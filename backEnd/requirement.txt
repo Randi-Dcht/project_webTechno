@@ -1,0 +1,8 @@
+ Flask==2.2.3
+ Werkzeug==2.2.3
+ itsdangerous==2.1.2
+ SQLAlchemy==2.0.7
+ flask_sqlalchemy==3.0.3
+ greenlet==2.0.2
+ typing-extensions==4.5.0
+ flask_cors==3.0.10
