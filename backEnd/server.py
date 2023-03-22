@@ -83,6 +83,7 @@ class getAdmin(Resource):
 
 
 api.add_resource(addAdmin, "/admin-add")
+api.add_resource(getAdmin, "/admin-get")
 
 
 # Main :
