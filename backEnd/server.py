@@ -38,6 +38,7 @@ class AbstractResource(Resource):
         return "", 200
 
 
+# ------------------- MODEL DataBase -------------------
 # All model :
 class adminModel(db.Model):
     """
@@ -56,6 +57,136 @@ class adminModel(db.Model):
         return "<admin %r>" % self.name
 
 
+class studentModel(db.Model):
+    """
+    student model
+    """
+    __tablename__ = "student"
+    matricule = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    surname = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    email_private = db.Column(db.String(120), nullable=False)
+    faculty = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<student %r>" % self.name
+
+
+class teacherModel(db.Model):
+    """
+    teacher model
+    """
+    __tablename__ = "teacher"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    surname = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<teacher %r>" % self.name
+
+
+class facilitiesModel(db.Model):
+    """
+    facilities model (unique for each student)
+    """
+    __tablename__ = "facilities"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.String(300), nullable=False)
+    type = db.Column(db.String(10), nullable=False)  # course or exam
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<facilities %r>" % self.name
+
+
+class courseModel(db.Model):
+    """
+    course model
+    """
+    __tablename__ = "course"
+    id_aa = db.Column(db.String(20), primary_key=True)  # INFO-1AA
+    name = db.Column(db.String(80), nullable=False)
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+    year = db.Column(db.String(15), nullable=False)  # Bachelor, Master, PhD
+    quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
+    yearSchool = db.Column(db.String(7), nullable=False)  # ie 22-23 for 2022-2023
+    teacher = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<course %r>" % self.name
+
+
+class courseFacilitiesModel(db.Model):
+    """
+    course facilities model (LIST) --> for each student (unique)
+    """
+    __tablename__ = "courseFacilities"
+    id = db.Column(db.Integer, primary_key=True)
+    course = db.Column(db.String(20), db.ForeignKey("course.id_aa"), nullable=False)
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+    facilities = db.Column(db.Integer, db.ForeignKey("facilities.id"), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<courseFacilities %r>" % self.name
+
+
+class examModel(db.Model):
+    """
+    exam model --> for each student (unique)
+    """
+    __tablename__ = "exam"
+    id = db.Column(db.Integer, primary_key=True)
+    course = db.Column(db.String(20), db.ForeignKey("course.id_aa"), nullable=False)
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    locale = db.Column(db.String(50), nullable=False)
+    yearSchool = db.Column(db.String(7), nullable=False)  # ie 22-23 for 2022-2023
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<exam %r>" % self.name
+
+
+class examFacilitiesModel(db.Model):
+    """
+    exam facilities model (LIST) --> for each student (unique)
+    """
+    __tablename__ = "examFacilities"
+    id = db.Column(db.Integer, primary_key=True)
+    exam = db.Column(db.Integer, db.ForeignKey("exam.id"), nullable=False)
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+    facilities = db.Column(db.Integer, db.ForeignKey("facilities.id"), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<examFacilities %r>" % self.name
+
+
+# ------------------- RESOURCES -------------------
 # define all resource :
 class addAdmin(AbstractResource):
     def post(self):
@@ -79,6 +210,7 @@ class getAdmin(Resource):
         return rtn, 200
 
 
+# ------------------- ROUTES -------------------
 # All resource (API) :
 
 
@@ -86,6 +218,7 @@ api.add_resource(addAdmin, "/admin-add")
 api.add_resource(getAdmin, "/admin-get")
 
 
+# ------------------- MAIN -------------------
 # Main :
 @app.route("/")
 def hello():
