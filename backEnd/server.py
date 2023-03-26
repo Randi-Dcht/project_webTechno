@@ -16,26 +16,19 @@ class AbstractResource(Resource):
     def __init__(self, model: db.Model) -> None:  # type: ignore
         super().__init__()
         self.model = model
-        self.primary_key = "id"
 
     def get(self, id):
-        q = db.session.query(self.model).filter_by(**{self.primary_key: id}).first()
-        if q is None:
-            return "", 404
-        else:
-            return q.as_dict(), 200
+        return db.session.query(self.model).filter_by(id=id).first().as_dict(), 200
 
     def delete(self, id):
-        db.session.query(self.model).filter_by(**{self.primary_key: id}).delete()
+        db.session.query(self.model).filter_by(id=id).delete()
         db.session.commit()
         return "", 204
 
     def put(self, id):
-        db.session.query(self.model).filter_by(**{self.primary_key: id}).update(
-            dict(**request.json)
-        )
+        db.session.query(self.model).filter_by(id=id).update(request.json)
         db.session.commit()
-        return "", 200
+        return "", 201
 
 
 # ------------------- MODEL DataBase -------------------
@@ -70,12 +63,25 @@ class studentModel(db.Model):
     email_private = db.Column(db.String(120), nullable=False)
     faculty = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    actif = db.Column(db.Boolean, nullable=False, default=False)  # if student is actif or not
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __repr__(self):
         return "<student %r>" % self.name
+
+
+class createStudentModel(db.Model):
+    """
+    create student model (unique for each
+    """
+    ___tablename__ = "createStudent"
+    id = db.Column(db.Integer, primary_key=True)  # matricule
+    name = db.Column(db.String(80), nullable=False)
+    surname = db.Column(db.String(80), nullable=False)
+    matricule = db.Column(db.Integer, nullable=False)
+    email = db.Column(db.String(120), nullable=False)
 
 
 class teacherModel(db.Model):
@@ -210,12 +216,33 @@ class getAdmin(Resource):
         return rtn, 200
 
 
+class addNewStudent(Resource):
+    def post(self):
+        arguments = request.get_json()
+
+        newStudent = createStudentModel(**arguments)
+        studentModel.query.session.add(newStudent)
+        db.session.commit()
+
+        return "", 201
+
+
+class getNewStudent(Resource):
+    def get(self):
+        id = request.get_json().get("id")
+        student = db.session.query(createStudentModel).filter_by(id=id).first()
+        rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
+        return rtn, 200
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
 
 api.add_resource(addAdmin, "/admin-add")
 api.add_resource(getAdmin, "/admin-get")
+api.add_resource(addNewStudent, "/new-student-add")  # example : {"id" : 45836,"name" : "test","surname" : "none","matricule" : 526312,"email" : "none@none.be"}
+api.add_resource(getNewStudent, "/new-student-get")  # example : {"id" : 45836}
 
 
 # ------------------- MAIN -------------------
