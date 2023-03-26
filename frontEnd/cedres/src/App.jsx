@@ -6,7 +6,7 @@ import Courses from "./pages/students/Courses.jsx";
 import Home from "./pages/Home.jsx";
 import Connexion from "./pages/Connexion.jsx";
 import StudentsList from "./pages/admin/StudentsList.jsx";
-import CreateStudentForm from "./components/forms/CreateStudentForm.jsx";
+import CreateStudent from "./pages/admin/CreateStudent.jsx";
 
 function App()
 {
@@ -18,7 +18,7 @@ function App()
             <Route path={STUDENT + "/course"} element={<Courses/>}/>
             <Route path={CONNEXION + "/:user"} element={<Connexion/>}/>
             <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
-            <Route path={ADMIN + "/students/add"} element={<CreateStudentForm/>}/>
+            <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
         </Routes>
     </div>
   )

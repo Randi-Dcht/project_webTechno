@@ -1,22 +1,20 @@
+import {Form} from "react-bootstrap";
 import {Controller} from "react-hook-form";
-import {Form} from "react-router-dom";
 
-const Inputs = ({name, label, controls, type}) =>
+export const Input = ({name, label, control, type, ...props}) =>
 {
-    return(
+    return (
         <Controller
             name={name}
-            control={controls}
-            render=
-                {({field, fieldState}) =>
-                {
-                    return <Form.Group>
-                        <Form.Label>{label}</Form.Label>
-                        <Form.Control type={type} value={field.value} onChange={field.onChange}/>
-                        <p style={{color: 'red'}}>{fieldState.error?.message}</p>
-                    </Form.Group>
-                }}/>
-    )
+            control={control}
+            render={({field, fieldState}) =>
+            {
+                return <Form.Group>
+                    <Form.Label>{label}</Form.Label>
+                    <Form.Control type={type} value={field.value} onChange={field.onChange} {...props} />
+                    <p style={{color: 'red'}}>{fieldState.error?.message}</p>
+                </Form.Group>
+            }}
+        />
+    );
 }
-
-export default Inputs;
