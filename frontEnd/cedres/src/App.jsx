@@ -6,6 +6,7 @@ import {STUDENT} from "./utils/routes.js";
 import LoadPages from "./components/LoadPages.jsx";
 import Courses from "./pages/students/Courses.jsx";
 import Home from "./pages/Home.jsx";
+import Connexion from "./pages/Connexion.jsx";
 
 function App()
 {
@@ -15,6 +16,7 @@ function App()
         <Routes>
             <Route exact path="/" element={<Home/>}/>
             <Route path={STUDENT + "/course"} element={<Courses/>}/>
+            <Route path={"connexion" + "/:user"} element={<Connexion/>}/>
         </Routes>
     </div>
   )
