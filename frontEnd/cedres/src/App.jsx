@@ -7,20 +7,37 @@ import Home from "./pages/Home.jsx";
 import Connexion from "./pages/Connexion.jsx";
 import StudentsList from "./pages/admin/StudentsList.jsx";
 import CreateStudent from "./pages/admin/CreateStudent.jsx";
+import NavTop from "./components/navBar/NavTop.jsx";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {URL_CEDRES, URL_STUDENT, URL_VISITOR} from "./utils/nav_url.js";
+import {useState} from "react";
+
+
+function getNav(type)
+{
+    if (type === "admin")
+        return URL_CEDRES
+    else if (type === "student")
+        return URL_STUDENT
+    else
+        return URL_VISITOR
+}
 
 function App()
 {
+    const [url, setUrl] = useState("Umons Cèdres");
 
-  return (
-    <div className="App">
-        <Routes>
-            <Route exact path="/" element={<Home/>}/>
-            <Route path={STUDENT + "/course"} element={<Courses/>}/>
-            <Route path={CONNEXION + "/:user"} element={<Connexion/>}/>
-            <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
-            <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
-        </Routes>
-    </div>
+    return (
+        <div className="App">
+            <NavTop name={url} list_url={getNav(url)}/>
+            <Routes>
+                <Route exact path="/" element={<Home/>}/>
+                <Route path={STUDENT + "/course"} element={<Courses/>}/>
+                <Route path={CONNEXION + "/:user"} element={<Connexion set_user={setUrl}/>}/>
+                <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
+                <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
+            </Routes>
+        </div>
   )
 }
 
