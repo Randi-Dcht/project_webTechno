@@ -11,7 +11,7 @@ const server = axios.create({
 
 export async function getNewStudent(data)
 {
-    const resp = await server.get('/new-student-get',data);
+    const resp = await server.get('/new-student-get/' + data);
     return resp.data
 }
 
@@ -26,4 +26,16 @@ export async function getListStudent()
     const rep = await server.get('/student-list');
     console.log(rep)
     return rep.data
+}
+
+export async function postSignupStudent(student)
+{
+    const resp = await server.post('/student-add', student);
+    return resp.data
+}
+
+export async function getStudent(matriculate)
+{
+    const resp = await server.get('/student-get/' + matriculate);
+    return resp.data
 }

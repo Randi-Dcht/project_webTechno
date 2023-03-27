@@ -11,6 +11,7 @@ import NavTop from "./components/navBar/NavTop.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {URL_CEDRES, URL_STUDENT, URL_VISITOR} from "./utils/nav_url.js";
 import {useState} from "react";
+import Signup from "./pages/students/Signup.jsx";
 
 
 function getNav(type)
@@ -36,6 +37,7 @@ function App()
                 <Route path={CONNEXION + "/:user"} element={<Connexion set_user={setUrl}/>}/>
                 <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
                 <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
+                <Route path={STUDENT + "/first/:id"} element={<Signup/>}/>
             </Routes>
         </div>
   )
