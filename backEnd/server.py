@@ -31,6 +31,20 @@ class AbstractResource(Resource):
         return "", 201
 
 
+class AbstractListResource(Resource):
+    def __init__(self, model: db.Model) -> None:  # type: ignore
+        super().__init__()
+        self.model = model
+
+    def get(self):
+        return [item.as_dict() for item in db.session.query(self.model).all()], 200
+
+    def post(self):
+        db.session.add(self.model(**request.json))
+        db.session.commit()
+        return "", 201
+
+
 # ------------------- MODEL DataBase -------------------
 # All model :
 class adminModel(db.Model):
@@ -194,7 +208,7 @@ class examFacilitiesModel(db.Model):
 
 # ------------------- RESOURCES -------------------
 # define all resource :
-class addAdmin(AbstractResource):
+class addAdmin(Resource):
     def post(self):
         arguments = request.get_json()
         pwd = arguments.get("password")
@@ -235,6 +249,26 @@ class getNewStudent(Resource):
         return rtn, 200
 
 
+class postStudent(Resource):
+    def post(self):
+        arguments = request.get_json()
+
+        pwd = arguments.get("password")
+        del arguments["password"]
+        pwd = generate_password_hash(pwd)
+
+        student = studentModel(**arguments, password=pwd)
+        studentModel.query.session.add(student)
+        db.session.commit()
+
+        return "", 201
+
+
+class getListStudent(AbstractListResource):
+    def __init__(self):
+        super().__init__(studentModel)
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -243,6 +277,8 @@ api.add_resource(addAdmin, "/admin-add")
 api.add_resource(getAdmin, "/admin-get")
 api.add_resource(addNewStudent, "/new-student-add")  # example : {"id" : 45836,"name" : "test","surname" : "none","matricule" : 526312,"email" : "none@none.be"}
 api.add_resource(getNewStudent, "/new-student-get")  # example : {"id" : 45836}
+api.add_resource(postStudent, "/student-add")  # {"matricule" : 110122,"name":"name2","surname":"surname2","email":"test2@none.com","phone": "01256300","email_private": "private2@none.be","faculty": "sciences","password": "test1234"}
+api.add_resource(getListStudent, "/student-list")  # empty body
 
 
 # ------------------- MAIN -------------------
