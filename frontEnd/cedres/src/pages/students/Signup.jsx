@@ -42,7 +42,17 @@ const Signup = () =>
         <Container>
             <h1>Première connexion :</h1>
             {
-                isLoading? <p>Chargement ...</p>: <StudentForm onSubmit={onSubmit} data_default={data}/>
+                isLoading? <p>Chargement ...</p>: <StudentForm onSubmit={onSubmit} name_button="créer le compte" data_default={
+                    {
+                        name : data.name,
+                        surname : data.surname,
+                        email : data.email,
+                        matricule : data.matricule,
+                        phone : "",
+                        email_private : " ",
+                        faculty : ""
+                    }
+                }/>
             }
         </Container>
     )

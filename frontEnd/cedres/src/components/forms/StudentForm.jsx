@@ -19,24 +19,13 @@ const validationSchema = yup.object().shape({
         .required("Ajouter un téléphone"),
     faculty: yup.string()
         .required("Ajouter votre faculté"),
-    password: yup.string()
-        .required("un mot de passe !"),
 });
 
-const StudentForm = ({data_default, onSubmit}) =>
+const StudentForm = ({data_default, onSubmit, name_button}) =>
 {
     const {handleSubmit, control} = useForm({
         mode: "onBlur",
-        defaultValues: {
-            name : data_default.name,
-            surname : data_default.surname,
-            email : data_default.email,
-            matricule : data_default.matricule,
-            phone : "",
-            email_private : " ",
-            faculty : "",
-            password : ""
-        },
+        defaultValues: data_default,
         resolver: yupResolver(validationSchema)
     });
 
@@ -52,9 +41,8 @@ const StudentForm = ({data_default, onSubmit}) =>
                     <Input type="text" name="phone" label="Téléphone (Gsm)" control={control}/>
                     <Input type="text" name="email_private" label="Mail privé" control={control}/>
                     <Input type="text" name="faculty" label="Facultée" control={control}/>
-                    <Input type="text" name="password" label="Ton mot de passe" control={control}/>
 
-                    <Button className="m-2" variant="primary" type="submit">ajouter</Button>
+                    <Button className="m-2" variant="primary" type="submit">{name_button}</Button>
                 </Form>
             </Row>
         </div>

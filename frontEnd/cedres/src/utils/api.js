@@ -24,7 +24,6 @@ export async function postNewStudent(student)
 export async function getListStudent()
 {
     const rep = await server.get('/student-list');
-    console.log(rep)
     return rep.data
 }
 
@@ -38,4 +37,15 @@ export async function getStudent(matriculate)
 {
     const resp = await server.get('/student-get/' + matriculate);
     return resp.data
+}
+
+export async function updateStudent(student)
+{
+    return " "
+}
+
+export async function getListTeacher()
+{
+    const rep = await server.get('/teacher-list');
+    return rep.data
 }

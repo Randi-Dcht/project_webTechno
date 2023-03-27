@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {URL_CEDRES, URL_STUDENT, URL_VISITOR} from "./utils/nav_url.js";
 import {useState} from "react";
 import Signup from "./pages/students/Signup.jsx";
+import Profil from "./pages/students/Profil.jsx";
 
 
 function getNav(type)
@@ -33,11 +34,14 @@ function App()
             <NavTop name={url} list_url={getNav(url)}/>
             <Routes>
                 <Route exact path="/" element={<Home/>}/>
-                <Route path={STUDENT + "/course"} element={<Courses/>}/>
                 <Route path={CONNEXION + "/:user"} element={<Connexion set_user={setUrl}/>}/>
+
                 <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
                 <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
+
+                <Route path={STUDENT + "/courses"} element={<Courses/>}/>
                 <Route path={STUDENT + "/first/:id"} element={<Signup/>}/>
+                <Route path={STUDENT + "/aboutMe"} element={<Profil/>}/>
             </Routes>
         </div>
   )
