@@ -46,6 +46,20 @@ class AbstractListResource(Resource):
         return "", 201
 
 
+class AbstractListResourceById(Resource):
+    def __init__(self, model: db.Model) -> None:  # type: ignore
+        super().__init__()
+        self.model = model
+
+    def get(self, id):
+        return [item.as_dict() for item in db.session.query(self.model).filter_by(id=id).all()], 200
+
+    def post(self):
+        db.session.add(self.model(**request.json))
+        db.session.commit()
+        return "", 201
+
+
 # ------------------- MODEL DataBase -------------------
 # All model :
 class adminModel(db.Model):
@@ -156,10 +170,8 @@ class courseModel(db.Model):
     __tablename__ = "course"
     id_aa = db.Column(db.String(20), primary_key=True)  # INFO-1AA
     name = db.Column(db.String(80), nullable=False)
-    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
     year = db.Column(db.String(15), nullable=False)  # Bachelor, Master, PhD
     quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
-    yearSchool = db.Column(db.String(7), nullable=False)  # ie 22-23 for 2022-2023
     teacher = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
 
     def as_dict(self):
@@ -167,6 +179,23 @@ class courseModel(db.Model):
 
     def __repr__(self):
         return "<course %r>" % self.name
+
+
+class courseStudentModel(db.Model):
+    """
+    courseStudent model (unique for each student)
+    """
+    __tablename__ = "courseStudent"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    course = db.Column(db.String(20), db.ForeignKey("course.id_aa"), nullable=False)
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+    yearSchool = db.Column(db.String(15), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<courseStudent %r>" % self.name
 
 
 class courseFacilitiesModel(db.Model):
@@ -315,6 +344,43 @@ class getListTeacher(AbstractListResource):
         super().__init__(teacherModel)
 
 
+class postCourse(Resource):
+    def post(self):
+        arguments = request.get_json()
+        course = courseModel(**arguments)
+        courseModel.query.session.add(course)
+        db.session.commit()
+
+        return "", 201
+
+
+class postLinkCourseStudent(Resource):
+    def post(self):
+        arguments = request.get_json()
+        link = courseStudentModel(**arguments)
+        courseStudentModel.query.session.add(link)
+        db.session.commit()
+
+        return "", 201
+
+
+class getListCourseStudent(AbstractListResourceById):  # TODO add name of teacher
+    def __init__(self):
+        super().__init__(courseModel)
+
+    def get(self, id):
+        course = db.session.query(courseStudentModel).filter_by(student=id)
+        list = []
+        for c in course:
+            list.append(db.session.query(courseModel).filter_by(id_aa=c.course).first())
+        return [c.as_dict() for c in list], 200
+
+
+class getListCourse(AbstractListResource):
+    def __init__(self):
+        super().__init__(courseModel)
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -329,6 +395,10 @@ api.add_resource(getListStudent, "/student-list")  # empty body
 api.add_resource(getStudent, "/student-get/<id>")  # 110122
 api.add_resource(postTeacher, "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
 api.add_resource(getListTeacher, "/teacher-list")  # empty body
+api.add_resource(postCourse, "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"teacher": 202022}
+api.add_resource(getListCourseStudent, "/courseStudent-list/<id>")  # empty body
+api.add_resource(postLinkCourseStudent, "/courseStudent-add")  # {"course" : "AA07785","student" : "191919","yearSchool" : "2022-2023"}
+api.add_resource(getListCourse, "/course-list")  # empty body
 
 
 # ------------------- MAIN -------------------
