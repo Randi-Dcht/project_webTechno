@@ -77,7 +77,7 @@ class studentModel(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     email_private = db.Column(db.String(120), nullable=False)
     faculty = db.Column(db.String(80), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    # password = db.Column(db.String(120), nullable=False)
     actif = db.Column(db.Boolean, nullable=False, default=False)  # if student is actif or not
 
     def as_dict(self):
@@ -85,6 +85,22 @@ class studentModel(db.Model):
 
     def __repr__(self):
         return "<student %r>" % self.name
+
+
+class loginStudentModel(db.Model):
+    """
+    login model
+    """
+    __tablename__ = "loginStudent"
+    matricule = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<login %r>" % self.email
 
 
 class createStudentModel(db.Model):
@@ -232,10 +248,10 @@ class getAdmin(Resource):
 
 class getStudent(Resource):
     def get(self, id):
-        student = db.session.query(createStudentModel).filter_by(matricule=id).first()
+        student = db.session.query(studentModel).filter_by(matricule=id).first()
         rtn = student.as_dict()
-        del rtn["password"]  # remove password from the response
         return rtn, 200
+
 
 class addNewStudent(Resource):
     def post(self):
@@ -259,12 +275,16 @@ class postStudent(Resource):
     def post(self):
         arguments = request.get_json()
 
-        pwd = arguments.get("password")
-        del arguments["password"]
-        pwd = generate_password_hash(pwd)
+        pwd = generate_password_hash('admin123')
+        matricule = arguments.get("matricule")
+        mail = arguments.get("email")
 
-        student = studentModel(**arguments, password=pwd)
+        student = studentModel(**arguments)
         studentModel.query.session.add(student)
+        db.session.commit()
+
+        login_student = loginStudentModel(matricule=matricule, password=pwd, email=mail)
+        loginStudentModel.query.session.add(login_student)
         db.session.commit()
 
         return "", 201
@@ -275,6 +295,26 @@ class getListStudent(AbstractListResource):
         super().__init__(studentModel)
 
 
+class getListNewStudent(AbstractListResource):
+    def __init__(self):
+        super().__init__(createStudentModel)
+
+
+class postTeacher(Resource):
+    def post(self):
+        arguments = request.get_json()
+        teacher = teacherModel(**arguments)
+        teacherModel.query.session.add(teacher)
+        db.session.commit()
+
+        return "", 201
+
+
+class getListTeacher(AbstractListResource):
+    def __init__(self):
+        super().__init__(teacherModel)
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -283,9 +323,12 @@ api.add_resource(addAdmin, "/admin-add")
 api.add_resource(getAdmin, "/admin-get")
 api.add_resource(addNewStudent, "/new-student-add")  # example : {"matricule" : 191919, "name" : "testR", "surname" : "none", "email" : "none@none.be"}
 api.add_resource(getNewStudent, "/new-student-get/<id>")  # example : 191919
+api.add_resource(getListNewStudent, "/new-student-list")
 api.add_resource(postStudent, "/student-add")  # {"matricule" : 110122,"name":"name2","surname":"surname2","email":"test2@none.com","phone": "01256300","email_private": "private2@none.be","faculty": "sciences","password": "test1234"}
 api.add_resource(getListStudent, "/student-list")  # empty body
 api.add_resource(getStudent, "/student-get/<id>")  # 110122
+api.add_resource(postTeacher, "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
+api.add_resource(getListTeacher, "/teacher-list")  # empty body
 
 
 # ------------------- MAIN -------------------
