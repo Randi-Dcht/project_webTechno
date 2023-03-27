@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 db = SQLAlchemy()
 db.init_app(app)
