@@ -92,10 +92,9 @@ class createStudentModel(db.Model):
     create student model (unique for each
     """
     ___tablename__ = "createStudent"
-    id = db.Column(db.Integer, primary_key=True)  # matricule
+    matricule = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     surname = db.Column(db.String(80), nullable=False)
-    matricule = db.Column(db.Integer, nullable=False)
     email = db.Column(db.String(120), nullable=False)
 
 
@@ -231,6 +230,13 @@ class getAdmin(Resource):
         return rtn, 200
 
 
+class getStudent(Resource):
+    def get(self, id):
+        student = db.session.query(createStudentModel).filter_by(matricule=id).first()
+        rtn = student.as_dict()
+        del rtn["password"]  # remove password from the response
+        return rtn, 200
+
 class addNewStudent(Resource):
     def post(self):
         arguments = request.get_json()
@@ -243,9 +249,8 @@ class addNewStudent(Resource):
 
 
 class getNewStudent(Resource):
-    def get(self):
-        id = request.get_json().get("id")
-        student = db.session.query(createStudentModel).filter_by(id=id).first()
+    def get(self, id):
+        student = db.session.query(createStudentModel).filter_by(matricule=id).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
         return rtn, 200
 
@@ -276,10 +281,11 @@ class getListStudent(AbstractListResource):
 
 api.add_resource(addAdmin, "/admin-add")
 api.add_resource(getAdmin, "/admin-get")
-api.add_resource(addNewStudent, "/new-student-add")  # example : {"id" : 45836,"name" : "test","surname" : "none","matricule" : 526312,"email" : "none@none.be"}
-api.add_resource(getNewStudent, "/new-student-get")  # example : {"id" : 45836}
+api.add_resource(addNewStudent, "/new-student-add")  # example : {"matricule" : 191919, "name" : "testR", "surname" : "none", "email" : "none@none.be"}
+api.add_resource(getNewStudent, "/new-student-get/<id>")  # example : 191919
 api.add_resource(postStudent, "/student-add")  # {"matricule" : 110122,"name":"name2","surname":"surname2","email":"test2@none.com","phone": "01256300","email_private": "private2@none.be","faculty": "sciences","password": "test1234"}
 api.add_resource(getListStudent, "/student-list")  # empty body
+api.add_resource(getStudent, "/student-get/<id>")  # 110122
 
 
 # ------------------- MAIN -------------------
