@@ -20,3 +20,10 @@ export async function postNewStudent(student)
     const resp = await server.post('/new-student-add', student);
     return resp.data
 }
+
+export async function getListStudent()
+{
+    const rep = await server.get('/student-list');
+    console.log(rep)
+    return rep.data
+}

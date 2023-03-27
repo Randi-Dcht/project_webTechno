@@ -18,13 +18,14 @@ const defaultValue = {
 
 const validationSchema = yup.object().shape({
     name: yup.string()
-        .required("Is required"),
+        .required("Merci de donner le nom"),
     surname: yup.string()
-        .required("Is required"),
+        .required("Merci de donner le prénom"),
     email: yup.string()
-        .required("Is required"),
+        .required("Pour envoyer, il faut un mail"),
     matricule: yup.number()
-        .required("Is required"),
+        .required("Is required")
+        .min(6, "La taille est incorrect"),
 });
 
 
