@@ -1,4 +1,4 @@
-import {Button, Tab, Tabs} from "react-bootstrap";
+import {Button, Container, Tab, Tabs} from "react-bootstrap";
 import FacilitiesTab from "../../components/board/FacilitiesTab.jsx";
 import {getListFacilitiesCourse, getListFacilitiesExam} from "../../utils/api.js";
 import {useState} from "react";
@@ -10,7 +10,7 @@ const Facilities = () =>
     const [visible, setVisible] = useState(false)
 
     return(
-        <div>
+        <Container>
             <h3 className="m-2">Mes aménagements :</h3>
             <div className="container-fluid text-center m-2">
                 {
@@ -25,7 +25,7 @@ const Facilities = () =>
                     <FacilitiesTab getter={getListFacilitiesExam('191919')} name={'listFacilitiesExam'}/>
                 </Tab>
             </Tabs>
-        </div>
+        </Container>
     )
 }
 export default Facilities;

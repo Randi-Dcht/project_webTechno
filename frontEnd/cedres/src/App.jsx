@@ -9,13 +9,15 @@ import StudentsList from "./pages/admin/StudentsList.jsx";
 import CreateStudent from "./pages/admin/CreateStudent.jsx";
 import NavTop from "./components/navBar/NavTop.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {URL_CEDRES, URL_STUDENT, URL_VISITOR, visitorUrl} from "./utils/nav_url.js";
+import {visitorUrl} from "./utils/nav_url.js";
 import Signup from "./pages/students/Signup.jsx";
 import Profil from "./pages/students/Profil.jsx";
 import HomeAdmin from "./pages/admin/HomeAdmin.jsx";
 import HomeStudent from "./pages/students/HomeStudent.jsx";
 import {useState} from "react";
 import Facilities from "./pages/students/Facilities.jsx";
+import AskFacilities from "./pages/students/AskFacilities.jsx";
+import Docs from "./pages/students/Docs.jsx";
 
 function App()
 {
@@ -37,6 +39,8 @@ function App()
                 <Route path={STUDENT + "/facilities"} element={<Facilities/>}/>
                 <Route path={STUDENT + "/first/:id"} element={<Signup/>}/>
                 <Route path={STUDENT + "/aboutMe"} element={<Profil/>}/>
+                <Route path={STUDENT + "/ask"} element={<AskFacilities/>}/>
+                <Route path={STUDENT + "/docs"} element={<Docs/>}/>
             </Routes>
         </div>
   )

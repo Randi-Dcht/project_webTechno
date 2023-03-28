@@ -28,7 +28,7 @@ const FacilitiesTab = ({getter, name}) =>
     return(
         isLoading?
         <p>en chargement ...</p>:
-                <Table style={{width: '80%', marginLeft: '10%'}} key={name}>
+                <Table key={name}>
                     <thead>
                     <tr>
                         <td>Nom</td><td>Description</td>
