@@ -45,7 +45,7 @@ const FacilitiesForm = ({cancel}) =>
             "name" : values.name,
             "description" : values.description,
             "type": values.type,
-            "student" : "191919"//todo here !
+            "student" : localStorage.getItem('id')
         });
     }, [mutation]);
 

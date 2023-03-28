@@ -1,16 +1,19 @@
 # save this as app.py
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+app.config["JWT_SECRET_KEY"] = "key-of-datBase-secret"
 CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 db = SQLAlchemy()
 db.init_app(app)
+jwt = JWTManager(app)
 
 
 class AbstractResource(Resource):
@@ -409,6 +412,23 @@ class getListFacilitiesExam(AbstractListResourceById):
         return [f.as_dict() for f in facilities], 200
 
 
+class loginStudent(Resource):
+    def post(self):
+        arguments = request.get_json()
+        mail = arguments.get("mail")
+        password = arguments.get("password")
+
+        student = db.session.query(loginStudentModel).filter_by(email=mail).first()
+        if student is None:
+            return "", 404
+
+        if check_password_hash(student.password, password):
+            var = {"id": student.matricule}, {"token": create_access_token(identity=student.matricule)}
+            return var, 200
+        else:
+            return "", 401
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -430,6 +450,7 @@ api.add_resource(getListCourse, "/course-list")  # empty body
 api.add_resource(postFacilities, "/facilities-add")  # {"student" : 191919, "yearSchool" : "2022-2023", "facilities" : "test"}
 api.add_resource(getListFacilitiesCourse, "/facilitiesCourse-list/<id>")  # empty body
 api.add_resource(getListFacilitiesExam, "/facilitiesExam-list/<id>")  # empty body
+api.add_resource(loginStudent, "/login-student")
 
 
 # ------------------- MAIN -------------------

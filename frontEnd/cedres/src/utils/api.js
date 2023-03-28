@@ -67,3 +67,9 @@ export async function postFacilities(data)
     const rep = await server.post('/facilities-add', data);
     return rep.data
 }
+
+export async function postloginStudent(data)
+{
+    const rep = await server.post('/login-student', data);
+    return rep.data
+}

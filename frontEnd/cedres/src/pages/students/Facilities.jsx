@@ -5,7 +5,7 @@ import {useState} from "react";
 import FacilitiesForm from "../../components/forms/FacilitiesForm.jsx";
 
 const Facilities = () =>
-{//TODO change here the matriculate !
+{
 
     const [visible, setVisible] = useState(false)
 
@@ -19,10 +19,10 @@ const Facilities = () =>
             </div>
             <Tabs defaultActiveKey="course" id="fill-tab-example" className="mb-3" fill>
                 <Tab eventKey="course" title="Aménagements cours">
-                    <FacilitiesTab getter={getListFacilitiesCourse('191919')} name={'listFacilitiesCourse'}/>
+                    <FacilitiesTab getter={getListFacilitiesCourse(localStorage.getItem('id'))} name={'listFacilitiesCourse'}/>
                 </Tab>
                 <Tab eventKey="exam" title="Aménagements examen">
-                    <FacilitiesTab getter={getListFacilitiesExam('191919')} name={'listFacilitiesExam'}/>
+                    <FacilitiesTab getter={getListFacilitiesExam(localStorage.getItem('id'))} name={'listFacilitiesExam'}/>
                 </Tab>
             </Tabs>
         </Container>

@@ -38,7 +38,6 @@ const CreateStudent = () =>
     const mutation = useMutation({
         mutationFn: postNewStudent,
         onSuccess: async data => {
-            await client.invalidateQueries(['create-student']);
             navigate("/cedres/students")
         }
     });

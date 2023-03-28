@@ -12,12 +12,10 @@ const Profil = () =>
     const client = useQueryClient();
     const param = useParams();
 
-    const matriculate = "191919"
-
     const {data, isLoading} = useQuery(
         {
             queryKey: ['studentMe'],
-            queryFn: () => getStudent(matriculate),
+            queryFn: () => getStudent(localStorage.getItem('id')),
         });
 
     const mutation = useMutation({
