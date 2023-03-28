@@ -150,9 +150,9 @@ class facilitiesModel(db.Model):
     facilities model (unique for each student)
     """
     __tablename__ = "facilities"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-    description = db.Column(db.String(300), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.String(300), nullable=False, default=" ")
     type = db.Column(db.String(10), nullable=False)  # course or exam
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
 
@@ -381,6 +381,34 @@ class getListCourse(AbstractListResource):
         super().__init__(courseModel)
 
 
+class postFacilities(Resource):
+    def post(self):
+        arguments = request.get_json()
+        facilities = facilitiesModel(**arguments)
+        facilitiesModel.query.session.add(facilities)
+        db.session.commit()
+
+        return arguments, 201
+
+
+class getListFacilitiesCourse(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(facilitiesModel)
+
+    def get(self, id):
+        facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="course")
+        return [f.as_dict() for f in facilities], 200
+
+
+class getListFacilitiesExam(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(facilitiesModel)
+
+    def get(self, id):
+        facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="exam")
+        return [f.as_dict() for f in facilities], 200
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -399,6 +427,9 @@ api.add_resource(postCourse, "/course-add")  # {"id_aa": "AA07785","name": "info
 api.add_resource(getListCourseStudent, "/courseStudent-list/<id>")  # empty body
 api.add_resource(postLinkCourseStudent, "/courseStudent-add")  # {"course" : "AA07785","student" : "191919","yearSchool" : "2022-2023"}
 api.add_resource(getListCourse, "/course-list")  # empty body
+api.add_resource(postFacilities, "/facilities-add")  # {"student" : 191919, "yearSchool" : "2022-2023", "facilities" : "test"}
+api.add_resource(getListFacilitiesCourse, "/facilitiesCourse-list/<id>")  # empty body
+api.add_resource(getListFacilitiesExam, "/facilitiesExam-list/<id>")  # empty body
 
 
 # ------------------- MAIN -------------------

@@ -6,6 +6,10 @@ export const URL_CEDRES =
         {
             "name" : "Elèves",
             "url" : ADMIN + '/students'
+        },
+        {
+            "name" : "Annuaire",
+            "url" : ADMIN + '/'
         }
     ]
 

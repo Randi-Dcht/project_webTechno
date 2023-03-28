@@ -49,3 +49,21 @@ export async function getListTeacher()
     const rep = await server.get('/teacher-list');
     return rep.data
 }
+
+export async function getListFacilitiesCourse(matriculate)
+{
+    const rep = await server.get('/facilitiesCourse-list/' + matriculate);
+    return rep.data
+}
+
+export async function getListFacilitiesExam(matriculate)
+{
+    const rep = await server.get('/facilitiesExam-list/' + matriculate);
+    return rep.data
+}
+
+export async function postFacilities(data)
+{
+    const rep = await server.post('/facilities-add', data);
+    return rep.data
+}

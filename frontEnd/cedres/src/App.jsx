@@ -15,6 +15,7 @@ import Profil from "./pages/students/Profil.jsx";
 import HomeAdmin from "./pages/admin/HomeAdmin.jsx";
 import HomeStudent from "./pages/students/HomeStudent.jsx";
 import {useState} from "react";
+import Facilities from "./pages/students/Facilities.jsx";
 
 function App()
 {
@@ -33,6 +34,7 @@ function App()
 
                 <Route path={STUDENT} element={<HomeStudent/>}/>
                 <Route path={STUDENT + "/courses"} element={<Courses/>}/>
+                <Route path={STUDENT + "/facilities"} element={<Facilities/>}/>
                 <Route path={STUDENT + "/first/:id"} element={<Signup/>}/>
                 <Route path={STUDENT + "/aboutMe"} element={<Profil/>}/>
             </Routes>

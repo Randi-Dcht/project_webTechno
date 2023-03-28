@@ -7,6 +7,7 @@ import {yupResolver} from "@hookform/resolvers/yup/dist/yup.js";
 import {Link, useNavigate} from "react-router-dom";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {postNewStudent} from "../../utils/api.js";
+import {ADMIN} from "../../utils/routes.js";
 
 
 const defaultValue = {
@@ -38,7 +39,7 @@ const CreateStudent = () =>
         mutationFn: postNewStudent,
         onSuccess: async data => {
             await client.invalidateQueries(['create-student']);
-            navigate("/")
+            navigate("/cedres/students")
         }
     });
 
