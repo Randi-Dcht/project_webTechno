@@ -1,9 +1,6 @@
 import {ADMIN, CONNEXION, STUDENT} from "./routes.js";
 
 
-
-
-
 export const URL_CEDRES =
     [
         {
@@ -39,3 +36,19 @@ export const URL_VISITOR =
             "url" : CONNEXION + '/student'
         },
     ]
+
+export const visitorUrl = {
+    'Name' :'Cèdre Umons',
+    'Root' : '/',
+    'Url' : URL_VISITOR
+}
+export const studentUrl = {
+    'Name' :'App élève',
+    'Root' : STUDENT,
+    'Url' : URL_STUDENT
+}
+export const adminUrl = {
+    'Name' :'App adminitration',
+    'Root' : ADMIN,
+    'Url' : URL_CEDRES
+}

@@ -2,7 +2,7 @@ import {Button, Form} from "react-bootstrap";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 
-const Connect = ({redirect}) =>
+const Connect = ({redirect, setUrl, name}) =>
 {
     const [isVisible, setVisible] = useState(false);
     const navigate = useNavigate()
@@ -21,7 +21,10 @@ const Connect = ({redirect}) =>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
                 <Form.Check onChange={() => setVisible(!isVisible)} type="checkbox" label="vérifier mot de passe" />
             </Form.Group>
-            <Button variant="primary" type="submit" onClick={()=>navigate(redirect)}>
+            <Button variant="primary" type="submit" onClick={()=> {
+                navigate(redirect)
+                setUrl(name)
+            }}>
                 connexion
             </Button>
         </Form>

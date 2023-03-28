@@ -9,36 +9,23 @@ import StudentsList from "./pages/admin/StudentsList.jsx";
 import CreateStudent from "./pages/admin/CreateStudent.jsx";
 import NavTop from "./components/navBar/NavTop.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {URL_CEDRES, URL_STUDENT, URL_VISITOR} from "./utils/nav_url.js";
+import {URL_CEDRES, URL_STUDENT, URL_VISITOR, visitorUrl} from "./utils/nav_url.js";
 import Signup from "./pages/students/Signup.jsx";
 import Profil from "./pages/students/Profil.jsx";
 import HomeAdmin from "./pages/admin/HomeAdmin.jsx";
 import HomeStudent from "./pages/students/HomeStudent.jsx";
-
-const visitor = {
-        'Name' :'Cèdre Umons',
-        'Root' : '/',
-        'Url' : URL_VISITOR
-}
-const student = {
-    'Name' :'App élève',
-    'Root' : STUDENT,
-    'Url' : URL_STUDENT
-}
-const admin = {
-    'Name' :'App adminitration',
-    'Root' : ADMIN,
-    'Url' : URL_CEDRES
-}
+import {useState} from "react";
 
 function App()
 {
+    const [getWho, setWho] = useState(visitorUrl);
+
     return (
         <div className="App">
-            <NavTop who={visitor}/>
+            <NavTop who={getWho}/>
             <Routes>
                 <Route exact path="/" element={<Home/>}/>
-                <Route path={CONNEXION + "/:user"} element={<Connexion/>}/>
+                <Route path={CONNEXION + "/:user"} element={<Connexion setUrl={setWho}/>}/>
 
                 <Route path={ADMIN} element={<HomeAdmin/>}/>
                 <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
