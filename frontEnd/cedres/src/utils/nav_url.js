@@ -1,11 +1,11 @@
-import {ADMIN, STUDENT} from "./routes.js";
+import {ADMIN, CONNEXION, STUDENT} from "./routes.js";
+
+
+
+
 
 export const URL_CEDRES =
     [
-        {
-            "name" : "Accueil",
-            "url" : ADMIN
-        },
         {
             "name" : "Elèves",
             "url" : ADMIN + '/students'
@@ -14,10 +14,6 @@ export const URL_CEDRES =
 
 export const URL_STUDENT =
     [
-        {
-            "name" : "Accueil",
-            "url" : STUDENT
-        },
         {
             "name" : "Mes cours",
             "url" : STUDENT + '/courses'
@@ -39,7 +35,7 @@ export const URL_STUDENT =
 export const URL_VISITOR =
     [
         {
-            "name" : "Accueil",
-            "url" : '/'
+            "name" : "Connexion",
+            "url" : CONNEXION + '/student'
         },
     ]
