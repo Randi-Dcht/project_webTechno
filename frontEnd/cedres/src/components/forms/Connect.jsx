@@ -3,7 +3,7 @@ import React, {useCallback, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import * as yup from "yup";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {postloginStudent, postNewStudent} from "../../utils/api.js";
+import {postloginStudent} from "../../utils/api.js";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {Input} from "../form/Input.jsx";

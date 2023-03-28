@@ -1,7 +1,6 @@
 import './styles/App.css'
 import {Route, Routes} from "react-router-dom";
 import {ADMIN, CONNEXION, STUDENT} from "./utils/routes.js";
-import LoadPages from "./components/LoadPages.jsx";
 import Courses from "./pages/students/Courses.jsx";
 import Home from "./pages/Home.jsx";
 import Connexion from "./pages/Connexion.jsx";

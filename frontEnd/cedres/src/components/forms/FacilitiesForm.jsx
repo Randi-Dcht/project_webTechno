@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {postFacilities, postNewStudent} from "../../utils/api.js";
+import {postFacilities} from "../../utils/api.js";
 import {useForm} from "react-hook-form";
 import React, {useCallback} from "react";
 import {Button, Container, Form, Row} from "react-bootstrap";

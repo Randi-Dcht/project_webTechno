@@ -1,10 +1,10 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {getNewStudent, getStudent, postSignupStudent, updateStudent} from "../../utils/api.js";
-import {CONNEXION} from "../../utils/routes.js";
+import {getStudent, postUpdatePasswordStudent, updateStudent} from "../../utils/api.js";
 import React, {useCallback} from "react";
 import {Col, Container, Nav, Row, Tab} from "react-bootstrap";
 import StudentForm from "../../components/forms/StudentForm.jsx";
+import UpdatePassForm from "../../components/forms/UpdatePassForm.jsx";
 
 const Profil = () =>
 {
@@ -21,8 +21,7 @@ const Profil = () =>
     const mutation = useMutation({
         mutationFn: updateStudent,
         onSuccess: async data => {
-            await client.invalidateQueries(['student']);
-            navigate(CONNEXION + '/student')
+            await client.invalidateQueries(['studentMe']);
         }
     });
 
@@ -64,7 +63,7 @@ const Profil = () =>
                                 }
                             </Tab.Pane>
                             <Tab.Pane eventKey="second">
-                                <p>vide</p>
+                                <UpdatePassForm url={postUpdatePasswordStudent}/>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

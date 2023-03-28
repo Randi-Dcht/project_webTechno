@@ -41,7 +41,8 @@ export async function getStudent(matriculate)
 
 export async function updateStudent(student)
 {
-    return " "
+    const rep = await server.post('/studentInfo-update', student);
+    return rep.data
 }
 
 export async function getListTeacher()
@@ -71,5 +72,11 @@ export async function postFacilities(data)
 export async function postloginStudent(data)
 {
     const rep = await server.post('/login-student', data);
+    return rep.data
+}
+
+export async function postUpdatePasswordStudent(data)
+{
+    const rep = await server.post('/studentPassword-update', data);
     return rep.data
 }

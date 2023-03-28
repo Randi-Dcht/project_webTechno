@@ -429,6 +429,49 @@ class loginStudent(Resource):
             return "", 401
 
 
+class updateStudentPassword(Resource):
+    def post(self):
+        arguments = request.get_json()
+        matricule = arguments.get("matricule")
+        password = arguments.get("password")
+        new_password = arguments.get("newPassword")
+
+        student = db.session.query(loginStudentModel).filter_by(matricule=matricule).first()
+        if student is None:
+            return "", 404
+
+        if check_password_hash(student.password, password):
+            student.password = generate_password_hash(new_password)
+            db.session.commit()
+            return "", 200
+        else:
+            return "", 401
+
+
+class updateStudentModel(Resource):
+    def post(self):
+        args = request.get_json()
+        matricule = args.get("matricule")
+        name = args.get("name")
+        surname = args.get("surname")
+        email = args.get("email")
+        phone = args.get("phone")
+        email_private = args.get("email_private")
+        faculty = args.get("faculty")
+
+        student = db.session.query(studentModel).filter_by(matricule=matricule).first()
+        if student is None:
+            return "", 404
+        else:
+            student.name = name
+            student.surname = surname
+            student.phone = phone
+            student.email_private = email_private
+            student.faculty = faculty
+            db.session.commit()
+            return "", 200
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -451,6 +494,8 @@ api.add_resource(postFacilities, "/facilities-add")  # {"student" : 191919, "yea
 api.add_resource(getListFacilitiesCourse, "/facilitiesCourse-list/<id>")  # empty body
 api.add_resource(getListFacilitiesExam, "/facilitiesExam-list/<id>")  # empty body
 api.add_resource(loginStudent, "/login-student")
+api.add_resource(updateStudentPassword, "/studentPassword-update")
+api.add_resource(updateStudentModel, "/studentInfo-update")
 
 
 # ------------------- MAIN -------------------

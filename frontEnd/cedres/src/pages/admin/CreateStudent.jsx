@@ -4,10 +4,9 @@ import React, {useCallback} from "react";
 import * as yup from "yup";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/dist/yup.js";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {postNewStudent} from "../../utils/api.js";
-import {ADMIN} from "../../utils/routes.js";
 
 
 const defaultValue = {
