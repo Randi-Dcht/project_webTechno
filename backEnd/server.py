@@ -16,6 +16,9 @@ db.init_app(app)
 jwt = JWTManager(app)
 
 
+actual_year = "2022-2023"
+
+
 class AbstractResource(Resource):
     def __init__(self, model: db.Model) -> None:  # type: ignore
         super().__init__()
@@ -70,10 +73,11 @@ class adminModel(db.Model):
     admin model (person who can log in to the system)
     """
     __tablename__ = "admin"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
+    grade = db.Column(db.String(80), nullable=False, default="admin")  # admin / worker
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -175,7 +179,12 @@ class courseModel(db.Model):
     name = db.Column(db.String(80), nullable=False)
     year = db.Column(db.String(15), nullable=False)  # Bachelor, Master, PhD
     quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
-    teacher = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+    passExam = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+    # 1 = january, 4 = june, 7 = september
+    # Session 1 : 8 or 12
+    # Session 2 : 11 or 12
+    # Session 3 : 8 or 11 or 12
+
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -192,7 +201,8 @@ class courseStudentModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     course = db.Column(db.String(20), db.ForeignKey("course.id_aa"), nullable=False)
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
-    yearSchool = db.Column(db.String(15), nullable=False)
+    teacher = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+    isSuccess = db.Column(db.String(15), nullable=False, default='false')
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -276,6 +286,37 @@ class getAdmin(Resource):
         rtn = admin.as_dict()
         del rtn["password"]  # remove password from the response
         return rtn, 200
+
+
+class loginAdmin(Resource):
+    def post(self):
+        arguments = request.get_json()
+        admin = db.session.query(adminModel).filter_by(email=arguments.get('mail')).first()
+
+        if admin is None:
+            return "", 404
+        if check_password_hash(admin.password, arguments.get("password")):
+            var = {"id": admin.id}, {"token": create_access_token(identity=admin.id)}, {"type": "admin"}
+            return var, 200
+        else:
+            return "", 401
+
+
+class updatePasswordAdmin(Resource):
+    def post(self):
+        arguments = request.get_json()
+        admin = db.session.query(adminModel).filter_by(email=arguments.get('mail')).first()
+
+        if admin is None:
+            return "", 404
+        if check_password_hash(admin.password, arguments.get("password")):
+            pwd = arguments.get("newPassword")
+            pwd = generate_password_hash(pwd)
+            admin.password = pwd
+            db.session.commit()
+            return "", 200
+        else:
+            return "", 401
 
 
 class getStudent(Resource):
@@ -372,11 +413,13 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
         super().__init__(courseModel)
 
     def get(self, id):
-        course = db.session.query(courseStudentModel).filter_by(student=id)
+        course = db.session.query(courseStudentModel).filter_by(student=id).all()
         list = []
         for c in course:
-            list.append(db.session.query(courseModel).filter_by(id_aa=c.course).first())
-        return [c.as_dict() for c in list], 200
+            crs = db.session.query(courseModel).filter_by(id_aa=c.course).first()
+            teacher = db.session.query(teacherModel).filter_by(id=c.teacher).first()
+            list.append({"id_aa": crs.id_aa, "name": crs.name, "teacher": teacher.name + " " + teacher.surname, "mail": teacher.email, "isSuccess": c.isSuccess, "passExam": crs.passExam, "quadrimester": crs.quadrimester})
+        return [h for h in list], 200
 
 
 class getListCourse(AbstractListResource):
@@ -423,7 +466,7 @@ class loginStudent(Resource):
             return "", 404
 
         if check_password_hash(student.password, password):
-            var = {"id": student.matricule}, {"token": create_access_token(identity=student.matricule)}
+            var = {"id": student.matricule}, {"token": create_access_token(identity=student.matricule)}, {"type": "student"}
             return var, 200
         else:
             return "", 401
@@ -476,8 +519,10 @@ class updateStudentModel(Resource):
 # All resource (API) :
 
 
-api.add_resource(addAdmin, "/admin-add")
+api.add_resource(addAdmin, "/admin-add")  # {"name" : "pascal dd", "password" : "admin", "email":"pascal@none.be"}
 api.add_resource(getAdmin, "/admin-get")
+api.add_resource(loginAdmin, "/admin-login") # {"password" : "admin", "mail":"pascal@none.be"}
+api.add_resource(updatePasswordAdmin, "/adminPassword-update")
 api.add_resource(addNewStudent, "/new-student-add")  # example : {"matricule" : 191919, "name" : "testR", "surname" : "none", "email" : "none@none.be"}
 api.add_resource(getNewStudent, "/new-student-get/<id>")  # example : 191919
 api.add_resource(getListNewStudent, "/new-student-list")
@@ -486,14 +531,14 @@ api.add_resource(getListStudent, "/student-list")  # empty body
 api.add_resource(getStudent, "/student-get/<id>")  # 110122
 api.add_resource(postTeacher, "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
 api.add_resource(getListTeacher, "/teacher-list")  # empty body
-api.add_resource(postCourse, "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"teacher": 202022}
+api.add_resource(postCourse, "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"passExam": 12}
 api.add_resource(getListCourseStudent, "/courseStudent-list/<id>")  # empty body
 api.add_resource(postLinkCourseStudent, "/courseStudent-add")  # {"course" : "AA07785","student" : "191919","yearSchool" : "2022-2023"}
 api.add_resource(getListCourse, "/course-list")  # empty body
 api.add_resource(postFacilities, "/facilities-add")  # {"student" : 191919, "yearSchool" : "2022-2023", "facilities" : "test"}
 api.add_resource(getListFacilitiesCourse, "/facilitiesCourse-list/<id>")  # empty body
 api.add_resource(getListFacilitiesExam, "/facilitiesExam-list/<id>")  # empty body
-api.add_resource(loginStudent, "/login-student")
+api.add_resource(loginStudent, "/student-login")
 api.add_resource(updateStudentPassword, "/studentPassword-update")
 api.add_resource(updateStudentModel, "/studentInfo-update")
 

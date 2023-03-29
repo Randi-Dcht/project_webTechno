@@ -33,6 +33,7 @@ const Connect = ({redirect, setUrl, name, url}) =>
         onSuccess: async data => {
             localStorage.setItem('id', data[0].id)
             localStorage.setItem('token', data[1].token)
+            localStorage.setItem('type', data[2].type)
             navigate(redirect)
             setUrl(name)
         },

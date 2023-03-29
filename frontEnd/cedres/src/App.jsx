@@ -8,7 +8,7 @@ import StudentsList from "./pages/admin/StudentsList.jsx";
 import CreateStudent from "./pages/admin/CreateStudent.jsx";
 import NavTop from "./components/navBar/NavTop.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {visitorUrl} from "./utils/nav_url.js";
+import {adminUrl, studentUrl, visitorUrl} from "./utils/nav_url.js";
 import Signup from "./pages/students/Signup.jsx";
 import Profil from "./pages/students/Profil.jsx";
 import HomeAdmin from "./pages/admin/HomeAdmin.jsx";
@@ -20,7 +20,12 @@ import Docs from "./pages/students/Docs.jsx";
 
 function App()
 {
-    const [getWho, setWho] = useState(visitorUrl);
+    let buffer = visitorUrl;
+    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === 'student')
+        buffer = studentUrl;
+    else if (localStorage.getItem('type') !== null && localStorage.getItem('type') === 'admin')
+        buffer = adminUrl;
+    const [getWho, setWho] = useState(buffer);
 
     return (
         <div className="App">

@@ -32,7 +32,7 @@ const Profil = () =>
 
     return(
         <Container>
-            <h3 className="m-2">Mon profil :</h3>
+            <h3 className="m-3">Mon profil :</h3>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                 <Row>
                     <Col sm={3}>

@@ -11,10 +11,10 @@ const Facilities = () =>
 
     return(
         <Container>
-            <h3 className="m-2">Mes aménagements :</h3>
+            <h3 className="m-3">Mes aménagements :</h3>
             <div className="container-fluid text-center m-2">
                 {
-                    visible? <FacilitiesForm cancel={setVisible}/> : <Button variant="primary" onClick={() => setVisible(!visible)}>ajouter un aménagement</Button>
+                    visible? <FacilitiesForm cancel={setVisible}/> : <Button variant="warning" onClick={() => setVisible(!visible)}>ajouter un aménagement</Button>
                 }
             </div>
             <Tabs defaultActiveKey="course" id="fill-tab-example" className="mb-3" fill>

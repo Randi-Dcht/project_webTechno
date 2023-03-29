@@ -1,11 +1,12 @@
 import {useContext} from "react";
+import {Container} from "react-bootstrap";
 
 const HomeStudent = () =>
 {
     return(
-        <div>
-            <h1>Accueil élève</h1>
-        </div>
+        <Container>
+            <h3 className='m-3'>Accueil élève</h3>
+        </Container>
     )
 }
 export default HomeStudent;

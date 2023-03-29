@@ -92,3 +92,15 @@ export async function postUpdatePasswordAdmin(data)
     const rep = await server.post('/adminPassword-update', data);
     return rep.data
 }
+
+export async function postStudentCourse(course)
+{
+    const rep = await server.post('/courseStudent-add', course);
+    return rep.data
+}
+
+export async function getListCourseStudent(matriculate)
+{
+    const rep = await server.get('/courseStudent-list/' + matriculate);
+    return rep.data
+}

@@ -1,19 +1,21 @@
-import {useQuery} from "@tanstack/react-query";
-import {getListTeacher} from "../../utils/api.js";
-import {Container} from "react-bootstrap";
+import {Button, Container} from "react-bootstrap";
+import CourseTab from "../../components/board/CourseTab.jsx";
+import {useState} from "react";
+import CourseStudentForm from "../../components/forms/CourseStudentForm.jsx";
 
 const Courses = () =>
 {
-
-    const {data, isLoading} = useQuery(
-    {
-        queryKey: ['listTeacher'],
-        queryFn: getListTeacher
-    })
+    const [isAdd, setAdd] = useState(false);
 
     return(
         <Container>
-            <h3 className="m-2">Mes cours : </h3>
+            <h3 className="m-3">Mes cours : </h3>
+            {
+                isAdd === false ?
+                    <div className="container-fluid text-center"><Button className='m-3' variant="warning" onClick={()=>setAdd(true)}>ajouter un cours</Button></div>:
+                    <CourseStudentForm cancel={setAdd}/>
+            }
+            <CourseTab/>
         </Container>
     )
 }
