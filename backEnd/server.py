@@ -1,4 +1,7 @@
 # save this as app.py
+import os
+from datetime import datetime
+
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
@@ -185,7 +188,6 @@ class courseModel(db.Model):
     # Session 2 : 11 or 12
     # Session 3 : 8 or 11 or 12
 
-
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -262,6 +264,24 @@ class examFacilitiesModel(db.Model):
 
     def __repr__(self):
         return "<examFacilities %r>" % self.name
+
+
+class documentsModel(db.Model):
+    """
+    documents model
+    """
+    __tablename__ = "documents"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    name = db.Column(db.String(200), nullable=False)
+    pushBy = db.Column(db.String(20), nullable=False)
+    student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<documents %r>" % self.name
 
 
 # ------------------- RESOURCES -------------------
@@ -539,6 +559,19 @@ class getListSelectTeacher(AbstractListResource):
         return [l for l in list], 200
 
 
+class postDocument(Resource):
+    def post(self):
+        print(request.files)
+        arguments = request.get_json()
+        fil = request.files['file']
+        document = documentsModel(**arguments)
+        documentsModel.query.session.add(document)
+        db.session.commit()
+
+        fil.save(os.path.join(app.config['UPLOAD_FOLDER'], str(document.id) + ".pdf"))
+
+        return "", 201
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -567,6 +600,7 @@ api.add_resource(updateStudentPassword, "/studentPassword-update")
 api.add_resource(updateStudentModel, "/studentInfo-update")
 api.add_resource(getListSelectCourse, "/select-list/course")
 api.add_resource(getListSelectTeacher, "/select-list/teacher")
+api.add_resource(postDocument, "/document-add")
 
 
 # ------------------- MAIN -------------------

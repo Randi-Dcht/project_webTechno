@@ -1,8 +1,13 @@
 import {Button, Col, Container, Nav, Row, Tab} from "react-bootstrap";
 import DocsTab from "../../components/board/DocsTab.jsx";
+import {useState} from "react";
+import PushDocForm from "../../components/forms/PushDocForm.jsx";
 
 const Docs = () =>
 {
+
+    const [push, setPush] = useState(false)
+
     return(
         <Container>
             <h3 className="m-3">Mes documents :</h3>
@@ -21,7 +26,11 @@ const Docs = () =>
                     <Col sm={9}>
                         <Tab.Content>
                             <Tab.Pane eventKey="actual">
-                                <div className="container-fluid text-center"><Button className='m-4' variant="warning">ajouter un document</Button></div>
+                                {
+                                    push === false?
+                                        <div className="container-fluid text-center"><Button className='m-4' variant="warning" onClick={()=>setPush(true)}>ajouter un document</Button></div>:
+                                        <PushDocForm cancel={setPush}/>
+                                }
                                 <DocsTab/>
                             </Tab.Pane>
                             <Tab.Pane eventKey="old">

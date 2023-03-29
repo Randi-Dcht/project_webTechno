@@ -116,3 +116,9 @@ export async function getSelectList(select)
     const rep = await server.get('/select-list/' + select);
     return rep.data
 }
+
+export async function postDocuments(doc)
+{
+    const rep = await server.post('/document-add', doc);
+    return rep.data
+}
