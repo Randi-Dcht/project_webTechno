@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import {getListStudent} from "../../utils/api.js";
 import {useMemo} from "react";
-import {Table} from "react-bootstrap";
+import {Button, Container, Table} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 
 const StudentsList = () =>
@@ -32,9 +32,9 @@ const StudentsList = () =>
 
 
     return(
-        <div>
-            <h1 style={{color: "red"}}>Liste des étudiants :</h1>
-            <button onClick={()=> navigate('./add')}>ajouter</button>
+        <Container>
+            <h3 className="m-2">Liste des étudiants :</h3>
+            <div className="container-fluid text-center"><Button variant="primary" onClick={()=> navigate('./add')}>ajouter</Button></div>
             <Table>
                 <thead>
                 <tr>
@@ -47,7 +47,7 @@ const StudentsList = () =>
                 }
                 </tbody>
             </Table>
-        </div>
+        </Container>
     )
 }
 

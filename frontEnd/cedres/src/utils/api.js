@@ -71,12 +71,24 @@ export async function postFacilities(data)
 
 export async function postloginStudent(data)
 {
-    const rep = await server.post('/login-student', data);
+    const rep = await server.post('/student-login', data);
     return rep.data
 }
 
 export async function postUpdatePasswordStudent(data)
 {
     const rep = await server.post('/studentPassword-update', data);
+    return rep.data
+}
+
+export async function postloginAdmin(data)
+{
+    const rep = await server.post('/admin-login', data);
+    return rep.data
+}
+
+export async function postUpdatePasswordAdmin(data)
+{
+    const rep = await server.post('/adminPassword-update', data);
     return rep.data
 }

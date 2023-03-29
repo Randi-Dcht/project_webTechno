@@ -54,7 +54,7 @@ const CreateStudent = () =>
     return (
         <div>
             <Container>
-                <h1>Ajouter un étudiant :</h1>
+                <h3 className="m-2">Ajouter un étudiant :</h3>
                 <Row>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Input type="text" name="name" label="Nom étudiant" control={control}/>

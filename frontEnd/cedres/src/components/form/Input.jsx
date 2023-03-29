@@ -11,7 +11,7 @@ export const Input = ({name, label, control, type}) =>
             {
                 return (<Form.Group>
                     <Form.Label>{label}</Form.Label>
-                    <Form.Control type={type} value={field.value} onChange={field.onChange}/>
+                    <Form.Control type={type} value={field.value} onChange={field.onChange} placeholder={label}/>
                     <p style={{color: 'red'}}>{fieldState.error?.message}</p>
                 </Form.Group>)
             }}

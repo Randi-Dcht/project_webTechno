@@ -20,7 +20,7 @@ const validationSchema = yup.object().shape({
         .required("mail est obligatoire"),
 });
 
-const Connect = ({redirect, setUrl, name}) =>
+const Connect = ({redirect, setUrl, name, url}) =>
 {
     const [isVisible, setVisible] = useState(false);
     const [error, setError] = useState("")
@@ -29,10 +29,8 @@ const Connect = ({redirect, setUrl, name}) =>
     const client = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: postloginStudent,
+        mutationFn: url,
         onSuccess: async data => {
-            console.log(data[0].id) //TODO remove
-            console.log(data[1].token) //TODO remove
             localStorage.setItem('id', data[0].id)
             localStorage.setItem('token', data[1].token)
             navigate(redirect)
