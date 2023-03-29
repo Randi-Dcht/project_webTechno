@@ -515,6 +515,30 @@ class updateStudentModel(Resource):
             return "", 200
 
 
+class getListSelectCourse(AbstractListResource):
+    def __init__(self):
+        super().__init__(courseModel)
+
+    def get(self):
+        course = db.session.query(courseModel).all()
+        list = []
+        for c in course:
+            list.append({"key": c.id_aa, "value": c.name})
+        return [l for l in list], 200
+
+
+class getListSelectTeacher(AbstractListResource):
+    def __init__(self):
+        super().__init__(teacherModel)
+
+    def get(self):
+        teacher = db.session.query(teacherModel).all()
+        list = []
+        for t in teacher:
+            list.append({"key": t.id, "value": t.name + " " + t.surname})
+        return [l for l in list], 200
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -541,6 +565,8 @@ api.add_resource(getListFacilitiesExam, "/facilitiesExam-list/<id>")  # empty bo
 api.add_resource(loginStudent, "/student-login")
 api.add_resource(updateStudentPassword, "/studentPassword-update")
 api.add_resource(updateStudentModel, "/studentInfo-update")
+api.add_resource(getListSelectCourse, "/select-list/course")
+api.add_resource(getListSelectTeacher, "/select-list/teacher")
 
 
 # ------------------- MAIN -------------------

@@ -7,6 +7,7 @@ import {Button, Container, Form, Row} from "react-bootstrap";
 import {Input} from "../form/Input.jsx";
 import * as yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
+import InputList from "../form/InputList.jsx";
 
 const defaultValue = {
     name: "",
@@ -46,6 +47,17 @@ const FacilitiesForm = ({cancel}) =>
         });
     }, [mutation]);
 
+    const list_Type = [
+        {
+            'key' : 'course',
+            'value' : 'cours'
+        },
+        {
+            'key' : 'exam',
+            'value' : 'examen'
+        }
+    ]
+
     return (
         <div>
             <Container>
@@ -53,7 +65,7 @@ const FacilitiesForm = ({cancel}) =>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Input type="text" name="name" label="Titre aménagement" control={control}/>
                         <Input type="text" name="description" label="Description aménagement" control={control}/>
-                        <Input type="text" name="type" label="exam / course" control={control}/>
+                        <InputList type="text" name="type" label="Aménagements pour" control={control} listData={list_Type}/>
                         <div className="container">
                             <Button className="m-2" variant="primary" type="submit">ajouter</Button>
                             <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>

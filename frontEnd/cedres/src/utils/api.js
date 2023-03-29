@@ -51,6 +51,12 @@ export async function getListTeacher()
     return rep.data
 }
 
+export async function getListCoure()
+{
+    const rep = await server.get('/course-list');
+    return rep.data
+}
+
 export async function getListFacilitiesCourse(matriculate)
 {
     const rep = await server.get('/facilitiesCourse-list/' + matriculate);
@@ -102,5 +108,11 @@ export async function postStudentCourse(course)
 export async function getListCourseStudent(matriculate)
 {
     const rep = await server.get('/courseStudent-list/' + matriculate);
+    return rep.data
+}
+
+export async function getSelectList(select)
+{
+    const rep = await server.get('/select-list/' + select);
     return rep.data
 }
