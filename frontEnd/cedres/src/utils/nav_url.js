@@ -9,7 +9,11 @@ export const URL_CEDRES =
         },
         {
             "name" : "Annuaire",
-            "url" : ADMIN + '/'
+            "url" : ADMIN + '/list'
+        },
+        {
+            "name" : "Liste demandes",
+            "url" : ADMIN + '/list-ask'
         }
     ]
 
