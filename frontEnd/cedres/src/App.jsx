@@ -18,6 +18,9 @@ import Facilities from "./pages/students/Facilities.jsx";
 import AskFacilities from "./pages/students/AskFacilities.jsx";
 import Docs from "./pages/students/Docs.jsx";
 import Calend from "./pages/students/Calend.jsx";
+import AllList from "./pages/admin/AllList.jsx";
+import ListAsk from "./pages/admin/ListAsk.jsx";
+import ListLog from "./pages/admin/ListLog.jsx";
 
 function App()
 {
@@ -38,6 +41,9 @@ function App()
                 <Route path={ADMIN} element={<HomeAdmin/>}/>
                 <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
                 <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
+                <Route path={ADMIN + "/list"} element={<AllList/>}/>
+                <Route path={ADMIN + "/list-ask"} element={<ListAsk/>}/>
+                <Route path={ADMIN + "/log"} element={<ListLog/>}/>
 
                 <Route path={STUDENT} element={<HomeStudent/>}/>
                 <Route path={STUDENT + "/courses"} element={<Courses/>}/>

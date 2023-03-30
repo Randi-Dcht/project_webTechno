@@ -14,6 +14,10 @@ export const URL_CEDRES =
         {
             "name" : "Liste demandes",
             "url" : ADMIN + '/list-ask'
+        },
+        {
+            "name" : "Log logiciel",
+            "url" : ADMIN + '/log'
         }
     ]
 
