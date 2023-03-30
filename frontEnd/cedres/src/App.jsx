@@ -17,6 +17,7 @@ import {useState} from "react";
 import Facilities from "./pages/students/Facilities.jsx";
 import AskFacilities from "./pages/students/AskFacilities.jsx";
 import Docs from "./pages/students/Docs.jsx";
+import Calend from "./pages/students/Calend.jsx";
 
 function App()
 {
@@ -45,6 +46,7 @@ function App()
                 <Route path={STUDENT + "/aboutMe"} element={<Profil/>}/>
                 <Route path={STUDENT + "/ask"} element={<AskFacilities/>}/>
                 <Route path={STUDENT + "/docs"} element={<Docs/>}/>
+                <Route path={STUDENT + "/calendar"} element={<Calend/>}/>
             </Routes>
         </div>
   )

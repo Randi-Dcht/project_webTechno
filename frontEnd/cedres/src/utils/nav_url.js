@@ -35,6 +35,10 @@ export const URL_STUDENT =
             "name" : "Mes documents",
             "url" : STUDENT + '/docs'
         },
+        {
+            "name" : "Mon calendrier",
+            "url" : STUDENT + '/calendar'
+        },
     ]
 
 export const URL_VISITOR =
