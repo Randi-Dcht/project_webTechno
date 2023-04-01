@@ -7,7 +7,7 @@ from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -16,10 +16,13 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 db = SQLAlchemy()
 db.init_app(app)
-jwt = JWTManager(app)
-
+jwt_ = JWTManager(app)
 
 actual_year = "2022-2023"
+
+
+# ------------------- RESOURCES -------------------
+# All resource (abstract) :
 
 
 class AbstractResource(Resource):
@@ -183,6 +186,7 @@ class courseModel(db.Model):
     year = db.Column(db.String(15), nullable=False)  # Bachelor, Master, PhD
     quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
     passExam = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+
     # 1 = january, 4 = june, 7 = september
     # Session 1 : 8 or 12
     # Session 2 : 11 or 12
@@ -218,7 +222,7 @@ class courseFacilitiesModel(db.Model):
     course facilities model (LIST) --> for each student (unique)
     """
     __tablename__ = "courseFacilities"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     course = db.Column(db.String(20), db.ForeignKey("course.id_aa"), nullable=False)
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
     facilities = db.Column(db.Integer, db.ForeignKey("facilities.id"), nullable=False)
@@ -425,7 +429,27 @@ class postLinkCourseStudent(Resource):
         courseStudentModel.query.session.add(link)
         db.session.commit()
 
+        list_facilities = db.session.query(facilitiesModel).filter_by(student=arguments.get('student')).filter_by(type='course').all()
+        for f in list_facilities:
+            addLink = courseFacilitiesModel(course=arguments.get('course'), facilities=f.id, student=arguments.get('student'))
+            courseFacilitiesModel.query.session.add(addLink)
+            db.session.commit()
+
         return "", 201
+
+
+class getListCourseFacilities(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(courseFacilitiesModel)
+
+    def get(self, id):
+        course = db.session.query(courseFacilitiesModel).filter_by(student=id).all()
+        list = []
+        for c in course:
+            crs = db.session.query(courseModel).filter_by(id_aa=c.course).first()
+            facilities = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
+            list.append({"id_aa": crs.id_aa, "name": crs.name, "facilities": facilities.name, "description": facilities.description})
+        return [h for h in list], 200
 
 
 class getListCourseStudent(AbstractListResourceById):  # TODO add name of teacher
@@ -438,7 +462,9 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
         for c in course:
             crs = db.session.query(courseModel).filter_by(id_aa=c.course).first()
             teacher = db.session.query(teacherModel).filter_by(id=c.teacher).first()
-            list.append({"id_aa": crs.id_aa, "name": crs.name, "teacher": teacher.name + " " + teacher.surname, "mail": teacher.email, "isSuccess": c.isSuccess, "passExam": crs.passExam, "quadrimester": crs.quadrimester})
+            list.append({"id_aa": crs.id_aa, "name": crs.name, "teacher": teacher.name + " " + teacher.surname,
+                         "mail": teacher.email, "isSuccess": c.isSuccess, "passExam": crs.passExam,
+                         "quadrimester": crs.quadrimester})
         return [h for h in list], 200
 
 
@@ -561,7 +587,6 @@ class getListSelectTeacher(AbstractListResource):
 
 class postDocument(Resource):
     def post(self):
-        print(request.files)
         arguments = request.get_json()
         fil = request.files['file']
         document = documentsModel(**arguments)
@@ -578,21 +603,27 @@ class postDocument(Resource):
 
 api.add_resource(addAdmin, "/admin-add")  # {"name" : "pascal dd", "password" : "admin", "email":"pascal@none.be"}
 api.add_resource(getAdmin, "/admin-get")
-api.add_resource(loginAdmin, "/admin-login") # {"password" : "admin", "mail":"pascal@none.be"}
+api.add_resource(loginAdmin, "/admin-login")  # {"password" : "admin", "mail":"pascal@none.be"}
 api.add_resource(updatePasswordAdmin, "/adminPassword-update")
-api.add_resource(addNewStudent, "/new-student-add")  # example : {"matricule" : 191919, "name" : "testR", "surname" : "none", "email" : "none@none.be"}
+api.add_resource(addNewStudent,
+                 "/new-student-add")  # example : {"matricule" : 191919, "name" : "testR", "surname" : "none", "email" : "none@none.be"}
 api.add_resource(getNewStudent, "/new-student-get/<id>")  # example : 191919
 api.add_resource(getListNewStudent, "/new-student-list")
-api.add_resource(postStudent, "/student-add")  # {"matricule" : 110122,"name":"name2","surname":"surname2","email":"test2@none.com","phone": "01256300","email_private": "private2@none.be","faculty": "sciences","password": "test1234"}
+api.add_resource(postStudent,
+                 "/student-add")  # {"matricule" : 110122,"name":"name2","surname":"surname2","email":"test2@none.com","phone": "01256300","email_private": "private2@none.be","faculty": "sciences","password": "test1234"}
 api.add_resource(getListStudent, "/student-list")  # empty body
 api.add_resource(getStudent, "/student-get/<id>")  # 110122
-api.add_resource(postTeacher, "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
+api.add_resource(postTeacher,
+                 "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
 api.add_resource(getListTeacher, "/teacher-list")  # empty body
-api.add_resource(postCourse, "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"passExam": 12}
+api.add_resource(postCourse,
+                 "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"passExam": 12}
 api.add_resource(getListCourseStudent, "/courseStudent-list/<id>")  # empty body
-api.add_resource(postLinkCourseStudent, "/courseStudent-add")  # {"course" : "AA07785","student" : "191919","yearSchool" : "2022-2023"}
+api.add_resource(postLinkCourseStudent,
+                 "/courseStudent-add")  # {"course" : "AA07785","student" : "191919","yearSchool" : "2022-2023"}
 api.add_resource(getListCourse, "/course-list")  # empty body
-api.add_resource(postFacilities, "/facilities-add")  # {"student" : 191919, "yearSchool" : "2022-2023", "facilities" : "test"}
+api.add_resource(postFacilities,
+                 "/facilities-add")  # {"student" : 191919, "yearSchool" : "2022-2023", "facilities" : "test"}
 api.add_resource(getListFacilitiesCourse, "/facilitiesCourse-list/<id>")  # empty body
 api.add_resource(getListFacilitiesExam, "/facilitiesExam-list/<id>")  # empty body
 api.add_resource(loginStudent, "/student-login")
@@ -601,6 +632,7 @@ api.add_resource(updateStudentModel, "/studentInfo-update")
 api.add_resource(getListSelectCourse, "/select-list/course")
 api.add_resource(getListSelectTeacher, "/select-list/teacher")
 api.add_resource(postDocument, "/document-add")
+api.add_resource(getListCourseFacilities, "/courseFacilities-list/<id>")
 
 
 # ------------------- MAIN -------------------

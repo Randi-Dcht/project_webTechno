@@ -6,6 +6,7 @@ const server = axios.create({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Access-Control-Allow-Origin': '*',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
     },
 });
 
@@ -120,5 +121,11 @@ export async function getSelectList(select)
 export async function postDocuments(doc)
 {
     const rep = await server.post('/document-add', doc);
+    return rep.data
+}
+
+export async function getListCourseFacilitiesStudent(matriculate)
+{
+    const rep = await server.get('/courseFacilities-list/' + matriculate);
     return rep.data
 }

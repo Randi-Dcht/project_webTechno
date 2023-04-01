@@ -1,4 +1,5 @@
 import {Container, Tab, Tabs} from "react-bootstrap";
+import CourseFacilitiesTab from "../../components/board/CourseFacilitiesTab.jsx";
 
 const AskFacilities = () =>
 {
@@ -11,7 +12,7 @@ const AskFacilities = () =>
                 className="mb-3"
             >
                 <Tab eventKey="course" title="Cours">
-                    <p>vide cours</p>
+                    <CourseFacilitiesTab/>
                 </Tab>
                 <Tab eventKey="exam-1" title="Examen janvier">
                     <p>vide examen janvier</p>
