@@ -626,7 +626,7 @@ class generateExamenFacilities(Resource):
         for t in to_pass:
             course = db.session.query(courseModel).filter_by(id_aa=t.course).first()
             if course.passExam in list_ok:
-                facilities = examModel(course=course.id_aa, student=student, locale="",hour="",date="",type="", quadrimester=course.quadrimester)
+                facilities = examModel(course=course.id_aa, student=student, locale="",hour="",date="",type="", quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
@@ -642,7 +642,7 @@ class getExamFacilities(AbstractListResourceById):
         super().__init__(examModel)
 
     def get(self, id):
-        exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=3).all()
+        exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=2).all()
         list = []
         for e in exam:
             subList = []
@@ -653,7 +653,7 @@ class getExamFacilities(AbstractListResourceById):
             course = db.session.query(courseModel).filter_by(id_aa=e.course).first()
             list.append({"id": e.id, "date": e.date, "hour": e.hour, "locale": e.locale, "type": e.type, "aa": e.course, "course": course.name, "facilities": subList})
 
-        return [l for l in list], 200
+        return list, 200
 
 
 # ------------------- ROUTES -------------------
@@ -692,6 +692,8 @@ api.add_resource(getListSelectCourse, "/select-list/course")
 api.add_resource(getListSelectTeacher, "/select-list/teacher")
 api.add_resource(postDocument, "/document-add")
 api.add_resource(getListCourseFacilities, "/courseFacilities-list/<id>")
+api.add_resource(getExamFacilities, "/examFacilities-list/<id>")
+api.add_resource(generateExamenFacilities, "/examFacilities-generate")
 
 
 # ------------------- MAIN -------------------
