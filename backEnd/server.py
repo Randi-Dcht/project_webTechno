@@ -32,6 +32,22 @@ def check_quadrimester(id):
         return [8, 11, 12]
 
 
+def getExamList(id, quadrimester):
+    exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=2).all()
+    list = []
+    for e in exam:
+        subList = []
+        facilities = db.session.query(examFacilitiesModel).filter_by(exam=e.id).all()
+        for c in facilities:
+            facil = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
+            subList.append({"id": c.id, "name": facil.name})
+        course = db.session.query(courseModel).filter_by(id_aa=e.course).first()
+        list.append({"id": e.id, "date": e.date, "hour": e.hour, "locale": e.locale, "type": e.type, "aa": e.course,
+                     "course": course.name, "facilities": subList})
+
+    return list
+
+
 # ------------------- RESOURCES -------------------
 # All resource (abstract) :
 
@@ -637,23 +653,26 @@ class generateExamenFacilities(Resource):
         return "", 201
 
 
-class getExamFacilities(AbstractListResourceById):
+class getExamFacilities1(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
     def get(self, id):
-        exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=2).all()
-        list = []
-        for e in exam:
-            subList = []
-            facilities = db.session.query(examFacilitiesModel).filter_by(exam=e.id).all()
-            for c in facilities:
-                facil = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
-                subList.append({"id": c.id, "name": facil.name})
-            course = db.session.query(courseModel).filter_by(id_aa=e.course).first()
-            list.append({"id": e.id, "date": e.date, "hour": e.hour, "locale": e.locale, "type": e.type, "aa": e.course, "course": course.name, "facilities": subList})
+        return getExamList(id, 2), 200
 
-        return list, 200
+class getExamFacilities2(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(examModel)
+
+    def get(self, id):
+        return getExamList(id, 2), 200
+
+class getExamFacilities3(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(examModel)
+
+    def get(self, id):
+        return getExamList(id, 2), 200
 
 
 # ------------------- ROUTES -------------------
@@ -692,7 +711,9 @@ api.add_resource(getListSelectCourse, "/select-list/course")
 api.add_resource(getListSelectTeacher, "/select-list/teacher")
 api.add_resource(postDocument, "/document-add")
 api.add_resource(getListCourseFacilities, "/courseFacilities-list/<id>")
-api.add_resource(getExamFacilities, "/examFacilities-list/<id>")
+api.add_resource(getExamFacilities1, "/examFacilities-list-1/<id>")
+api.add_resource(getExamFacilities2, "/examFacilities-list-2/<id>")
+api.add_resource(getExamFacilities3, "/examFacilities-list-3/<id>")
 api.add_resource(generateExamenFacilities, "/examFacilities-generate")
 
 
