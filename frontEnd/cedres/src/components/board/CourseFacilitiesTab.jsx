@@ -1,4 +1,4 @@
-import {Table} from "react-bootstrap";
+import {Button, Table} from "react-bootstrap";
 import {getListCourseFacilitiesStudent, getListCourseStudent} from "../../utils/api.js";
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
@@ -12,6 +12,21 @@ const CourseFacilitiesTab = () =>
            queryFn: () => getListCourseFacilitiesStudent(localStorage.getItem('id'))
        });
 
+   const facilities = (list, index1) =>
+   {
+       return list?.map((e, index) =>
+       {
+           return(
+               <div key={index1 + index} className='container-fluid'>
+                   <div title={e.description}>
+                       {e.name}
+                       <Button variant='light' className='m-2'>retirer</Button>
+                   </div>
+               </div>
+           )
+       })
+   }
+
    const lineTab = useMemo(() =>
    {
        console.log(data)
@@ -19,10 +34,14 @@ const CourseFacilitiesTab = () =>
        return data?.map(doc =>
        {
            return(
-               <tr key={doc.id_aa}>
-                   <td>{doc.id_aa}</td>
+               <tr key={doc.id}>
+                   <td>{doc.id}</td>
                    <td>{doc.name}</td>
-                   <td title={doc.description}>{doc.facilities}</td>
+                   <td>
+                       {
+                         facilities(doc.facilities, doc.id)
+                       }
+                   </td>
                </tr>
            )
        })

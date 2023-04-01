@@ -443,12 +443,16 @@ class getListCourseFacilities(AbstractListResourceById):
         super().__init__(courseFacilitiesModel)
 
     def get(self, id):
-        course = db.session.query(courseFacilitiesModel).filter_by(student=id).all()
+        listCourse = db.session.query(courseStudentModel).filter_by(student=id).all()
         list = []
-        for c in course:
-            crs = db.session.query(courseModel).filter_by(id_aa=c.course).first()
-            facilities = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
-            list.append({"id_aa": crs.id_aa, "name": crs.name, "facilities": facilities.name, "description": facilities.description})
+        for course in listCourse:
+            subList = []
+            aCourse = db.session.query(courseModel).filter_by(id_aa=course.course).first()
+            listFacilities = db.session.query(courseFacilitiesModel).filter_by(student=id).filter_by(course=course.course).all()
+            for f in listFacilities:
+                facilities = db.session.query(facilitiesModel).filter_by(id=f.facilities).first()
+                subList.append({"id": facilities.id, "name": facilities.name, "description": facilities.description,})
+            list.append({"id": aCourse.id_aa, "name": aCourse.name, "facilities": subList})
         return [h for h in list], 200
 
 
