@@ -32,8 +32,8 @@ def check_quadrimester(id):
         return [8, 11, 12]
 
 
-def getExamList(id, quadrimester):
-    exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=2).all()
+def getExamList(id, quadri):
+    exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=quadri).all()
     list = []
     for e in exam:
         subList = []
@@ -658,7 +658,7 @@ class getExamFacilities1(AbstractListResourceById):
         super().__init__(examModel)
 
     def get(self, id):
-        return getExamList(id, 2), 200
+        return getExamList(id, 1), 200
 
 class getExamFacilities2(AbstractListResourceById):
     def __init__(self):
@@ -672,7 +672,7 @@ class getExamFacilities3(AbstractListResourceById):
         super().__init__(examModel)
 
     def get(self, id):
-        return getExamList(id, 2), 200
+        return getExamList(id, 3), 200
 
 
 # ------------------- ROUTES -------------------

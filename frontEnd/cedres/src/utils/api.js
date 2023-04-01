@@ -129,3 +129,9 @@ export async function getListCourseFacilitiesStudent(matriculate)
     const rep = await server.get('/courseFacilities-list/' + matriculate);
     return rep.data
 }
+
+export async function getListExamFacilitiesStudent(matriculate, session)
+{
+    const rep = await server.get(`/examFacilities-list-${session}/${matriculate}`);
+    return rep.data
+}

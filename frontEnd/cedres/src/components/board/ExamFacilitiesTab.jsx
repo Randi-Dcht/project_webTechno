@@ -1,15 +1,15 @@
 import {Button, Table} from "react-bootstrap";
-import {getListCourseFacilitiesStudent, getListCourseStudent} from "../../utils/api.js";
+import {getListCourseFacilitiesStudent, getListCourseStudent, getListExamFacilitiesStudent} from "../../utils/api.js";
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
 
-const CourseFacilitiesTab = () =>
+const ExamFacilitiesTab = ({session, Ukey}) =>
 {
 
    const {data, isLoading} = useQuery(
        {
-           queryKey: ['listCourseFacilities'],
-           queryFn: () => getListCourseFacilitiesStudent(localStorage.getItem('id'))
+           queryKey: [Ukey],
+           queryFn: () => getListExamFacilitiesStudent(localStorage.getItem('id'), session)
        });
 
    const facilities = (list, index1) =>
@@ -34,12 +34,17 @@ const CourseFacilitiesTab = () =>
        {
            return(
                <tr key={doc.id}>
-                   <td>{doc.id}</td>
-                   <td>{doc.name}</td>
+                   <td>{doc.course}</td>
+                   <td>{doc.date} : {doc.hour}</td>
+                   <td>{doc.local}</td>
+                   <td>{doc.type}</td>
                    <td>
                        {
                          facilities(doc.facilities, doc.id)
                        }
+                   </td>
+                   <td>
+                       <Button variant='light'>modifier</Button>
                    </td>
                </tr>
            )
@@ -53,7 +58,7 @@ const CourseFacilitiesTab = () =>
         <Table>
             <thead>
             <tr>
-                <td>A.A</td><td>Intitulé du cours</td><td>Aménagement</td>
+                <td>Cours</td><td>date</td><td>local</td><td>type</td><td>Aménagement</td><td></td>
             </tr>
             </thead>
             <tbody>
@@ -64,4 +69,4 @@ const CourseFacilitiesTab = () =>
         </Table>
     )
 }
-export default CourseFacilitiesTab
+export default ExamFacilitiesTab
