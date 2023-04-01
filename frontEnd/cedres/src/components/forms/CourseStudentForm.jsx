@@ -8,6 +8,7 @@ import {Button, Container, Form, Row} from "react-bootstrap";
 import {Input} from "../form/Input.jsx";
 import * as yup from "yup";
 import InputList from "../form/InputList.jsx";
+import ChooseList from "../form/ChooseList.jsx";
 
 const defaultValue = {
     course: "",
@@ -52,8 +53,8 @@ const CourseStudentForm = ({cancel, listA, listB}) =>
             <Container>
                 <Row>
                     <Form onSubmit={handleSubmit(onSubmit)}>
-                        <InputList type="text" name="course" label="Code du cours (AA) :" control={control} listData={listA}/>
-                        <InputList type="text" name="teacher" label="Professeur principal" control={control} listData={listB}/>
+                        <ChooseList type="text" name="course" label="Code du cours (AA) :" control={control} listData={listA} listName='list1'/>
+                        <ChooseList type="text" name="teacher" label="Professeur principal" control={control} listData={listB} listName='list2'/>
                         <div className="container">
                             <Button className="m-2" variant="primary" type="submit">ajouter</Button>
                             <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>

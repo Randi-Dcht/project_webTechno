@@ -20,6 +20,17 @@ jwt_ = JWTManager(app)
 
 actual_year = "2022-2023"
 
+# ------------------- METHOD -------------------
+
+
+def check_quadrimester(id):
+    if id == 1:
+        return [8, 12]
+    elif id == 2:
+        return [11, 12]
+    else:
+        return [8, 11, 12]
+
 
 # ------------------- RESOURCES -------------------
 # All resource (abstract) :
@@ -239,12 +250,14 @@ class examModel(db.Model):
     exam model --> for each student (unique)
     """
     __tablename__ = "exam"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     course = db.Column(db.String(20), db.ForeignKey("course.id_aa"), nullable=False)
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.String(25), nullable=False)
+    hour = db.Column(db.String(10), nullable=False)
     locale = db.Column(db.String(50), nullable=False)
-    yearSchool = db.Column(db.String(7), nullable=False)  # ie 22-23 for 2022-2023
+    type = db.Column(db.String(10), nullable=False)  # oral or written
+    quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -258,7 +271,7 @@ class examFacilitiesModel(db.Model):
     exam facilities model (LIST) --> for each student (unique)
     """
     __tablename__ = "examFacilities"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     exam = db.Column(db.Integer, db.ForeignKey("exam.id"), nullable=False)
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
     facilities = db.Column(db.Integer, db.ForeignKey("facilities.id"), nullable=False)
@@ -600,6 +613,48 @@ class postDocument(Resource):
         fil.save(os.path.join(app.config['UPLOAD_FOLDER'], str(document.id) + ".pdf"))
 
         return "", 201
+
+
+class generateExamenFacilities(Resource):
+    def post(self):
+        arg = request.get_json()
+        student = arg.get("student")
+        quadrimester = arg.get("quadrimester")
+        list_ok = check_quadrimester(quadrimester)
+
+        to_pass = db.session.query(courseStudentModel).filter_by(student=student).filter_by(isSuccess='false').all()
+        for t in to_pass:
+            course = db.session.query(courseModel).filter_by(id_aa=t.course).first()
+            if course.passExam in list_ok:
+                facilities = examModel(course=course.id_aa, student=student, locale="",hour="",date="",type="", quadrimester=course.quadrimester)
+                facilitiesModel.query.session.add(facilities)
+                db.session.commit()
+                listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
+                for f in listing:
+                    exam = examFacilitiesModel(facilities=f.id, student=student, exam=facilities.id)
+                    examFacilitiesModel.query.session.add(exam)
+                    db.session.commit()
+        return "", 201
+
+
+class getExamFacilities(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(examModel)
+
+    def get(self, id):
+        exam = db.session.query(examModel).filter_by(student=id).filter_by(quadrimester=3).all()
+        list = []
+        for e in exam:
+            subList = []
+            facilities = db.session.query(examFacilitiesModel).filter_by(exam=e.id).all()
+            for c in facilities:
+                facil = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
+                subList.append({"id": c.id, "name": facil.name})
+            course = db.session.query(courseModel).filter_by(id_aa=e.course).first()
+            list.append({"id": e.id, "date": e.date, "hour": e.hour, "locale": e.locale, "type": e.type, "aa": e.course, "course": course.name, "facilities": subList})
+
+        return [l for l in list], 200
+
 
 # ------------------- ROUTES -------------------
 # All resource (API) :
