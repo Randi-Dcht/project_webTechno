@@ -1,0 +1,8 @@
+FROM python:3
+
+RUN pip install gunicorn
+COPY ./requirements.txt /app/
+RUN pip install -r /app/requirements.txt
+WORKDIR /app
+COPY . /app/
+ENTRYPOINT ["gunicorn", "--bind", ":5000", "main:get_app()"]

@@ -1,0 +1,15 @@
+version: '1.0'
+
+services:
+
+  front:
+    image: frontend:latest
+    build: ./frontEnd/cedres/
+    container_name: front
+    restart: unless-stopped
+
+  api:
+    image: backend:latest
+    build: ./backEnd
+    container_name: api
+    restart: unless-stopped
