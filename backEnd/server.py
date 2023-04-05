@@ -101,6 +101,22 @@ class AbstractListResourceById(Resource):
 
 # ------------------- MODEL DataBase -------------------
 # All model :
+class facultyModel(db.Model):
+    """
+    faculty model
+    """
+    __tablename__ = "faculty"
+    id = db.Column(db.String(10), primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    mail = db.Column(db.String(120), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<faculty %r>" % self.name
+
+
 class adminModel(db.Model):
     """
     admin model (person who can log in to the system)
@@ -660,6 +676,7 @@ class getExamFacilities1(AbstractListResourceById):
     def get(self, id):
         return getExamList(id, 1), 200
 
+
 class getExamFacilities2(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
@@ -667,12 +684,34 @@ class getExamFacilities2(AbstractListResourceById):
     def get(self, id):
         return getExamList(id, 2), 200
 
+
 class getExamFacilities3(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
     def get(self, id):
         return getExamList(id, 3), 200
+
+
+class getListFaculty(AbstractListResource):
+    def __init__(self):
+        super().__init__(facultyModel)
+
+    def get(self):
+        faculty = db.session.query(facultyModel).all()
+        list = []
+        for f in faculty:
+            list.append({"key": f.id, "value": f.name, "mail": f.mail})
+        return [l for l in list], 200
+
+
+class postFaculty(Resource):
+    def post(self):
+        arguments = request.get_json()
+        faculty = facultyModel(**arguments)
+        facultyModel.query.session.add(faculty)
+        db.session.commit()
+        return "", 201
 
 
 # ------------------- ROUTES -------------------
@@ -715,6 +754,8 @@ api.add_resource(getExamFacilities1, "/examFacilities-list-1/<id>")
 api.add_resource(getExamFacilities2, "/examFacilities-list-2/<id>")
 api.add_resource(getExamFacilities3, "/examFacilities-list-3/<id>")
 api.add_resource(generateExamenFacilities, "/examFacilities-generate")
+api.add_resource(getListFaculty, "/faculty-list")
+api.add_resource(postFaculty, "/faculty-add")
 
 
 # ------------------- MAIN -------------------
