@@ -228,7 +228,7 @@ class courseModel(db.Model):
     name = db.Column(db.String(80), nullable=False)
     year = db.Column(db.String(15), nullable=False)  # Bachelor, Master, PhD
     quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
-    passExam = db.Column(db.Integer, db.ForeignKey("teacher.id"), nullable=False)
+    passExam = db.Column(db.Integer,  nullable=False)
 
     # 1 = january, 4 = june, 7 = september
     # Session 1 : 8 or 12
@@ -701,7 +701,7 @@ class getListFaculty(AbstractListResource):
         faculty = db.session.query(facultyModel).all()
         list = []
         for f in faculty:
-            list.append({"key": f.id, "value": f.name, "mail": f.mail})
+            list.append({"id": f.id, "name": f.name, "mail": f.mail})
         return [l for l in list], 200
 
 

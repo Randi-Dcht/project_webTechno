@@ -24,7 +24,7 @@ const StudentsList = () =>
                     <td>{student.name} {student.surname}</td>
                     <td>{student.email}</td>
                     <td>{student.phone}</td>
-                    <td><button>profile</button></td>
+                    <td><Button variant='warning'>profile</Button></td>
                 </tr>
             )
         })
