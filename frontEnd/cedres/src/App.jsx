@@ -29,6 +29,8 @@ function App()
         buffer = studentUrl;
     else if (localStorage.getItem('type') !== null && localStorage.getItem('type') === 'admin')
         buffer = adminUrl;
+    else
+        buffer = visitorUrl;
     const [getWho, setWho] = useState(buffer);
 
     return (

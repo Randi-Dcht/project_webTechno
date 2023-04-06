@@ -18,15 +18,15 @@ const AllList = () =>
             <h3 className='m-3'>Annuaires :</h3>
             <Tabs defaultActiveKey="course" id="fill-tab-example" className="mb-3" fill>
                 <Tab eventKey="teacher" title="Liste professeurs">
-                    {teacher? <TeacherForm cancel={setTeacher}/> : <Button onClick={()=>setTeacher(true)}>ajouter</Button>}
+                    {teacher? <TeacherForm cancel={setTeacher}/> : <Button variant="dark" className='m-3' onClick={()=>setTeacher(true)}>ajouter</Button>}
                     <TeacherListTab/>
                 </Tab>
                 <Tab eventKey="secretary" title="Liste de secrétariats">
-                    {faculty? <FacultyForm cancel={setFaculty}/> : <Button onClick={()=>setFaculty(true)}>ajouter</Button>}
+                    {faculty? <FacultyForm cancel={setFaculty}/> : <Button variant="dark" className='m-3' onClick={()=>setFaculty(true)}>ajouter</Button>}
                     <FacultyListTab/>
                 </Tab>
                 <Tab eventKey="course" title="Liste de cours">
-                    {course? <CourseForm cancel={setCourse}/> : <Button onClick={()=>setCourse(true)}>ajouter</Button>}
+                    {course? <CourseForm cancel={setCourse}/> : <Button variant="dark" className='m-3' onClick={()=>setCourse(true)}>ajouter</Button>}
                     <CourseListTab/>
                 </Tab>
             </Tabs>

@@ -1,4 +1,4 @@
-import {Container, Nav, Navbar} from "react-bootstrap";
+import {Button, Container, Nav, Navbar} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 
 const NavTop = ({who}) =>
@@ -22,6 +22,16 @@ const NavTop = ({who}) =>
                                 <Nav.Link key={item.name} onClick={() => navigate(item.url)}>{item.name}</Nav.Link>
                             )
                         })
+                    }
+                    {
+                        localStorage.getItem('id') !== '0' &&
+                            <Button variant='dark' style={{marginLeft: '25px'}} onClick={()=>
+                            {
+                                localStorage.setItem('type','visitor')
+                                localStorage.setItem('id','0')
+                                localStorage.setItem('token','fuck')
+                                window.location = '/'
+                            }}>déconnexion</Button>
                     }
                 </Nav>
             </Container>
