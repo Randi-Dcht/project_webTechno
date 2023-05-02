@@ -20,6 +20,7 @@ jwt_ = JWTManager(app)
 
 actual_year = "2022-2023"
 
+
 # ------------------- METHOD -------------------
 
 
@@ -146,7 +147,7 @@ class studentModel(db.Model):
     email = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     email_private = db.Column(db.String(120), nullable=False)
-    faculty = db.Column(db.String(80), nullable=False)
+    faculty = db.Column(db.String(80), db.ForeignKey("faculty.id"), nullable=False)
     # password = db.Column(db.String(120), nullable=False)
     actif = db.Column(db.Boolean, nullable=False, default=False)  # if student is actif or not
 
@@ -162,7 +163,7 @@ class loginStudentModel(db.Model):
     login model
     """
     __tablename__ = "loginStudent"
-    matricule = db.Column(db.Integer, primary_key=True)
+    matricule = db.Column(db.Integer, db.ForeignKey("student.matricule"), primary_key=True)
     email = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
@@ -228,7 +229,7 @@ class courseModel(db.Model):
     name = db.Column(db.String(80), nullable=False)
     year = db.Column(db.String(15), nullable=False)  # Bachelor, Master, PhD
     quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
-    passExam = db.Column(db.Integer,  nullable=False)
+    passExam = db.Column(db.Integer, nullable=False)
 
     # 1 = january, 4 = june, 7 = september
     # Session 1 : 8 or 12
@@ -474,9 +475,11 @@ class postLinkCourseStudent(Resource):
         courseStudentModel.query.session.add(link)
         db.session.commit()
 
-        list_facilities = db.session.query(facilitiesModel).filter_by(student=arguments.get('student')).filter_by(type='course').all()
+        list_facilities = db.session.query(facilitiesModel).filter_by(student=arguments.get('student')).filter_by(
+            type='course').all()
         for f in list_facilities:
-            addLink = courseFacilitiesModel(course=arguments.get('course'), facilities=f.id, student=arguments.get('student'))
+            addLink = courseFacilitiesModel(course=arguments.get('course'), facilities=f.id,
+                                            student=arguments.get('student'))
             courseFacilitiesModel.query.session.add(addLink)
             db.session.commit()
 
@@ -493,10 +496,11 @@ class getListCourseFacilities(AbstractListResourceById):
         for course in listCourse:
             subList = []
             aCourse = db.session.query(courseModel).filter_by(id_aa=course.course).first()
-            listFacilities = db.session.query(courseFacilitiesModel).filter_by(student=id).filter_by(course=course.course).all()
+            listFacilities = db.session.query(courseFacilitiesModel).filter_by(student=id).filter_by(
+                course=course.course).all()
             for f in listFacilities:
                 facilities = db.session.query(facilitiesModel).filter_by(id=f.facilities).first()
-                subList.append({"id": facilities.id, "name": facilities.name, "description": facilities.description,})
+                subList.append({"id": facilities.id, "name": facilities.name, "description": facilities.description, })
             list.append({"id": aCourse.id_aa, "name": aCourse.name, "facilities": subList})
         return [h for h in list], 200
 
@@ -561,7 +565,8 @@ class loginStudent(Resource):
             return "", 404
 
         if check_password_hash(student.password, password):
-            var = {"id": student.matricule}, {"token": create_access_token(identity=student.matricule)}, {"type": "student"}
+            var = {"id": student.matricule}, {"token": create_access_token(identity=student.matricule)}, {
+                "type": "student"}
             return var, 200
         else:
             return "", 401
@@ -658,7 +663,8 @@ class generateExamenFacilities(Resource):
         for t in to_pass:
             course = db.session.query(courseModel).filter_by(id_aa=t.course).first()
             if course.passExam in list_ok:
-                facilities = examModel(course=course.id_aa, student=student, locale="",hour="",date="",type="", quadrimester=quadrimester)
+                facilities = examModel(course=course.id_aa, student=student, locale="", hour="", date="", type="",
+                                       quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
