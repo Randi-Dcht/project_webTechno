@@ -21,6 +21,8 @@ import Calend from "./pages/students/Calend.jsx";
 import AllList from "./pages/admin/AllList.jsx";
 import ListAsk from "./pages/admin/ListAsk.jsx";
 import ListLog from "./pages/admin/ListLog.jsx";
+import Teacher from "./pages/teacher/Teacher.jsx";
+import Secretary from "./pages/secretary/Secretary.jsx";
 
 function App()
 {
@@ -55,6 +57,9 @@ function App()
                 <Route path={STUDENT + "/ask"} element={<AskFacilities/>}/>
                 <Route path={STUDENT + "/docs"} element={<Docs/>}/>
                 <Route path={STUDENT + "/calendar"} element={<Calend/>}/>
+
+                <Route path={"invite/teacher/:id"} element={<Teacher/>}/>
+                <Route path={"invite/secretary/:id"} element={<Secretary/>}/>
             </Routes>
         </div>
   )
