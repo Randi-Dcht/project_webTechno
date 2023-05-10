@@ -1,4 +1,5 @@
 # save this as app.py
+import json
 import os
 from datetime import datetime
 
@@ -723,6 +724,39 @@ class postFaculty(Resource):
         return "", 201
 
 
+def initDataBase():
+    if db.session.query(adminModel).filter_by(name="admin").first() is None:
+        admin = adminModel(name="admin", password=generate_password_hash("admin"), email="admin@admin.be")
+        adminModel.query.session.add(admin)
+        db.session.commit()
+        print(" * admin created !")
+
+        # read json file to database
+        with open('data/faculty.json') as json_file:
+            data = json.load(json_file)
+            for p in data:
+                faculty = facultyModel(id=p['id'],name=p['name'], mail=p['email'])
+                facultyModel.query.session.add(faculty)
+                db.session.commit()
+        print(" * faculty created !")
+
+        with open('data/teacher.json') as json_file:
+            data = json.load(json_file)
+            for p in data:
+                teacher = teacherModel(name=p['name'], surname=p['surname'], email=p['email'])
+                teacherModel.query.session.add(teacher)
+                db.session.commit()
+        print(" * teacher created !")
+
+        with open('data/course.json') as json_file:
+            data = json.load(json_file)
+            for p in data:
+                course = courseModel(id_aa=p['AA'], name=p['name'], passExam=p['passExam'], year=p['year'], quadrimester=p['quadrimester'])
+                courseModel.query.session.add(course)
+                db.session.commit()
+        print(" * course created !")
+
+
 # ------------------- ROUTES -------------------
 # All resource (API) :
 
@@ -777,6 +811,7 @@ def hello():
 def main():
     with app.app_context():
         db.create_all()
+        initDataBase()
     app.run(host='0.0.0.0', port=8080, debug=True)
 
 

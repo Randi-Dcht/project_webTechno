@@ -1,0 +1,52 @@
+[
+  {
+    "id": "FB",
+    "name": "Department of Biology",
+    "email": "biology@example.com"
+  },
+  {
+    "id": "FM",
+    "name": "Department of Mathematics",
+    "email": "mathematics@example.com"
+  },
+  {
+    "id": "FP",
+    "name": "Department of Physics",
+    "email": "physics@example.com"
+  },
+  {
+    "id": "FC",
+    "name": "Department of Chemistry",
+    "email": "chemistry@example.com"
+  },
+  {
+    "id": "FH",
+    "name": "Department of History",
+    "email": "history@example.com"
+  },
+  {
+    "id": "FE",
+    "name": "Department of English",
+    "email": "english@example.com"
+  },
+  {
+    "id":  "FS",
+    "name": "Department of Computer Science",
+    "email": "computerscience@example.com"
+  },
+  {
+    "id": "FG",
+    "name": "Department of Psychology",
+    "email": "psychology@example.com"
+  },
+  {
+    "id": "FSO",
+    "name": "Department of Sociology",
+    "email": "sociology@example.com"
+  },
+  {
+    "id": "FL",
+    "name": "Department of Business",
+    "email": "business@example.com"
+  }
+]
