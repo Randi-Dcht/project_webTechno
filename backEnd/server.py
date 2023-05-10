@@ -103,6 +103,20 @@ class AbstractListResourceById(Resource):
 
 # ------------------- MODEL DataBase -------------------
 # All model :
+class actionDateModel(db.Model):
+    """
+    action date model
+    """
+    __tablename__ = "actionDate"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date_start = db.Column(db.Date, nullable=False)
+    date_end = db.Column(db.Date, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
 class facultyModel(db.Model):
     """
     faculty model
@@ -731,6 +745,26 @@ def initDataBase():
         db.session.commit()
         print(" * admin created !")
 
+        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="development")
+        actionDateModel.query.session.add(action)
+        db.session.commit()
+
+        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="course")
+        actionDateModel.query.session.add(action)
+        db.session.commit()
+
+        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="session1")
+        actionDateModel.query.session.add(action)
+        db.session.commit()
+
+        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="session2")
+        actionDateModel.query.session.add(action)
+        db.session.commit()
+
+        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="session3")
+        actionDateModel.query.session.add(action)
+        db.session.commit()
+
         # read json file to database
         with open('data/faculty.json') as json_file:
             data = json.load(json_file)
@@ -755,6 +789,15 @@ def initDataBase():
                 courseModel.query.session.add(course)
                 db.session.commit()
         print(" * course created !")
+
+
+class getActionDate(Resource):
+    def get(self):
+        action = db.session.query(actionDateModel).all()
+        list = []
+        for a in action:
+            list.append({"name": a.name, "start": str(a.date_start), "end": str(a.date_end)})
+        return [l for l in list], 200
 
 
 # ------------------- ROUTES -------------------
@@ -799,6 +842,7 @@ api.add_resource(getExamFacilities3, "/examFacilities-list-3/<id>")
 api.add_resource(generateExamenFacilities, "/examFacilities-generate")
 api.add_resource(getListFaculty, "/faculty-list")
 api.add_resource(postFaculty, "/faculty-add")
+api.add_resource(getActionDate, "/actions-list")
 
 
 # ------------------- MAIN -------------------

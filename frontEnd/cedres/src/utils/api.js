@@ -159,3 +159,9 @@ export async function postFaculty(faculty)
     const rep = await server.post('/faculty-add', faculty);
     return rep.data
 }
+
+export async function getListAction()
+{
+    const rep = await server.get('/actions-list');
+    return rep.data
+}
