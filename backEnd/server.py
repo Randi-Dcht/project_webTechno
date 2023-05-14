@@ -680,7 +680,8 @@ class generateExamenFacilities(Resource):
         to_pass = db.session.query(courseStudentModel).filter_by(student=student).filter_by(isSuccess='false').all()
         for t in to_pass:
             course = db.session.query(courseModel).filter_by(id_aa=t.course).first()
-            if course.passExam in list_ok:
+            ckeck_exist = db.session.query(examModel).filter_by(student=student).filter_by(course=course.id_aa).first()
+            if course.passExam in list_ok and ckeck_exist is None:
                 facilities = examModel(course=course.id_aa, student=student, locale="", hour="", date="", type="",
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
