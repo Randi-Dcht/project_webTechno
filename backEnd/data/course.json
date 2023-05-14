@@ -4,111 +4,111 @@
     "name": "Database Systems",
     "year": "Bachelor",
     "quadrimester": 1,
-    "passExam": 4
+    "passExam": 8
   },
   {
     "AA": "INFO-S4262",
     "name": "Artificial Intelligence",
     "year": "Bachelor",
     "quadrimester": 2,
-    "passExam": 4
+    "passExam": 11
   },
   {
     "AA": "INFO-S5003",
     "name": "Web Development",
     "year": "Bachelor",
     "quadrimester": 1,
-    "passExam": 4
+    "passExam": 8
   },
   {
     "AA": "INFO-S5324",
     "name": "Software Engineering",
     "year": "Bachelor",
     "quadrimester": 2,
-    "passExam": 4
+    "passExam": 11
   },
   {
     "AA": "INFO-S5245",
     "name": "Computer Networks",
     "year": "Bachelor",
     "quadrimester": 1,
-    "passExam": 4
+    "passExam": 8
   },
   {
     "AA": "INFO-M5016",
     "name": "Machine Learning",
     "year": "Master",
     "quadrimester": 2,
-    "passExam": 7
+    "passExam": 11
   },
   {
     "AA": "INFO-M5117",
     "name": "Natural Language Processing",
     "year": "Master",
     "quadrimester": 2,
-    "passExam": 7
+    "passExam": 11
   },
   {
     "AA": "INFO-M5028",
     "name": "Deep Learning",
     "year": "Master",
     "quadrimester": 1,
-    "passExam": 7
+    "passExam": 8
   },
   {
     "AA": "INFO-M5059",
     "name": "Data Science",
     "year": "Master",
     "quadrimester": 1,
-    "passExam": 7
+    "passExam": 8
   },
   {
     "AA": "INFO-M520A",
     "name": "Computer Vision",
     "year": "Master",
     "quadrimester": 2,
-    "passExam": 7
+    "passExam": 11
   },
   {
     "AA": "INFO-S421B",
     "name": "Operating Systems",
     "year": "Bachelor",
     "quadrimester": 1,
-    "passExam": 4
+    "passExam": 8
   },
   {
     "AA": "INFO-S424C",
     "name": "Computer Graphics",
     "year": "Bachelor",
     "quadrimester": 2,
-    "passExam": 4
+    "passExam": 11
   },
   {
     "AA": "INFO-S451D",
     "name": "Computer Architecture",
     "year": "Bachelor",
     "quadrimester": 2,
-    "passExam": 4
+    "passExam": 11
   },
   {
     "AA": "INFO-S434E",
     "name": "Human-Computer Interaction",
     "year": "Bachelor",
     "quadrimester": 1,
-    "passExam": 4
+    "passExam": 8
   },
   {
     "AA": "INFO-S555F",
     "name": "Cloud Computing",
     "year": "Bachelor",
     "quadrimester": 2,
-    "passExam": 4
+    "passExam": 11
   },
   {
     "AA": "INFO-S555G",
     "name": "Distributed Systems",
     "year": "Master",
     "quadrimester": 2,
-    "passExam": 7
+    "passExam": 11
   }
 ]
