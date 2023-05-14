@@ -165,3 +165,9 @@ export async function getListAction()
     const rep = await server.get('/actions-list');
     return rep.data
 }
+
+export async function postAskFacilitiesExamen(data)
+{
+    const rep = await server.post('/examFacilities-generate', data);
+    return rep.data
+}

@@ -1,9 +1,30 @@
-import {Container, Tab, Tabs} from "react-bootstrap";
+import {Button, Container, Tab, Tabs} from "react-bootstrap";
 import CourseFacilitiesTab from "../../components/board/CourseFacilitiesTab.jsx";
 import ExamFacilitiesTab from "../../components/board/ExamFacilitiesTab.jsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {postAskFacilitiesExamen} from "../../utils/api.js";
+import {useCallback} from "react";
 
 const AskFacilities = () =>
 {
+    const client = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: postAskFacilitiesExamen,
+        onSuccess: async data => {
+            await client.invalidateQueries(['listExamFacilities1', 'listExamFacilities2', 'listExamFacilities3']);
+        }
+    });
+
+
+    const onSubmit = useCallback(quadri => {
+        mutation.mutate({
+            'student': localStorage.getItem('id'),
+            'quadrimester': quadri
+        });
+    }, [mutation]);
+
+
     return(
         <Container>
             <h3 className="m-2">Mes aménagements demandés:</h3>
@@ -16,12 +37,15 @@ const AskFacilities = () =>
                     <CourseFacilitiesTab/>
                 </Tab>
                 <Tab eventKey="exam-1" title="Examen janvier">
+                    <Button onClick={()=>onSubmit(1)}>créer demande pour janvier</Button>
                     <ExamFacilitiesTab session='1' Ukey='listExamFacilities1'/>
                 </Tab>
                 <Tab eventKey="exam-2" title="Examen juin">
+                    <Button onClick={()=>onSubmit(2)}>créer demande pour juin</Button>
                     <ExamFacilitiesTab session='2' Ukey='listExamFacilities2'/>
                 </Tab>
                 <Tab eventKey="exam-3" title="Examen aout">
+                    <Button onClick={()=>onSubmit(3)}>créer demande pour aout</Button>
                     <ExamFacilitiesTab session='3' Ukey='listExamFacilities3'/>
                 </Tab>
             </Tabs>
