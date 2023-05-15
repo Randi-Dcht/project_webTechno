@@ -769,6 +769,27 @@ class getExampleFacilities(Resource):
         return [l for l in list], 200
 
 
+class getMyExam(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(examModel)
+
+    def get(self, id):
+        rtn = db.session.query(examModel).filter_by(id=id).first()
+        course = db.session.query(courseModel).filter_by(id_aa=rtn.course).first()
+        return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour, "local": rtn.locale, "type": rtn.type}, 200
+
+
+class postMyExam(Resource):
+    def post(self):
+        arguments = request.get_json()
+        exam = examModel.query.filter_by(id=arguments.get("id")).first()
+        exam.date = arguments.get("date")
+        exam.hour = arguments.get("hour")
+        exam.locale = arguments.get("local")
+        exam.type = arguments.get("type")
+        db.session.commit()
+        return "", 201
+
 # ------------------- INIT -------------------
 # Initialisation database :
 
@@ -880,6 +901,8 @@ api.add_resource(getListFaculty, "/faculty-list")
 api.add_resource(postFaculty, "/faculty-add")
 api.add_resource(getActionDate, "/actions-list")
 api.add_resource(getExampleFacilities, "/exampleFacilities-list")
+api.add_resource(getMyExam, "/myExam/<id>")
+api.add_resource(postMyExam, "/myExam-update")
 
 
 # ------------------- MAIN -------------------

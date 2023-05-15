@@ -177,3 +177,15 @@ export async function getListFacilitiesExample()
     const rep = await server.get('/exampleFacilities-list');
     return rep.data
 }
+
+export async function getMyExam(number)
+{
+    const rep = await server.get(`/myExam/${number}`);
+    return rep.data
+}
+
+export async function postMyExam(data)
+{
+    const rep = await server.post('/myExam-update', data);
+    return rep.data
+}

@@ -2,9 +2,12 @@ import {Button, Table} from "react-bootstrap";
 import {getListCourseFacilitiesStudent, getListCourseStudent, getListExamFacilitiesStudent} from "../../utils/api.js";
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
+import {useNavigate} from "react-router-dom";
+import {STUDENT} from "../../utils/routes.js";
 
 const ExamFacilitiesTab = ({session, Ukey}) =>
 {
+    const navigate = useNavigate();
 
    const {data, isLoading} = useQuery(
        {
@@ -36,7 +39,7 @@ const ExamFacilitiesTab = ({session, Ukey}) =>
                <tr key={doc.id}>
                    <td>{doc.course}</td>
                    <td>{doc.date} : {doc.hour}</td>
-                   <td>{doc.local}</td>
+                   <td>{doc.locale}</td>
                    <td>{doc.type}</td>
                    <td>
                        {
@@ -44,7 +47,7 @@ const ExamFacilitiesTab = ({session, Ukey}) =>
                        }
                    </td>
                    <td>
-                       <Button variant='light'>modifier</Button>
+                       <Button variant='light' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>modifier</Button>
                    </td>
                </tr>
            )

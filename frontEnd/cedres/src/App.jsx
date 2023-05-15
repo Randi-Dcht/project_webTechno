@@ -23,6 +23,7 @@ import ListAsk from "./pages/admin/ListAsk.jsx";
 import ListLog from "./pages/admin/ListLog.jsx";
 import Teacher from "./pages/teacher/Teacher.jsx";
 import Secretary from "./pages/secretary/Secretary.jsx";
+import Examens from "./pages/students/Examens.jsx";
 
 function App()
 {
@@ -57,6 +58,7 @@ function App()
                 <Route path={STUDENT + "/ask"} element={<AskFacilities/>}/>
                 <Route path={STUDENT + "/docs"} element={<Docs/>}/>
                 <Route path={STUDENT + "/calendar"} element={<Calend/>}/>
+                <Route path={STUDENT + "/ask-exam/:ask"} element={<Examens/>}/>
 
                 <Route path={"invite/teacher/:id"} element={<Teacher/>}/>
                 <Route path={"invite/secretary/:id"} element={<Secretary/>}/>
