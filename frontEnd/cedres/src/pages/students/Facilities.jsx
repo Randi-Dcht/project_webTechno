@@ -1,11 +1,23 @@
 import {Button, Container, Tab, Tabs} from "react-bootstrap";
 import FacilitiesTab from "../../components/board/FacilitiesTab.jsx";
-import {getListFacilitiesCourse, getListFacilitiesExam} from "../../utils/api.js";
+import {
+    getListFacilitiesCourse,
+    getListFacilitiesExam,
+    getListFacilitiesExample,
+    getSelectList
+} from "../../utils/api.js";
 import {useState} from "react";
 import FacilitiesForm from "../../components/forms/FacilitiesForm.jsx";
+import {useQuery} from "@tanstack/react-query";
 
 const Facilities = () =>
 {
+
+    const {data} = useQuery(
+        {
+            queryKey:['listExampleFacilities'],
+            queryFn: getListFacilitiesExample,
+        })
 
     const [visible, setVisible] = useState(false)
 
@@ -14,7 +26,7 @@ const Facilities = () =>
             <h3 className="m-3">Mes aménagements :</h3>
             <div className="container-fluid text-center m-2">
                 {
-                    visible? <FacilitiesForm cancel={setVisible}/> : <Button variant="warning" onClick={() => setVisible(!visible)}>ajouter un aménagement</Button>
+                    visible? <FacilitiesForm cancel={setVisible} example={data}/> : <Button variant="warning" onClick={() => setVisible(!visible)}>ajouter un aménagement</Button>
                 }
             </div>
             <Tabs defaultActiveKey="course" id="fill-tab-example" className="mb-3" fill>

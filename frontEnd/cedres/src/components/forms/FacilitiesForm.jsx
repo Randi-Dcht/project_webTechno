@@ -8,6 +8,7 @@ import {Input} from "../form/Input.jsx";
 import * as yup from "yup";
 import {yupResolver} from "@hookform/resolvers/yup";
 import InputList from "../form/InputList.jsx";
+import ChooseList from "../form/ChooseList.jsx";
 
 const defaultValue = {
     name: "",
@@ -20,7 +21,7 @@ const validationSchema = yup.object().shape({
         .required("un titre est obligatoire !"),
 });
 
-const FacilitiesForm = ({cancel}) =>
+const FacilitiesForm = ({cancel, example}) =>
 {
     const client = useQueryClient();
     const navigate = useNavigate();
@@ -63,7 +64,7 @@ const FacilitiesForm = ({cancel}) =>
             <Container>
                 <Row>
                     <Form onSubmit={handleSubmit(onSubmit)}>
-                        <Input type="text" name="name" label="Titre aménagement" control={control}/>
+                        <ChooseList type="text" name="name" label="Titre aménagement" control={control} listData={example} listName='listExample'/>
                         <Input type="text" name="description" label="Description aménagement" control={control}/>
                         <InputList type="text" name="type" label="Aménagements pour" control={control} listData={list_Type}/>
                         <div className="container">

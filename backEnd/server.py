@@ -117,6 +117,18 @@ class actionDateModel(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
+class exampleFacilitiesModel(db.Model):
+    """
+    list facilities model
+    """
+    __tablename__ = "exampleFacilities"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(120), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
 class facultyModel(db.Model):
     """
     faculty model
@@ -739,6 +751,27 @@ class postFaculty(Resource):
         return "", 201
 
 
+class getActionDate(Resource):
+    def get(self):
+        action = db.session.query(actionDateModel).all()
+        list = []
+        for a in action:
+            list.append({"name": a.name, "start": str(a.date_start), "end": str(a.date_end)})
+        return [l for l in list], 200
+
+
+class getExampleFacilities(Resource):
+    def get(self):
+        facilities = db.session.query(exampleFacilitiesModel).all()
+        list = []
+        for f in facilities:
+            list.append({"name": f.name, "key": f.name})
+        return [l for l in list], 200
+
+
+# ------------------- INIT -------------------
+# Initialisation database :
+
 def initDataBase():
     if db.session.query(adminModel).filter_by(name="admin").first() is None:
         admin = adminModel(name="admin", password=generate_password_hash("admin"), email="admin@admin.be")
@@ -770,7 +803,7 @@ def initDataBase():
         with open('data/faculty.json') as json_file:
             data = json.load(json_file)
             for p in data:
-                faculty = facultyModel(id=p['id'],name=p['name'], mail=p['email'])
+                faculty = facultyModel(id=p['id'], name=p['name'], mail=p['email'])
                 facultyModel.query.session.add(faculty)
                 db.session.commit()
         print(" * faculty created !")
@@ -786,19 +819,21 @@ def initDataBase():
         with open('data/course.json') as json_file:
             data = json.load(json_file)
             for p in data:
-                course = courseModel(id_aa=p['AA'], name=p['name'], passExam=p['passExam'], year=p['year'], quadrimester=p['quadrimester'])
+                course = courseModel(id_aa=p['AA'], name=p['name'], passExam=p['passExam'], year=p['year'],
+                                     quadrimester=p['quadrimester'])
                 courseModel.query.session.add(course)
                 db.session.commit()
         print(" * course created !")
 
+        with open('data/facilities.json') as json_file:
+            data = json.load(json_file)
+            for p in data:
+                facilities = exampleFacilitiesModel(name=p['name'])
+                exampleFacilitiesModel.query.session.add(facilities)
+                db.session.commit()
+        print(" * facilities created !")
 
-class getActionDate(Resource):
-    def get(self):
-        action = db.session.query(actionDateModel).all()
-        list = []
-        for a in action:
-            list.append({"name": a.name, "start": str(a.date_start), "end": str(a.date_end)})
-        return [l for l in list], 200
+
 
 
 # ------------------- ROUTES -------------------
@@ -844,6 +879,7 @@ api.add_resource(generateExamenFacilities, "/examFacilities-generate")
 api.add_resource(getListFaculty, "/faculty-list")
 api.add_resource(postFaculty, "/faculty-add")
 api.add_resource(getActionDate, "/actions-list")
+api.add_resource(getExampleFacilities, "/exampleFacilities-list")
 
 
 # ------------------- MAIN -------------------

@@ -171,3 +171,9 @@ export async function postAskFacilitiesExamen(data)
     const rep = await server.post('/examFacilities-generate', data);
     return rep.data
 }
+
+export async function getListFacilitiesExample()
+{
+    const rep = await server.get('/exampleFacilities-list');
+    return rep.data
+}
