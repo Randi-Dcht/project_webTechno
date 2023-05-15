@@ -779,6 +779,20 @@ class getMyExam(AbstractListResourceById):
         return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour, "local": rtn.locale, "type": rtn.type}, 200
 
 
+class getMyExamFacilities(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(examModel)
+
+    def get(self, id):
+        rtn = db.session.query(examFacilitiesModel).filter_by(exam=id).all()
+        lst = []
+        for r in rtn:
+            tmp = db.session.query(facilitiesModel).filter_by(id=r.facilities).first()
+            lst.append({"id": r.id, "facilitie": tmp.name})
+
+        return [l for l in lst], 200
+
+
 class postMyExam(Resource):
     def post(self):
         arguments = request.get_json()
@@ -903,6 +917,7 @@ api.add_resource(getActionDate, "/actions-list")
 api.add_resource(getExampleFacilities, "/exampleFacilities-list")
 api.add_resource(getMyExam, "/myExam/<id>")
 api.add_resource(postMyExam, "/myExam-update")
+api.add_resource(getMyExamFacilities, "/myExamList/<id>")
 
 
 # ------------------- MAIN -------------------

@@ -184,6 +184,12 @@ export async function getMyExam(number)
     return rep.data
 }
 
+export async function getMyExamList(number)
+{
+    const rep = await server.get(`/myExamList/${number}`);
+    return rep.data
+}
+
 export async function postMyExam(data)
 {
     const rep = await server.post('/myExam-update', data);

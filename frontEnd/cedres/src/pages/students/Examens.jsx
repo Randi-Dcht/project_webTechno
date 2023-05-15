@@ -1,10 +1,43 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {getListExamFacilitiesStudent, getMyExam, postMyExam, postSignupStudent} from "../../utils/api.js";
-import {useParams} from "react-router-dom";
+import {
+    getListExamFacilitiesStudent,
+    getMyExam,
+    getMyExamList,
+    postMyExam,
+    postSignupStudent
+} from "../../utils/api.js";
+import {useNavigate, useParams} from "react-router-dom";
 import ExamFacilitiesForm from "../../components/forms/ExamFacilitiesForm.jsx";
 import {CONNEXION} from "../../utils/routes.js";
 import {useCallback} from "react";
-import {Container} from "react-bootstrap";
+import {Button, Container, ListGroup} from "react-bootstrap";
+
+const listFacilities = (nb) =>
+{
+    const {data, isLoading} = useQuery(
+        {
+            queryKey: ['examFacilitieList'],
+            queryFn: () => getMyExamList(nb)
+        });
+
+    return(
+        <ListGroup>
+            <p>Aménagements :</p>
+            {
+               isLoading?
+                   <p>chargement ...</p>:
+                   data.map((d, index) =>
+                   {
+                       return(
+                           <ListGroup.Item style={{display:'flex', justifyContent:'space-between', alignItems:'center'}} key={index}>{d.facilitie} <Button className='m-1' variant='light'>X</Button></ListGroup.Item>
+                       )
+                   })
+            }
+        </ListGroup>
+    )
+
+}
+
 
 const Examens = () =>
 {
@@ -16,24 +49,16 @@ const Examens = () =>
             queryFn: () => getMyExam(examNumber)
         });
 
-    const mutation = useMutation({
-        mutationFn: postMyExam,
-        onSuccess: async data => {
-            await client.invalidateQueries(['examFacilitie']);
-        }
-    });
-
-
-    const onSubmit = useCallback(values => {
-        mutation.mutate(values);
-    }, [mutation]);
-
     return(
         <Container style={{marginTop:'50px'}}>
             {
                 isLoading? <p>chargement ...</p>:
-                    <ExamFacilitiesForm onSubmit={onSubmit} data_default={data}/>
+                    <ExamFacilitiesForm data_default={data}/>
             }
+            {
+                listFacilities(examNumber)
+            }
+            <Button className='m-5'>quitter</Button>
         </Container>
     )
 }
