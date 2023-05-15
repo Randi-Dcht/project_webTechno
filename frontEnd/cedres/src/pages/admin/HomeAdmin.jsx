@@ -1,4 +1,4 @@
-import {Button, Card, CardGroup} from "react-bootstrap";
+import {Button, Card, CardGroup, Col, Row} from "react-bootstrap";
 
 const listLink =[
     {
@@ -11,6 +11,16 @@ const listLink =[
         link: "",
         text: "Liste des demandes (accepter, modifier, consulter)"
     },
+    {
+        name : "Logger",
+        link: "",
+        text: "Log de l'application"
+    },
+    {
+        name : "Annuaires",
+        link: "",
+        text: "Liste de secrétariat, professeurs, cours, ..."
+    },
 ]
 
 const HomeAdmin = () =>
@@ -18,24 +28,26 @@ const HomeAdmin = () =>
     return(
         <div>
             <h2 className="m-4">Accueil administration</h2>
-            <CardGroup>
+            <Row xs={1} md={2} className="g-2">
                 {
                     listLink.map((e, index)=>
                     {
                         return(
-                            <Card key={index} className='m-2'>
-                                <Card.Body>
-                                    <Card.Title>{e.name}</Card.Title>
-                                    <Card.Text>{e.text}</Card.Text>
-                                </Card.Body>
-                                <Card.Footer>
-                                    <Button  variant='warning'>consulter</Button>
-                                </Card.Footer>
-                            </Card>
+                           <Col>
+                               <Card key={index} className='m-2'>
+                                   <Card.Body>
+                                       <Card.Title>{e.name}</Card.Title>
+                                       <Card.Text>{e.text}</Card.Text>
+                                   </Card.Body>
+                                   <Card.Footer>
+                                       <Button  variant='warning'>consulter</Button>
+                                   </Card.Footer>
+                               </Card>
+                           </Col>
                         )
                     })
                 }
-            </CardGroup>
+            </Row>
         </div>
     )
 }
