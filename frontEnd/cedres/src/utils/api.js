@@ -195,3 +195,21 @@ export async function postMyExam(data)
     const rep = await server.post('/myExam-update', data);
     return rep.data
 }
+
+export async function getDeadLine(name)
+{
+    const rep = await server.get(`/deadline/${name}`);
+    return rep.data
+}
+
+export async function postDeadLine(data)
+{
+    const rep = await server.post('/deadline-update', data);
+    return rep.data
+}
+
+export async function getListDeadLine()
+{
+    const rep = await server.get(`/deadline-list`);
+    return rep.data
+}

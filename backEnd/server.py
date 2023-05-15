@@ -109,8 +109,8 @@ class actionDateModel(db.Model):
     """
     __tablename__ = "actionDate"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    date_start = db.Column(db.Date, nullable=False)
-    date_end = db.Column(db.Date, nullable=False)
+    date_start = db.Column(db.String(25), nullable=False)
+    date_end = db.Column(db.String(25), nullable=False)
     name = db.Column(db.String(80), nullable=False)
 
     def as_dict(self):
@@ -804,6 +804,33 @@ class postMyExam(Resource):
         db.session.commit()
         return "", 201
 
+
+class getDeadLine(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(actionDateModel)
+
+    def get(self, id):
+        rtn = db.session.query(actionDateModel).filter_by(name=id).first()
+        return {"id": rtn.id, "date_start": str(rtn.date_start), "date_end": str(rtn.date_end)}, 200
+
+
+class getDeadLineList(Resource):
+    def get(self):
+        rtn = db.session.query(actionDateModel).all()
+        lst = []
+        for r in rtn:
+            lst.append({"id": r.id, "date_start": r.date_start, "date_end": r.date_end})
+        return [l for l in lst], 200
+
+class postUpdateDeadLine(Resource):
+    def post(self):
+        arguments = request.get_json()
+        action = actionDateModel.query.filter_by(id=arguments.get("id")).first()
+        action.date_start = arguments.get("date_start")
+        action.date_end = arguments.get("date_end")
+        db.session.commit()
+        return "", 201
+
 # ------------------- INIT -------------------
 # Initialisation database :
 
@@ -814,23 +841,25 @@ def initDataBase():
         db.session.commit()
         print(" * admin created !")
 
-        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="development")
+        date_year = "2023"
+
+        action = actionDateModel(date_start=date_year + "-08-25", date_end=date_year + "-10-30", name="development")
         actionDateModel.query.session.add(action)
         db.session.commit()
 
-        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="course")
+        action = actionDateModel(date_start=date_year + "-09-15", date_end=date_year + "-11-01", name="course")
         actionDateModel.query.session.add(action)
         db.session.commit()
 
-        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="session1")
+        action = actionDateModel(date_start=date_year + "-11-01", date_end=date_year + "-12-05", name="session1")
         actionDateModel.query.session.add(action)
         db.session.commit()
 
-        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="session2")
+        action = actionDateModel(date_start=date_year + "-04-01", date_end=date_year + "-05-01", name="session2")
         actionDateModel.query.session.add(action)
         db.session.commit()
 
-        action = actionDateModel(date_start=datetime.now(), date_end=datetime.now(), name="session3")
+        action = actionDateModel(date_start=date_year + "-07-01", date_end=date_year + "-08-01", name="session3")
         actionDateModel.query.session.add(action)
         db.session.commit()
 
@@ -918,7 +947,9 @@ api.add_resource(getExampleFacilities, "/exampleFacilities-list")
 api.add_resource(getMyExam, "/myExam/<id>")
 api.add_resource(postMyExam, "/myExam-update")
 api.add_resource(getMyExamFacilities, "/myExamList/<id>")
-
+api.add_resource(getDeadLine, "/deadline/<id>")
+api.add_resource(postUpdateDeadLine, "/deadline-update")
+api.add_resource(getDeadLineList, "/deadline-list")
 
 # ------------------- MAIN -------------------
 # Main :

@@ -18,6 +18,10 @@ export const URL_CEDRES =
         {
             "name" : "Log logiciel",
             "url" : ADMIN + '/log'
+        },
+        {
+            "name" : "DeadLine",
+            "url" : ADMIN + '/deadline'
         }
     ]
 
