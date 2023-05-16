@@ -315,6 +315,23 @@ class examModel(db.Model):
         return "<exam %r>" % self.name
 
 
+class examStatusModel(db.Model):
+    """
+    exam status model --> for each student (unique)
+    """
+    __tablename__ = "examStatus"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    exam = db.Column(db.Integer, db.ForeignKey("exam.id"), nullable=False)
+    status = db.Column(db.String(15), nullable=False, default='false')  # created, verification, accepted, refused
+    comment = db.Column(db.String(300), nullable=False, default=" ")
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<examStatus %r>" % self.name
+
+
 class examFacilitiesModel(db.Model):
     """
     exam facilities model (LIST) --> for each student (unique)
@@ -697,6 +714,9 @@ class generateExamenFacilities(Resource):
                 facilities = examModel(course=course.id_aa, student=student, locale="", hour="", date="", type="",
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
+                db.session.commit()
+                statusexam = examStatusModel(exam=facilities.id, status="created")
+                examStatusModel.query.session.add(statusexam)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
                 for f in listing:
