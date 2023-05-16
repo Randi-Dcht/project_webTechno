@@ -686,6 +686,17 @@ class getListSelectTeacher(AbstractListResource):
         return [l for l in list], 200
 
 
+class getListSelectFalculty(AbstractListResource):
+    def __init__(self):
+        super().__init__(facultyModel)
+
+    def get(self):
+        faculty = db.session.query(facultyModel).all()
+        list = []
+        for f in faculty:
+            list.append({"key": f.id, "value": f.name})
+        return [l for l in list], 200
+
 class postDocument(Resource):
     def post(self):
         arguments = request.get_json()
@@ -970,6 +981,7 @@ api.add_resource(getMyExamFacilities, "/myExamList/<id>")
 api.add_resource(getDeadLine, "/deadline/<id>")
 api.add_resource(postUpdateDeadLine, "/deadline-update")
 api.add_resource(getDeadLineList, "/deadline-list")
+api.add_resource(getListSelectFalculty, "/faculty-select")
 
 # ------------------- MAIN -------------------
 # Main :

@@ -213,3 +213,9 @@ export async function getListDeadLine()
     const rep = await server.get(`/deadline-list`);
     return rep.data
 }
+
+export async function getSelectFaculty()
+{
+    const rep = await server.get(`/faculty-select`);
+    return rep.data
+}
