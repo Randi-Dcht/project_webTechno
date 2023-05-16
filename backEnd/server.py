@@ -129,6 +129,21 @@ class exampleFacilitiesModel(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
+class localModel(db.Model):
+    """
+    local model
+    """
+    __tablename__ = "local"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(120), nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<local %r>" % self.name
+
+
 class facultyModel(db.Model):
     """
     faculty model
@@ -697,6 +712,19 @@ class getListSelectFalculty(AbstractListResource):
             list.append({"key": f.id, "value": f.name})
         return [l for l in list], 200
 
+
+class getListSelectLocal(AbstractListResource):
+    def __init__(self):
+        super().__init__(localModel)
+
+    def get(self):
+        local = db.session.query(localModel).all()
+        list = []
+        for l in local:
+            list.append({"key": l.name, "value": l.name})
+        return [l for l in list], 200
+
+
 class postDocument(Resource):
     def post(self):
         arguments = request.get_json()
@@ -928,7 +956,13 @@ def initDataBase():
                 db.session.commit()
         print(" * facilities created !")
 
-
+        with open('data/local.json') as json_file:
+            data = json.load(json_file).get("locals")
+            for p in data:
+                local = localModel(name=p)
+                localModel.query.session.add(local)
+                db.session.commit()
+        print(" * local created !")
 
 
 # ------------------- ROUTES -------------------
@@ -982,6 +1016,7 @@ api.add_resource(getDeadLine, "/deadline/<id>")
 api.add_resource(postUpdateDeadLine, "/deadline-update")
 api.add_resource(getDeadLineList, "/deadline-list")
 api.add_resource(getListSelectFalculty, "/faculty-select")
+api.add_resource(getListSelectLocal, "/local-select")
 
 # ------------------- MAIN -------------------
 # Main :

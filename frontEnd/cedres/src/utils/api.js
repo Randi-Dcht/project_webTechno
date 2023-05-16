@@ -219,3 +219,9 @@ export async function getSelectFaculty()
     const rep = await server.get(`/faculty-select`);
     return rep.data
 }
+
+export async function getSelectLocal()
+{
+    const rep = await server.get(`/local-select`);
+    return rep.data
+}

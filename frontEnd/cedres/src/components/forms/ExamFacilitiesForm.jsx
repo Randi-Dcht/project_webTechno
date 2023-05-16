@@ -6,7 +6,8 @@ import React, {useCallback} from "react";
 import * as yup from "yup";
 import InputList from "../form/InputList.jsx";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {getMyExam, postMyExam} from "../../utils/api.js";
+import {getMyExam, getSelectFaculty, getSelectLocal, postMyExam} from "../../utils/api.js";
+import ChooseList from "../form/ChooseList.jsx";
 
 
 const list_Type = [
@@ -42,6 +43,11 @@ const ExamFacilitiesForm = ({data_default}) =>
         defaultValues: data_default,
     });
 
+    const {data, isLoading} = useQuery(
+        {
+            queryKey: ['locals'],
+            queryFn: getSelectLocal
+        });
 
     const onSubmit = useCallback(values => {
         mutation.mutate(values);
@@ -51,15 +57,16 @@ const ExamFacilitiesForm = ({data_default}) =>
         <div>
             <Row>
                 <h4>Aménagement pour {data_default.course} ({data_default.aa})</h4>
-                <Form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onSubmit)}>
-                    <Input type="hidden" name="id" label="" control={control}/>
-                    <Input type="date" name="date" label="Date de l'examen" control={control}/>
-                    <Input type="time" name="hour" label="Heure de l'examen" control={control}/>
-                    <Input type="text" name="local" label="Local de l'examen" control={control}/>
-                    <InputList type="text" name="type" label="Type examen" control={control} listData={list_Type}/>
-
-
-                </Form>
+                {
+                    isLoading? <p>Chargement ...</p>:
+                        <Form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onSubmit)}>
+                            <Input type="hidden" name="id" label="" control={control}/>
+                            <Input type="date" name="date" label="Date de l'examen" control={control}/>
+                            <Input type="time" name="hour" label="Heure de l'examen" control={control}/>
+                            <ChooseList type="text" name="local" label="Local de l'examen" control={control} listData={data} listName="local"/>
+                            <InputList type="text" name="type" label="Type examen" control={control} listData={list_Type}/>
+                        </Form>
+                }
             </Row>
         </div>
     );
