@@ -53,8 +53,8 @@ const CourseStudentForm = ({cancel, listA, listB}) =>
             <Container>
                 <Row>
                     <Form onSubmit={handleSubmit(onSubmit)}>
-                        <ChooseList type="text" name="course" label="Code du cours (AA) :" control={control} listData={listA} listName='list1'/>
-                        <ChooseList type="text" name="teacher" label="Professeur principal" control={control} listData={listB} listName='list2'/>
+                        <InputList type="text" name="course" label="Code du cours (AA) :" control={control} listData={listA}/>
+                        <InputList type="text" name="teacher" label="Professeur principal" control={control} listData={listB}/>
                         <div className="container">
                             <Button className="m-2" variant="primary" type="submit">ajouter</Button>
                             <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>
