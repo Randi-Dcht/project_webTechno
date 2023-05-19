@@ -27,13 +27,13 @@ const ListAsk = () =>
         <Container>
             <h3 className='m-3'>Les demandes :</h3>
             <Tabs defaultActiveKey="todo" id="fill-tab-example" className="mb-3" fill>
-                <Tab eventKey="todo" title="Demande à valider">
+                <Tab eventKey="todo" title="Demandes à valider">
                     <RequestToValidate request={getRequestToValidate} id={'requestToValidate'}/>
                 </Tab>
-                <Tab eventKey="valid" title="Demander en attente (revalider)">
+                <Tab eventKey="valid" title="Demandes en attente (à revalider)">
                     <RequestToValidate request={getRequestWait} id={'requestWait'}/>
                 </Tab>
-                <Tab eventKey="old" title="Demander valider (ancienne)">
+                <Tab eventKey="old" title="Demandes validées (anciennes)">
                     <RequestToValidate request={getRequestFinish} id={'requestFinish'}/>
                 </Tab>
             </Tabs>

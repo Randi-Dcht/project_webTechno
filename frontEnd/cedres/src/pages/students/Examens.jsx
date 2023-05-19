@@ -25,7 +25,7 @@ const listFacilities = (nb) =>
             <p>Aménagements :</p>
             {
                isLoading?
-                   <p>chargement ...</p>:
+                   <p>Chargement ...</p>:
                    data.map((d, index) =>
                    {
                        return(
@@ -52,13 +52,13 @@ const Examens = () =>
     return(
         <Container style={{marginTop:'50px'}}>
             {
-                isLoading? <p>chargement ...</p>:
+                isLoading? <p>Chargement ...</p>:
                     <ExamFacilitiesForm data_default={data}/>
             }
             {
                 listFacilities(examNumber)
             }
-            <Button className='m-5'>quitter</Button>
+            <Button className='m-5'>Quitter</Button>
         </Container>
     )
 }

@@ -17,7 +17,7 @@ const Calend = () =>
     return(
        <div className="container-fluid text-center align-content-center" style={{width: '100%', marginTop: '10px'}}>
            {
-               isLoading? <p>chargement ...</p>:
+               isLoading? <p>Chargement ...</p>:
                <Calendar
                    localizer={localizer}
                    startAccessor="start"

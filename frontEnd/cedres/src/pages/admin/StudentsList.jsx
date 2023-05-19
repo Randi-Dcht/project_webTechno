@@ -3,6 +3,7 @@ import {getListStudent} from "../../utils/api.js";
 import {useMemo} from "react";
 import {Button, Container, Table} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
+import { ADMIN } from "../../utils/routes.js";
 
 const StudentsList = () =>
 {
@@ -16,7 +17,7 @@ const StudentsList = () =>
         });
 
     const lineTab = useMemo(() =>
-    {
+    { 
         return data?.map(student =>
         {
             return(
@@ -24,7 +25,7 @@ const StudentsList = () =>
                     <td>{student.name} {student.surname}</td>
                     <td>{student.email}</td>
                     <td>{student.phone}</td>
-                    <td><Button variant='warning'>profile</Button></td>
+                    <td><Button variant='warning' onClick={()=> navigate('./'+student.matricule)}>Profil</Button></td>
                 </tr>
             )
         })
@@ -34,7 +35,7 @@ const StudentsList = () =>
     return(
         <Container>
             <h3 className="m-2">Liste des étudiants :</h3>
-            <div className="container-fluid text-center"><Button variant="primary" onClick={()=> navigate('./add')}>ajouter</Button></div>
+            <div className="container-fluid text-center"><Button variant="primary" onClick={()=> navigate('./add')}>Ajouter</Button></div>
             <Table>
                 <thead>
                 <tr>

@@ -17,10 +17,10 @@ const Home = () =>
                 <Card.Body>
                     <Card.Title>Cèdres Umons</Card.Title>
                     <Card.Text>
-                        Si vous êtes porteur d’une déficience sensorielle ou motrice, de troubles de l’apprentissage, du développement ou d’une maladie, … l’UMONS s’appuie sur les compétences de son service d’accueil et d’accompagnement, Les Cèdres, pour l’accompagnement des étudiants à besoins spécifiques. L’asbl analyse les besoins matériels, pédagogiques, sociaux, culturels, médicaux et psychologiques de l’étudiant et établit, en concertation avec lui, un plan d’accompagnement individualisé.
-                        L’UMONS propose également des dispositions spécifiques pour les étudiants sportifs de haut niveau et artistes ainsi que pour les étudiants-entrepreneurs.
+                        Si vous êtes porteur d'une déficience sensorielle ou motrice, de troubles de l'apprentissage, du développement ou d'une maladie, … l'UMONS s'appuie sur les compétences de son service d'accueil et d'accompagnement, Les Cèdres, pour l'accompagnement des étudiants à besoins spécifiques. L'asbl analyse les besoins matériels, pédagogiques, sociaux, culturels, médicaux et psychologiques de l'étudiant et établit, en concertation avec lui, un plan d'accompagnement individualisé.
+                        L'UMONS propose également des dispositions spécifiques pour les étudiants sportifs de haut niveau et artistes ainsi que pour les étudiants-entrepreneurs.
                     </Card.Text>
-                    <Button variant="light">Go to  https://web.umons.ac.be/fr/vie-campus/etudiants-a-besoins-specifiques/</Button>
+                    <Button variant="light">Go to https://web.umons.ac.be/fr/vie-campus/etudiants-a-besoins-specifiques/</Button>
                 </Card.Body>
             </Card>
             <Card className="m-3">
@@ -28,7 +28,7 @@ const Home = () =>
                 <Card.Body>
                     <Card.Title>App Cèdres Umons</Card.Title>
                     <Card.Text>
-                        Cette application a été développé dans le but d'améliorer les services informatiques des cèdrès. En outre, cette application permet de gérer votre dossier
+                        Cette application a été développée dans le but d'améliorer les services informatiques des cèdres. En outre, cette application permet de gérer votre dossier
                         depuis votre navigateur et ainsi pourvoir modifier vos données et vos demandes à tout instant en quelques cliques.
                     </Card.Text>
                     <Stack gap={2} className="col-md-5 mx-auto p-5">

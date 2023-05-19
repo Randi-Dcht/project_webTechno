@@ -61,7 +61,7 @@ const CreateStudent = () =>
                         <Input type="text" name="surname" label="Prénom étudiant" control={control}/>
                         <Input type="text" name="email" label="Email Université" control={control}/>
                         <Input type="number" name="matricule" label="Matricule étudiant" control={control}/>
-                        <Button className="m-2" variant="primary" type="submit">ajouter</Button>
+                        <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
                     </Form>
                 </Row>
             </Container>

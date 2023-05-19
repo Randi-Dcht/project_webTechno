@@ -8,7 +8,7 @@ import {postloginAdmin, postloginStudent} from "../utils/api.js";
 const Connexion = ({setUrl}) =>
 {
     const param = useParams();
-    const id = param.user;
+    const id = param.user; 
 
     return(
         <Card style={{width: '30%', margin: "auto", marginTop: '5%'}}>

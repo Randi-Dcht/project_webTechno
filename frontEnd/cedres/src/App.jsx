@@ -25,6 +25,7 @@ import Teacher from "./pages/teacher/Teacher.jsx";
 import Secretary from "./pages/secretary/Secretary.jsx";
 import Examens from "./pages/students/Examens.jsx";
 import DeadLine from "./pages/admin/DeadLine.jsx";
+import ProfilStudent from './pages/admin/ProfilStudent';
 
 function App()
 {
@@ -47,6 +48,7 @@ function App()
                 <Route path={ADMIN} element={<HomeAdmin/>}/>
                 <Route path={ADMIN + "/students"} element={<StudentsList/>}/>
                 <Route path={ADMIN + "/students/add"} element={<CreateStudent/>}/>
+                <Route path={ADMIN + "/students/:id"} element={<ProfilStudent/>}/>
                 <Route path={ADMIN + "/list"} element={<AllList/>}/>
                 <Route path={ADMIN + "/list-ask"} element={<ListAsk/>}/>
                 <Route path={ADMIN + "/log"} element={<ListLog/>}/>

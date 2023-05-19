@@ -6,33 +6,35 @@ import {Col, Container, Nav, Row, Tab} from "react-bootstrap";
 import StudentForm from "../../components/forms/StudentForm.jsx";
 import UpdatePassForm from "../../components/forms/UpdatePassForm.jsx";
 
-const Profil = () =>
+const ProfilStudent = () =>
 {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const client = useQueryClient();
-    const param = useParams(); 
+    const param = useParams();
+
+    const matriculate = param.id
 
     const {data, isLoading} = useQuery(
-        {
-            queryKey: ['studentMe'],
-            queryFn: () => getStudent(localStorage.getItem('id')),
-        });
-
+    {
+        queryKey: ['student'],
+        queryFn: () => getStudent(matriculate),
+    });
+    
     const mutation = useMutation({
         mutationFn: updateStudent,
         onSuccess: async data => {
-            await client.invalidateQueries(['studentMe']);
+            await client.invalidateQueries(['student']);
         }
     });
-
-
+    
+    
     const onSubmit = useCallback(values => {
         mutation.mutate(values);
     }, [mutation]);
-
+    
     return(
         <Container>
-            <h3 className="m-3">Mon profil :</h3>
+            <h3 className="m-3">Profil de l'élève :</h3>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                 <Row>
                     <Col sm={3}>
@@ -49,7 +51,7 @@ const Profil = () =>
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
                                 {
-                                    isLoading? <p>Chargement ...</p>: <StudentForm onSubmit={onSubmit} name_button="mettre à jour" data_default={
+                                    isLoading? <p>Chargement ...</p>: <StudentForm onSubmit={onSubmit} name_button="Mettre à jour" data_default={
                                         {
                                             name : data.name,
                                             surname : data.surname,
@@ -73,4 +75,4 @@ const Profil = () =>
     )
 }
 
-export default Profil
+export default ProfilStudent

@@ -4,7 +4,7 @@ const listLink =[
     {
         name : "Etudiants",
         link: "",
-        text: "Liste des étudiants et consulter les profiles"
+        text: "Liste des étudiants et consulter les profils"
     },
     {
         name : "Demandes",
@@ -14,7 +14,7 @@ const listLink =[
     {
         name : "Logger",
         link: "",
-        text: "Log de l'application"
+        text: "Logs de l'application"
     },
     {
         name : "Annuaires",
@@ -40,7 +40,7 @@ const HomeAdmin = () =>
                                        <Card.Text>{e.text}</Card.Text>
                                    </Card.Body>
                                    <Card.Footer>
-                                       <Button  variant='warning'>consulter</Button>
+                                       <Button  variant='warning'>Consulter</Button>
                                    </Card.Footer>
                                </Card>
                            </Col>
