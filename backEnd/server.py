@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from jwt import DecodeError, ExpiredSignatureError
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
 
@@ -385,16 +386,13 @@ class documentsModel(db.Model):
 # ------------------- RESOURCES -------------------
 # define all resource :
 
-def verify() :
-    """
-    verify if the user is logged in (with jwt token and if the user is admin or not)
-    """
+def verify():
     try:
         verify_jwt_in_request()
-    except:
+    except (DecodeError, ExpiredSignatureError):
         return False
-    current_user = get_jwt_identity() 
-    #TODO : verify if the user type
+    current_user = get_jwt_identity()
+    # TODO: Vérifier le type d'utilisateur
     return True
     
 class addAdmin(Resource):
