@@ -17,9 +17,9 @@ const defaultValue = {
 
 const validationSchema = yup.object().shape({
     course: yup.string()
-        .required("un code de cours est obligatoire !"),
+        .required("Un code de cours est obligatoire !"),
     teacher: yup.string()
-        .required("un professeur est obligatoire !"),
+        .required("Un professeur est obligatoire !"),
 });
 
 const CourseStudentForm = ({cancel, listA, listB}) =>
@@ -56,8 +56,8 @@ const CourseStudentForm = ({cancel, listA, listB}) =>
                         <InputList type="text" name="course" label="Code du cours (AA) :" control={control} listData={listA}/>
                         <InputList type="text" name="teacher" label="Professeur principal" control={control} listData={listB}/>
                         <div className="container">
-                            <Button className="m-2" variant="primary" type="submit">ajouter</Button>
-                            <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>
+                            <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
+                            <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>Annuler</Button>
                         </div>
                     </Form>
                 </Row>

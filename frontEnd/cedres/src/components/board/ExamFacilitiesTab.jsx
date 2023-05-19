@@ -47,7 +47,7 @@ const ExamFacilitiesTab = ({session, Ukey}) =>
                        }
                    </td>
                    <td>
-                       <Button variant='light' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>modifier</Button>
+                       <Button variant='light' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>
                    </td>
                </tr>
            )
@@ -57,11 +57,11 @@ const ExamFacilitiesTab = ({session, Ukey}) =>
 
     return(
         /*isLoading?
-            <p>en chargement ...</p>:*/
+            <p>Chargement ...</p>:*/
         <Table>
             <thead>
             <tr>
-                <td>Cours</td><td>date</td><td>local</td><td>type</td><td>Aménagement</td><td></td>
+                <td>Cours</td><td>Date</td><td>Local</td><td>Type</td><td>Aménagement</td><td></td>
             </tr>
             </thead>
             <tbody>

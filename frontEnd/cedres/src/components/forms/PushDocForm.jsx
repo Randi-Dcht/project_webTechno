@@ -20,7 +20,7 @@ const listB =[
     },
     {
         'key' : 'demande',
-        'value' : 'demande introduction'
+        'value' : 'Demande introduction'
     },
 ]
 
@@ -56,8 +56,8 @@ const PushDocForm = ({cancel}) =>
                         <Input type="file" name="file" label="Fichier :" control={control}/>
                         <InputList type="text" name="name" label="Nom du fichier" control={control} listData={listB}/>
                         <div className="container">
-                            <Button className="m-2" variant="primary" type="submit">ajouter</Button>
-                            <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>
+                            <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
+                            <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>Annuler</Button>
                         </div>
                     </Form>
                 </Row>

@@ -13,19 +13,19 @@ import ChooseList from "../form/ChooseList.jsx";
 const list_Type = [
     {
         'key' : '?',
-        'value' : 'je ne sais pas !'
+        'value' : 'Je ne sais pas !'
     },
     {
         'key' : 'ecrit',
-        'value' : 'ecrit'
+        'value' : 'Ecrit'
     },
     {
         'key' : 'oral',
-        'value' : 'oral'
+        'value' : 'Oral'
     },
     {
         'key' : 'oral/ecrit',
-        'value' : 'oral/ecrit'
+        'value' : 'Oral/écrit'
     }
 ]
 

@@ -18,7 +18,7 @@ const defaultValue = {
 
 const validationSchema = yup.object().shape({
     name: yup.string()
-        .required("un titre est obligatoire !"),
+        .required("Un titre est obligatoire !"),
 });
 
 const FacilitiesForm = ({cancel, example}) =>
@@ -51,11 +51,11 @@ const FacilitiesForm = ({cancel, example}) =>
     const list_Type = [
         {
             'key' : 'course',
-            'value' : 'cours'
+            'value' : 'Cours'
         },
         {
             'key' : 'exam',
-            'value' : 'examen'
+            'value' : 'Examen'
         }
     ]
 
@@ -68,8 +68,8 @@ const FacilitiesForm = ({cancel, example}) =>
                         <Input type="text" name="description" label="Description aménagement" control={control}/>
                         <InputList type="text" name="type" label="Aménagements pour" control={control} listData={list_Type}/>
                         <div className="container">
-                            <Button className="m-2" variant="primary" type="submit">ajouter</Button>
-                            <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>
+                            <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
+                            <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>Annuler</Button>
                         </div>
                     </Form>
                 </Row>

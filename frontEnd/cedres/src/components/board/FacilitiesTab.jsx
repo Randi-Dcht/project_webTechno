@@ -27,7 +27,7 @@ const FacilitiesTab = ({getter, name}) =>
 
     return(
         isLoading?
-        <p>en chargement ...</p>:
+        <p>Chargement ...</p>:
                 <Table key={name}>
                     <thead>
                     <tr>

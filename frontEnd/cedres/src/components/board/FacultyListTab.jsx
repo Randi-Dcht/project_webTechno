@@ -8,7 +8,7 @@ const CourseListTab = () =>
 
    const {data, isLoading} = useQuery(
        {
-           queryKey: ['listFaculty'],
+           queryKey: ['listFaculty'], 
            queryFn: getListFaculty,
        });
 
@@ -30,7 +30,7 @@ const CourseListTab = () =>
 
     return(
         /*isLoading?
-            <p>en chargement ...</p>:*/
+            <p>Chargement ...</p>:*/
         <Table>
             <thead>
             <tr>

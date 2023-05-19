@@ -4,7 +4,7 @@ const ListLog = () =>
 {
     return(
         <Container>
-            <h3 className='m-3'> Log du logiciel :</h3>
+            <h3 className='m-3'> Logs du logiciel :</h3>
         </Container>
     )
 }

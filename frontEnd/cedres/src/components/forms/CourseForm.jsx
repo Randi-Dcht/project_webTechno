@@ -55,15 +55,15 @@ const TeacherForm = ({cancel}) =>
 
     const listToChoose = [
         {
-            value: "Janvier et Aout",
+            value: "Janvier et Août",
             key: 8
         },
         {
-            value: "Juin et Aout",
+            value: "Juin et Août",
             key: 11
         },
         {
-            value: "Janvier et Juin et Aout",
+            value: "Janvier, Juin et Août",
             key: 12
         },
     ]
@@ -78,8 +78,8 @@ const TeacherForm = ({cancel}) =>
                     <InputList type="number" listData={listToChoose} listName="list1" name="passExam" label="Session examen" control={control}/>
 
                     <div className="container">
-                        <Button className="m-2" variant="primary" type="submit">ajouter</Button>
-                        <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>
+                        <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
+                        <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>Annuler</Button>
                     </div>
                 </Form>
             </Row>

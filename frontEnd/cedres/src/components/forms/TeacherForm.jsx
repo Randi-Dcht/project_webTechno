@@ -53,8 +53,8 @@ const TeacherForm = ({cancel}) =>
                     <Input type="text" name="email" label="Email Université" control={control}/>
 
                     <div className="container">
-                        <Button className="m-2" variant="primary" type="submit">ajouter</Button>
-                        <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>annuler</Button>
+                        <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
+                        <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>Annuler</Button>
                     </div>
                 </Form>
             </Row>
