@@ -788,7 +788,11 @@ class getRequestWait(Resource):
         list_request = db.session.query(examStatusModel).filter_by(status='wait').all()
         list = []
         for ask in list_request:
-            list.append(ask.as_dict())
+            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            list.append(
+                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
+                 "comment": ask.comment})
         return list, 201
 
 class getRequestFinish(Resource):
@@ -797,7 +801,11 @@ class getRequestFinish(Resource):
         list_request = db.session.query(examStatusModel).filter_by(status='finish').all()
         list = []
         for ask in list_request:
-            list.append(ask.as_dict())
+            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            list.append(
+                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
+                 "comment": ask.comment})
         return list, 201
 
 class getListSelectFalculty(AbstractListResource):
@@ -865,8 +873,8 @@ class generateExamenFacilities(Resource):
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
-                statusexam = examStatusModel(exam=facilities.id, status="tovalide")
-                examStatusModel.query.session.add(statusexam)
+                status = examStatusModel(exam=facilities.id, status="tovalide")
+                examStatusModel.query.session.add(status)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
                 for f in listing:
