@@ -337,7 +337,7 @@ class examStatusModel(db.Model):
     __tablename__ = "examStatus"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     exam = db.Column(db.Integer, db.ForeignKey("exam.id"), nullable=False)
-    status = db.Column(db.String(15), nullable=False, default='false')  # created, verification, accepted, refused
+    status = db.Column(db.String(15), nullable=False, default='tovalide')  # created, verification, accepted, refused
     comment = db.Column(db.String(300), nullable=False, default=" ")
 
     def as_dict(self):
@@ -771,6 +771,34 @@ class getListSelectTeacher(AbstractListResource):
         return [l for l in list], 200
 
 
+class getRequestToValidate(Resource):
+
+    def get(self):
+        print (db.session.query(examStatusModel).all())
+        list_request = db.session.query(examStatusModel).filter_by(status='tovalide').all()
+        list = []
+        for ask in list_request:
+            list.append(ask.as_dict())
+        return list, 201
+
+class getRequestWait(Resource):
+
+    def get(self):
+        list_request = db.session.query(examStatusModel).filter_by(status='wait').all()
+        list = []
+        for ask in list_request:
+            list.append(ask.as_dict())
+        return list, 201
+
+class getRequestFinish(Resource):
+
+    def get(self):
+        list_request = db.session.query(examStatusModel).filter_by(status='finish').all()
+        list = []
+        for ask in list_request:
+            list.append(ask.as_dict())
+        return list, 201
+
 class getListSelectFalculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
@@ -836,7 +864,7 @@ class generateExamenFacilities(Resource):
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
-                statusexam = examStatusModel(exam=facilities.id, status="created")
+                statusexam = examStatusModel(exam=facilities.id, status="tovalide")
                 examStatusModel.query.session.add(statusexam)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
@@ -1105,6 +1133,9 @@ api.add_resource(getStudent, "/student-get/<id>")  # 110122
 api.add_resource(postTeacher,
                  "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
 api.add_resource(getListTeacher, "/teacher-list")  # empty body
+api.add_resource(getRequestToValidate, "/request-tovalide")
+api.add_resource(getRequestWait, "/request-wait")
+api.add_resource(getRequestFinish, "/request-finish")
 api.add_resource(postCourse,
                  "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"passExam": 12}
 api.add_resource(getListCourseStudent, "/courseStudent-list/<id>")  # empty body
