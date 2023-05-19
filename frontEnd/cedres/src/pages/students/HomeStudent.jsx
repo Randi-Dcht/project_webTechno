@@ -52,7 +52,7 @@ const HomeStudent = () =>
                             </p>
                             <hr />
                             <div className="d-flex justify-content-end">
-                                <Button>
+                                <Button variant="warning">
                                     voir plus
                                 </Button>
                             </div>
