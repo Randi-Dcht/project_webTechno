@@ -225,3 +225,21 @@ export async function getSelectLocal()
     const rep = await server.get(`/local-select`);
     return rep.data
 }
+
+export async function getRequestToValidate()
+{
+    const rep = await server.get(`/request-tovalide`);
+    return rep.data
+}
+
+export async function getRequestWait()
+{
+    const rep = await server.get(`/request-wait`);
+    return rep.data
+}
+
+export async function getRequestFinish()
+{
+    const rep = await server.get(`/request-finish`);
+    return rep.data
+}
