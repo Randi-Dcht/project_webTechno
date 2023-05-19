@@ -42,9 +42,6 @@ const ProfilStudent = () =>
                             <Nav.Item>
                                 <Nav.Link eventKey="first">Informations</Nav.Link>
                             </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="second">Mot de passe</Nav.Link>
-                            </Nav.Item>
                         </Nav>
                     </Col>
                     <Col sm={9}>
@@ -63,9 +60,6 @@ const ProfilStudent = () =>
                                         }
                                     }/>
                                 }
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="second">
-                                <UpdatePassForm url={postUpdatePasswordStudent}/>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
