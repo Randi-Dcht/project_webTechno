@@ -387,15 +387,18 @@ class documentsModel(db.Model):
 
 def verify() :
     """
-    verify if the user is logged in
+    verify if the user is logged in (with jwt token and if the user is admin or not)
     """
-    current_user = get_jwt_identity()
-    if current_user is None:
+    try:
+        verify_jwt_in_request()
+    except:
         return False
+    current_user = get_jwt_identity() 
+    #TODO : verify if the user type
     return True
     
 class addAdmin(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -412,7 +415,7 @@ class addAdmin(Resource):
 
 
 class getAdmin(Resource):
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -437,7 +440,7 @@ class loginAdmin(Resource):
 
 
 class updatePasswordAdmin(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -457,7 +460,7 @@ class updatePasswordAdmin(Resource):
 
 
 class getStudent(Resource):
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -467,7 +470,7 @@ class getStudent(Resource):
 
 
 class addNewStudent(Resource):  # matricule / name / surname / email
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -487,7 +490,7 @@ class addNewStudent(Resource):  # matricule / name / surname / email
 
 
 class getNewStudent(Resource):
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -497,7 +500,7 @@ class getNewStudent(Resource):
 
 
 class postStudent(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -537,7 +540,7 @@ class getListNewStudent(AbstractListResource):
 
 
 class postTeacher(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -555,7 +558,7 @@ class getListTeacher(AbstractListResource):
 
 
 class postCourse(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -568,7 +571,7 @@ class postCourse(Resource):
 
 
 class postLinkCourseStudent(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -592,7 +595,7 @@ class getListCourseFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(courseFacilitiesModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -614,7 +617,7 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
     def __init__(self):
         super().__init__(courseModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -635,7 +638,7 @@ class getListCourse(AbstractListResource):
 
 
 class postFacilities(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -651,7 +654,7 @@ class getListFacilitiesCourse(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -663,7 +666,7 @@ class getListFacilitiesExam(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -690,7 +693,7 @@ class loginStudent(Resource):
 
 
 class updateStudentPassword(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -712,7 +715,7 @@ class updateStudentPassword(Resource):
 
 
 class updateStudentModel(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -742,7 +745,7 @@ class getListSelectCourse(AbstractListResource):
     def __init__(self):
         super().__init__(courseModel)
 
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -757,7 +760,7 @@ class getListSelectTeacher(AbstractListResource):
     def __init__(self):
         super().__init__(teacherModel)
 
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -800,7 +803,7 @@ class getListSelectFalculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -815,7 +818,7 @@ class getListSelectLocal(AbstractListResource):
     def __init__(self):
         super().__init__(localModel)
 
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -827,7 +830,7 @@ class getListSelectLocal(AbstractListResource):
 
 
 class postDocument(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -843,7 +846,7 @@ class postDocument(Resource):
 
 
 class generateExamenFacilities(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -876,7 +879,7 @@ class getExamFacilities1(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -887,7 +890,7 @@ class getExamFacilities2(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -898,7 +901,7 @@ class getExamFacilities3(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -909,7 +912,7 @@ class getListFaculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -921,7 +924,7 @@ class getListFaculty(AbstractListResource):
 
 
 class postFaculty(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -933,7 +936,7 @@ class postFaculty(Resource):
 
 
 class getActionDate(Resource):
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -945,7 +948,7 @@ class getActionDate(Resource):
 
 
 class getExampleFacilities(Resource):
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -960,7 +963,7 @@ class getMyExam(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -973,7 +976,7 @@ class getMyExamFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -987,7 +990,7 @@ class getMyExamFacilities(AbstractListResourceById):
 
 
 class postMyExam(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -1005,7 +1008,7 @@ class getDeadLine(AbstractListResourceById):
     def __init__(self):
         super().__init__(actionDateModel)
 
-    @jwt_required()
+    
     def get(self, id):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -1014,7 +1017,7 @@ class getDeadLine(AbstractListResourceById):
 
 
 class getDeadLineList(Resource):
-    @jwt_required()
+    
     def get(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
@@ -1025,7 +1028,7 @@ class getDeadLineList(Resource):
         return [l for l in lst], 200
 
 class postUpdateDeadLine(Resource):
-    @jwt_required()
+    
     def post(self):
         if not verify():
           return {"msg": "Authentication required"}, 401
