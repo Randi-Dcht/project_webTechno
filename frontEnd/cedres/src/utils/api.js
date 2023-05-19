@@ -2,25 +2,39 @@ import axios from "axios";
 
 const server = axios.create({
     baseURL: 'http://127.0.0.1:8080',
-    headers:{
+    headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
     },
 });
 
-export async function getNewStudent(data)
-{
+// Fonction pour ajouter le jeton d'authentification à chaque requête sortante
+//  ajouter le jeton d'authentification à chaque requête sortante. 
+//L'intercepteur vérifie si un jeton est présent dans le localStorage, puis l'ajoute à l'en-tête Authorization avec la valeur Bearer <token>. 
+//Ainsi, le jeton sera envoyé avec toutes les requêtes effectuées à l'aide de la variable server d'Axios.
+server.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+        const type = localStorage.getItem('type');
+        if (type) {
+            config.headers['type'] = type;
+        }
+    }
+    return config;
+});
+
+export async function getNewStudent(data) {
     const resp = await server.get('/new-student-get/' + data);
-    return resp.data
+    return resp.data;
 }
 
-export async function postNewStudent(student)
-{
+export async function postNewStudent(student) {
     const resp = await server.post('/new-student-add', student);
-    return resp.data
+    return resp.data;
 }
+
 
 export async function getListStudent()
 {

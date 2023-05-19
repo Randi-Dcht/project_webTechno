@@ -7,6 +7,8 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from jwt import DecodeError, ExpiredSignatureError
+from pytest import console_main
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
 
@@ -17,7 +19,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 db = SQLAlchemy()
 db.init_app(app)
-jwt_ = JWTManager(app)
+jwt = JWTManager(app)
 
 actual_year = "2022-2023"
 
@@ -337,7 +339,7 @@ class examStatusModel(db.Model):
     __tablename__ = "examStatus"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     exam = db.Column(db.Integer, db.ForeignKey("exam.id"), nullable=False)
-    status = db.Column(db.String(15), nullable=False, default='false')  # created, verification, accepted, refused
+    status = db.Column(db.String(15), nullable=False, default='tovalide')  # created, verification, accepted, refused
     comment = db.Column(db.String(300), nullable=False, default=" ")
 
     def as_dict(self):
@@ -385,20 +387,34 @@ class documentsModel(db.Model):
 # ------------------- RESOURCES -------------------
 # define all resource :
 
-def verify() :
+def verify(admin=False):
     """
-    verify if the user is logged in
+    verify if the token is valid or not and if the user is admin or not
+    :param admin: if the user must be admin or not
     """
-    current_user = get_jwt_identity()
-    if current_user is None:
-        return False
+    try:
+        verify_jwt_in_request()
+    except (DecodeError, ExpiredSignatureError):
+        print("token invalid")
+        return {"msg": "Authentication required"}, 401
+    t = request.headers.get("type")
+    if t is None:
+        print("type not found")
+        return {"msg": "Type not found"}, 401
+    print(t)
+    if admin :
+        if t == "admin":
+            return True
+        else:
+            return {"msg": "Admin authentication required"}, 401
     return True
     
 class addAdmin(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         pwd = arguments.get("password")
         del arguments["password"]
@@ -412,10 +428,11 @@ class addAdmin(Resource):
 
 
 class getAdmin(Resource):
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         admin = db.session.query(adminModel).filter_by(name="admin").first()
         rtn = admin.as_dict()
         del rtn["password"]  # remove password from the response
@@ -423,10 +440,7 @@ class getAdmin(Resource):
 
 
 class loginAdmin(Resource):
-    # @jwt_required()
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
         arguments = request.get_json()
         admin = db.session.query(adminModel).filter_by(email=arguments.get('mail')).first()
 
@@ -440,10 +454,11 @@ class loginAdmin(Resource):
 
 
 class updatePasswordAdmin(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         admin = db.session.query(adminModel).filter_by(email=arguments.get('mail')).first()
 
@@ -460,20 +475,22 @@ class updatePasswordAdmin(Resource):
 
 
 class getStudent(Resource):
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         student = db.session.query(studentModel).filter_by(matricule=id).first()
         rtn = student.as_dict()
         return rtn, 200
 
 
 class addNewStudent(Resource):  # matricule / name / surname / email
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
 
         matricule = arguments.get("matricule")
@@ -490,20 +507,22 @@ class addNewStudent(Resource):  # matricule / name / surname / email
 
 
 class getNewStudent(Resource):
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         student = db.session.query(studentModel).filter_by(matricule=id).filter_by(actif=False).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
         return rtn, 200
 
 
 class postStudent(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         args = request.get_json()
 
         pwd = generate_password_hash('admin123')
@@ -540,10 +559,11 @@ class getListNewStudent(AbstractListResource):
 
 
 class postTeacher(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         teacher = teacherModel(**arguments)
         teacherModel.query.session.add(teacher)
@@ -558,10 +578,11 @@ class getListTeacher(AbstractListResource):
 
 
 class postCourse(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         course = courseModel(**arguments)
         courseModel.query.session.add(course)
@@ -571,10 +592,11 @@ class postCourse(Resource):
 
 
 class postLinkCourseStudent(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         link = courseStudentModel(**arguments)
         courseStudentModel.query.session.add(link)
@@ -595,10 +617,11 @@ class getListCourseFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(courseFacilitiesModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         listCourse = db.session.query(courseStudentModel).filter_by(student=id).all()
         list = []
         for course in listCourse:
@@ -617,10 +640,11 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
     def __init__(self):
         super().__init__(courseModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         course = db.session.query(courseStudentModel).filter_by(student=id).all()
         list = []
         for c in course:
@@ -638,10 +662,11 @@ class getListCourse(AbstractListResource):
 
 
 class postFacilities(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         facilities = facilitiesModel(**arguments)
         facilitiesModel.query.session.add(facilities)
@@ -654,10 +679,11 @@ class getListFacilitiesCourse(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="course")
         return [f.as_dict() for f in facilities], 200
 
@@ -666,10 +692,11 @@ class getListFacilitiesExam(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="exam")
         return [f.as_dict() for f in facilities], 200
 
@@ -693,10 +720,11 @@ class loginStudent(Resource):
 
 
 class updateStudentPassword(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         matricule = arguments.get("matricule")
         password = arguments.get("password")
@@ -715,10 +743,11 @@ class updateStudentPassword(Resource):
 
 
 class updateStudentModel(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         args = request.get_json()
         matricule = args.get("matricule")
         name = args.get("name")
@@ -745,10 +774,11 @@ class getListSelectCourse(AbstractListResource):
     def __init__(self):
         super().__init__(courseModel)
 
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         course = db.session.query(courseModel).all()
         list = []
         for c in course:
@@ -760,10 +790,11 @@ class getListSelectTeacher(AbstractListResource):
     def __init__(self):
         super().__init__(teacherModel)
 
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         teacher = db.session.query(teacherModel).all()
         list = []
         for t in teacher:
@@ -771,14 +802,52 @@ class getListSelectTeacher(AbstractListResource):
         return [l for l in list], 200
 
 
+class getRequestToValidate(Resource):
+
+    def get(self):
+        list_request = db.session.query(examStatusModel).filter_by(status='tovalide').all()
+        list = []
+        for ask in list_request:
+            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
+        return list, 201
+
+class getRequestWait(Resource):
+
+    def get(self):
+        list_request = db.session.query(examStatusModel).filter_by(status='wait').all()
+        list = []
+        for ask in list_request:
+            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            list.append(
+                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
+                 "comment": ask.comment})
+        return list, 201
+
+class getRequestFinish(Resource):
+
+    def get(self):
+        list_request = db.session.query(examStatusModel).filter_by(status='finish').all()
+        list = []
+        for ask in list_request:
+            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            list.append(
+                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
+                 "comment": ask.comment})
+        return list, 201
+
 class getListSelectFalculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         faculty = db.session.query(facultyModel).all()
         list = []
         for f in faculty:
@@ -790,10 +859,11 @@ class getListSelectLocal(AbstractListResource):
     def __init__(self):
         super().__init__(localModel)
 
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         local = db.session.query(localModel).all()
         list = []
         for l in local:
@@ -802,10 +872,11 @@ class getListSelectLocal(AbstractListResource):
 
 
 class postDocument(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         fil = request.files['file']
         document = documentsModel(**arguments)
@@ -818,10 +889,11 @@ class postDocument(Resource):
 
 
 class generateExamenFacilities(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arg = request.get_json()
         student = arg.get("student")
         quadrimester = arg.get("quadrimester")
@@ -830,14 +902,14 @@ class generateExamenFacilities(Resource):
         to_pass = db.session.query(courseStudentModel).filter_by(student=student).filter_by(isSuccess='false').all()
         for t in to_pass:
             course = db.session.query(courseModel).filter_by(id_aa=t.course).first()
-            ckeck_exist = db.session.query(examModel).filter_by(student=student).filter_by(course=course.id_aa).first()
+            ckeck_exist = db.session.query(examModel).filter_by(student=student).filter_by(course=course.id_aa).filter_by(quadrimester=quadrimester).first()
             if course.passExam in list_ok and ckeck_exist is None:
                 facilities = examModel(course=course.id_aa, student=student, locale="", hour="", date="", type="",
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
-                statusexam = examStatusModel(exam=facilities.id, status="created")
-                examStatusModel.query.session.add(statusexam)
+                status = examStatusModel(exam=facilities.id, status="tovalide")
+                examStatusModel.query.session.add(status)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
                 for f in listing:
@@ -851,10 +923,11 @@ class getExamFacilities1(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         return getExamList(id, 1), 200
 
 
@@ -862,10 +935,11 @@ class getExamFacilities2(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         return getExamList(id, 2), 200
 
 
@@ -873,10 +947,11 @@ class getExamFacilities3(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         return getExamList(id, 3), 200
 
 
@@ -884,10 +959,11 @@ class getListFaculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         faculty = db.session.query(facultyModel).all()
         list = []
         for f in faculty:
@@ -896,10 +972,11 @@ class getListFaculty(AbstractListResource):
 
 
 class postFaculty(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         faculty = facultyModel(**arguments)
         facultyModel.query.session.add(faculty)
@@ -908,10 +985,11 @@ class postFaculty(Resource):
 
 
 class getActionDate(Resource):
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         action = db.session.query(actionDateModel).all()
         list = []
         for a in action:
@@ -920,10 +998,11 @@ class getActionDate(Resource):
 
 
 class getExampleFacilities(Resource):
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         facilities = db.session.query(exampleFacilitiesModel).all()
         list = []
         for f in facilities:
@@ -935,10 +1014,11 @@ class getMyExam(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         rtn = db.session.query(examModel).filter_by(id=id).first()
         course = db.session.query(courseModel).filter_by(id_aa=rtn.course).first()
         return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour, "local": rtn.locale, "type": rtn.type}, 200
@@ -948,10 +1028,11 @@ class getMyExamFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         rtn = db.session.query(examFacilitiesModel).filter_by(exam=id).all()
         lst = []
         for r in rtn:
@@ -962,10 +1043,11 @@ class getMyExamFacilities(AbstractListResourceById):
 
 
 class postMyExam(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         exam = examModel.query.filter_by(id=arguments.get("id")).first()
         exam.date = arguments.get("date")
@@ -980,30 +1062,34 @@ class getDeadLine(AbstractListResourceById):
     def __init__(self):
         super().__init__(actionDateModel)
 
-    # @jwt_required()
+    
     def get(self, id):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         rtn = db.session.query(actionDateModel).filter_by(name=id).first()
         return {"id": rtn.id, "date_start": str(rtn.date_start), "date_end": str(rtn.date_end)}, 200
 
 
 class getDeadLineList(Resource):
-    # @jwt_required()
+    
     def get(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         rtn = db.session.query(actionDateModel).all()
         lst = []
         for r in rtn:
             lst.append({"id": r.id, "date_start": r.date_start, "date_end": r.date_end})
         return [l for l in lst], 200
 
+
 class postUpdateDeadLine(Resource):
-    # @jwt_required()
+    
     def post(self):
-        # if not verify():
-          #  return {"msg": "Authentication required"}, 401
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         action = actionDateModel.query.filter_by(id=arguments.get("id")).first()
         action.date_start = arguments.get("date_start")
@@ -1105,6 +1191,9 @@ api.add_resource(getStudent, "/student-get/<id>")  # 110122
 api.add_resource(postTeacher,
                  "/teacher-add")  # {"id" : 202022, "name" : "TheBest", "surname" : "NoExist", "email" : "no.exit@mail.be"}
 api.add_resource(getListTeacher, "/teacher-list")  # empty body
+api.add_resource(getRequestToValidate, "/request-tovalide")
+api.add_resource(getRequestWait, "/request-wait")
+api.add_resource(getRequestFinish, "/request-finish")
 api.add_resource(postCourse,
                  "/course-add")  # {"id_aa": "AA07785","name": "informatiqueA","year": "Master 2","quadrimester": 2,"passExam": 12}
 api.add_resource(getListCourseStudent, "/courseStudent-list/<id>")  # empty body
