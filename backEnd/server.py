@@ -774,11 +774,12 @@ class getListSelectTeacher(AbstractListResource):
 class getRequestToValidate(Resource):
 
     def get(self):
-        print (db.session.query(examStatusModel).all())
         list_request = db.session.query(examStatusModel).filter_by(status='tovalide').all()
         list = []
         for ask in list_request:
-            list.append(ask.as_dict())
+            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
         return list, 201
 
 class getRequestWait(Resource):
@@ -1026,6 +1027,7 @@ class getDeadLineList(Resource):
         for r in rtn:
             lst.append({"id": r.id, "date_start": r.date_start, "date_end": r.date_end})
         return [l for l in lst], 200
+
 
 class postUpdateDeadLine(Resource):
     # @jwt_required()
