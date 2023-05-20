@@ -488,9 +488,6 @@ class getStudent(Resource):
 class addNewStudent(Resource):  # matricule / name / surname / email
     
     def post(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         arguments = request.get_json()
 
         matricule = arguments.get("matricule")
@@ -509,9 +506,6 @@ class addNewStudent(Resource):  # matricule / name / surname / email
 class getNewStudent(Resource):
     
     def get(self, id):
-        verif = verify()
-        if verif is not True:
-            return verif
         student = db.session.query(studentModel).filter_by(matricule=id).filter_by(actif=False).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
         return rtn, 200
@@ -520,9 +514,6 @@ class getNewStudent(Resource):
 class postStudent(Resource):
     
     def post(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         args = request.get_json()
 
         pwd = generate_password_hash('admin123')
@@ -722,9 +713,6 @@ class loginStudent(Resource):
 class updateStudentPassword(Resource):
     
     def post(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         arguments = request.get_json()
         matricule = arguments.get("matricule")
         password = arguments.get("password")
@@ -776,9 +764,6 @@ class getListSelectCourse(AbstractListResource):
 
     
     def get(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         course = db.session.query(courseModel).all()
         list = []
         for c in course:
@@ -792,9 +777,6 @@ class getListSelectTeacher(AbstractListResource):
 
     
     def get(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         teacher = db.session.query(teacherModel).all()
         list = []
         for t in teacher:
@@ -845,9 +827,6 @@ class getListSelectFalculty(AbstractListResource):
 
     
     def get(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         faculty = db.session.query(facultyModel).all()
         list = []
         for f in faculty:
@@ -861,9 +840,6 @@ class getListSelectLocal(AbstractListResource):
 
     
     def get(self):
-        verif = verify()
-        if verif is not True:
-            return verif
         local = db.session.query(localModel).all()
         list = []
         for l in local:
