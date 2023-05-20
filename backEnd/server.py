@@ -870,6 +870,9 @@ class getDocument(AbstractListResourceById):
         super().__init__(documentsModel)
 
     def get(self, id):
+        verif = verify()
+        if verif is not True:
+            return verif
         document = db.session.query(documentsModel).filter_by(student=id).all()
         if document is None:
             return "", 404
