@@ -854,14 +854,30 @@ class postDocument(Resource):
         if verif is not True:
             return verif
         arguments = request.get_json()
-        fil = request.files['file']
+        fil = arguments.get("file")
+        arguments.pop("file")
         document = documentsModel(**arguments)
         documentsModel.query.session.add(document)
         db.session.commit()
 
-        fil.save(os.path.join(app.config['UPLOAD_FOLDER'], str(document.id) + ".pdf"))
+        #fil.save(os.path.join(app.config['UPLOAD_FOLDER'], document.id + ".pdf")) TODO error
 
         return "", 201
+
+
+class getDocument(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(documentsModel)
+
+    def get(self, id):
+        document = db.session.query(documentsModel).filter_by(student=id).all()
+        if document is None:
+            return "", 404
+        else:
+            list = []
+            for d in document:
+                list.append({"id": d.id, "name": d.name, "pusbBy": d.pushBy, "date": "error"})
+            return list, 200
 
 
 class generateExamenFacilities(Resource):
@@ -1203,6 +1219,7 @@ api.add_resource(postUpdateDeadLine, "/deadline-update")
 api.add_resource(getDeadLineList, "/deadline-list")
 api.add_resource(getListSelectFalculty, "/faculty-select")
 api.add_resource(getListSelectLocal, "/local-select")
+api.add_resource(getDocument, "/list-document/<id>")
 
 # ------------------- MAIN -------------------
 # Main :
