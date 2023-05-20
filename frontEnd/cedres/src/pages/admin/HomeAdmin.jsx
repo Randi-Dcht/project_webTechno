@@ -1,30 +1,34 @@
 import {Button, Card, CardGroup, Col, Row} from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
 
 const listLink =[
     {
         name : "Etudiants",
-        link: "",
+        link: './students',
         text: "Liste des étudiants et consulter les profils"
     },
     {
         name : "Demandes",
-        link: "",
+        link: './list-ask',
         text: "Liste des demandes (accepter, modifier, consulter)"
     },
     {
         name : "Logger",
-        link: "",
+        link: './log',
         text: "Logs de l'application"
     },
     {
         name : "Annuaires",
-        link: "",
+        link: './list',
         text: "Liste de secrétariat, professeurs, cours, ..."
     },
 ]
 
 const HomeAdmin = () =>
 {
+    const navigate = useNavigate();
+
+
     return(
         <div>
             <h2 className="m-4">Accueil administration</h2>
@@ -40,7 +44,7 @@ const HomeAdmin = () =>
                                        <Card.Text>{e.text}</Card.Text>
                                    </Card.Body>
                                    <Card.Footer>
-                                       <Button  variant='warning'>Consulter</Button>
+                                       <Button  variant='warning' onClick={()=>navigate(e.link)}>Consulter</Button>
                                    </Card.Footer>
                                </Card>
                            </Col>

@@ -15,9 +15,9 @@ const defaultValue = {
 
 const validationSchema = yup.object().shape({
     password: yup.string()
-        .required("mot de passe est obligatoire"),
+        .required("Mot de passe est obligatoire"),
     mail: yup.string()
-        .required("mail est obligatoire"),
+        .required("Mail est obligatoire"),
 });
 
 const Connect = ({redirect, setUrl, name, url}) =>
