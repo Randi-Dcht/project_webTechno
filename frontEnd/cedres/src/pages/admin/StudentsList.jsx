@@ -35,7 +35,7 @@ const StudentsList = () =>
     return(
         <Container>
             <h3 className="m-2">Liste des étudiants :</h3>
-            <div className="container-fluid text-center"><Button variant="primary" onClick={()=> navigate('./add')}>Ajouter</Button></div>
+            <div className="container-fluid text-center"><Button variant="warning" onClick={()=> navigate('./add')}>Ajouter</Button></div>
             <Table>
                 <thead>
                 <tr>

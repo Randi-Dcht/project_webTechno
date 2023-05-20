@@ -31,7 +31,7 @@ const NavTop = ({who}) =>
                                 localStorage.setItem('id','0')
                                 localStorage.setItem('token','fuck')
                                 window.location = '/'
-                            }}>déconnexion</Button>
+                            }}>Déconnexion</Button>
                     }
                 </Nav>
             </Container>

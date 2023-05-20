@@ -5,7 +5,12 @@ const listLink =[
     {
         name : "Etudiants",
         link: './students',
-        text: "Liste des étudiants et consulter les profils"
+        text: "Liste des étudiants et consultation de leur profil"
+    },
+    {
+        name : "Annuaire",
+        link: './list',
+        text: "Liste des secrétariats, professeurs, cours, ..."
     },
     {
         name : "Demandes",
@@ -16,11 +21,6 @@ const listLink =[
         name : "Logger",
         link: './log',
         text: "Logs de l'application"
-    },
-    {
-        name : "Annuaires",
-        link: './list',
-        text: "Liste de secrétariat, professeurs, cours, ..."
     },
 ]
 

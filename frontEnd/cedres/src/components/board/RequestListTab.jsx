@@ -16,7 +16,7 @@ const RequestListTab = ({data}) =>
                    <td>{req.exam}</td>
                    <td>{req.status}</td>
                    <td>{req.comment}</td>
-                   <td><Button variant='light'>Modifier</Button></td>
+                   <td><Button variant='warning'>Modifier</Button></td>
                </tr>
            )
        })

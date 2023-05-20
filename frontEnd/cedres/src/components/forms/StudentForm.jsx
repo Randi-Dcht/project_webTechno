@@ -51,9 +51,9 @@ const StudentForm = ({data_default, onSubmit, name_button}) =>
 
                             <Input type="text" name="phone" label="Téléphone (Gsm)" control={control}/>
                             <Input type="text" name="email_private" label="Mail privé" control={control}/>
-                            <InputList type="text" name="faculty" label="Facultée" control={control} listData={data}/>
+                            <InputList type="text" name="faculty" label="Faculté" control={control} listData={data}/>
 
-                            <Button className="m-2" variant="primary" type="submit">{name_button}</Button>
+                            <Button className="m-2" variant="warning" type="submit">{name_button}</Button>
                         </Form>
                 }
             </Row>

@@ -60,7 +60,7 @@ const UpdatePassForm = ({url}) =>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Input type="text" name="password" label="Ancien mot de passe" control={control}/>
                         <Input type="text" name="newPassword" label="Nouveau mot de passe" control={control}/>
-                        <Button className="m-2" variant="primary" type="submit">Changer</Button>
+                        <Button className="m-2" variant="warning" type="submit">Changer</Button>
                     </Form>
                 </Row>
             </Container>

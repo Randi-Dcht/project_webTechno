@@ -37,15 +37,15 @@ const AskFacilities = () =>
                     <CourseFacilitiesTab/>
                 </Tab>
                 <Tab eventKey="exam-1" title="Examen janvier">
-                    <Button onClick={()=>onSubmit(1)}>Créer une demande pour janvier</Button>
+                    <Button variant="warning" onClick={()=>onSubmit(1)}>Créer une demande pour janvier</Button>
                     <ExamFacilitiesTab session='1' Ukey='listExamFacilities1'/>
                 </Tab>
                 <Tab eventKey="exam-2" title="Examen juin">
-                    <Button onClick={()=>onSubmit(2)}>Créer une demande pour juin</Button>
+                    <Button variant="warning" onClick={()=>onSubmit(2)}>Créer une demande pour juin</Button>
                     <ExamFacilitiesTab session='2' Ukey='listExamFacilities2'/>
                 </Tab>
-                <Tab eventKey="exam-3" title="Examen aout">
-                    <Button onClick={()=>onSubmit(3)}>Créer une demande pour août</Button>
+                <Tab eventKey="exam-3" title="Examen août">
+                    <Button variant="warning" onClick={()=>onSubmit(3)}>Créer une demande pour août</Button>
                     <ExamFacilitiesTab session='3' Ukey='listExamFacilities3'/>
                 </Tab>
             </Tabs>

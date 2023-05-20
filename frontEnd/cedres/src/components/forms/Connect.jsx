@@ -64,7 +64,7 @@ const Connect = ({redirect, setUrl, name, url}) =>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
                 <Form.Check onChange={() => setVisible(!isVisible)} type="checkbox" label="Vérifier mot de passe" />
             </Form.Group>
-            <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
+            <Button className="m-2" variant="warning" type="submit">Se connecter</Button>
         </Form>
     )
 }

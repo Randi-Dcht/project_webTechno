@@ -49,7 +49,7 @@ const Profil = () =>
                         <Tab.Content>
                             <Tab.Pane eventKey="first">
                                 {
-                                    isLoading? <p>Chargement ...</p>: <StudentForm onSubmit={onSubmit} name_button="mettre à jour" data_default={
+                                    isLoading? <p>Chargement ...</p>: <StudentForm onSubmit={onSubmit} name_button="Mettre à jour" data_default={
                                         {
                                             name : data.name,
                                             surname : data.surname,

@@ -78,8 +78,8 @@ const TeacherForm = ({cancel}) =>
                     <InputList type="number" listData={listToChoose} listName="list1" name="passExam" label="Session examen" control={control}/>
 
                     <div className="container">
-                        <Button className="m-2" variant="primary" type="submit">Ajouter</Button>
-                        <Button className="m-2" variant="dark" onClick={()=>cancel(false)}>Annuler</Button>
+                        <Button className="m-2" variant="warning" type="submit">Ajouter</Button>
+                        <Button className="m-2" variant="outline-secondary" onClick={()=>cancel(false)}>Annuler</Button>
                     </div>
                 </Form>
             </Row>

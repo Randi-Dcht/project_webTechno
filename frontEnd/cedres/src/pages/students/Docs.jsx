@@ -28,7 +28,7 @@ const Docs = () =>
                             <Tab.Pane eventKey="actual">
                                 {
                                     push === false?
-                                        <div className="container-fluid text-center"><Button className='m-4' variant="warning" onClick={()=>setPush(true)}>ajouter un document</Button></div>:
+                                        <div className="container-fluid text-center"><Button className='m-4' variant="warning" onClick={()=>setPush(true)}>Ajouter un document</Button></div>:
                                         <PushDocForm cancel={setPush}/>
                                 }
                                 <DocsTab/>

@@ -39,7 +39,7 @@ const Courses = () =>
             <h3 className="m-3">Mes cours : </h3>
             {
                 isAdd === false ?
-                    <div className="container-fluid text-center"><Button className='m-3' variant="warning" onClick={()=>setAdd(true)}>ajouter un cours</Button></div>:
+                    <div className="container-fluid text-center"><Button className='m-3' variant="warning" onClick={()=>setAdd(true)}>Ajouter un cours</Button></div>:
                     <CourseStudentForm cancel={setAdd} listA={listA} listB={listB}/>
             }
             <CourseTab/>
