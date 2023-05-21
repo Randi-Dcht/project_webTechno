@@ -1,7 +1,7 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {postDocuments} from "../../utils/api.js";
 import {useForm} from "react-hook-form";
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button, Container, Form, Row} from "react-bootstrap";
 import InputList from "../form/InputList.jsx";
 import {Input} from "../form/Input.jsx";
@@ -10,8 +10,8 @@ import data from "bootstrap/js/src/dom/data.js";
 
 const listB =[
     {
-        'key' : 'Choisir',
-        'value' : ' '
+        'key' : '',
+        'value' : 'Choisir'
     },
     {
         'key' : 'pae',
@@ -31,7 +31,7 @@ const PushDocForm = ({cancel}) =>
 {
     const client = useQueryClient();
 
-    const [file, setFile] = useState(" ");
+    const initialFileValue = ""
 
     const mutation = useMutation({
         mutationFn: postDocuments,
@@ -40,18 +40,23 @@ const PushDocForm = ({cancel}) =>
         }
     });
 
-    const {handleSubmit, control, register} = useForm({
+    const {handleSubmit, control, register, setValue} = useForm({
         mode: "onBlur",
     });
 
+    useEffect(() =>
+    {
+        setValue('file', initialFileValue);
+    }, [setValue, initialFileValue]);
+
     const onSubmit = useCallback(values => {
-        mutation.mutate({
-            "name" : values.name,
-            "student" : localStorage.getItem('id'),
-            "pushBy" : "student",
-            file: values.file
-        });
         console.log(values.file)
+        const formData = new FormData();
+        formData.append('file', values.file);
+        formData.append('name', values.name)
+        formData.append('student', localStorage.getItem('id'))
+        formData.append('pushBy', "student")
+        mutation.mutate(formData);
     }, [mutation]);
 
     return (
@@ -59,7 +64,7 @@ const PushDocForm = ({cancel}) =>
             <Container>
                 <Row>
                     <Form onSubmit={handleSubmit(onSubmit)}>
-                        <InputFile control={control} />
+                        <InputFile control={control} register={()=>register('file')}/>
                         <InputList type="text" name="name" label="Nom du fichier" control={control} listData={listB}/>
                         <div className="container">
                             <Button className="m-2" variant="warning" type="submit">Ajouter</Button>

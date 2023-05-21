@@ -42,6 +42,7 @@ const listFacilities = (nb) =>
 const Examens = () =>
 {
     const examNumber = useParams().ask;
+    const navigate = useNavigate()
 
     const {data, isLoading} = useQuery(
         {
@@ -58,7 +59,7 @@ const Examens = () =>
             {
                 listFacilities(examNumber)
             }
-            <Button className='m-5'>Quitter</Button>
+            <Button className='m-5' onClick={() => navigate('/student/ask')}>Quitter</Button>
         </Container>
     )
 }

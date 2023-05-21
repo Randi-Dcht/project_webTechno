@@ -11,6 +11,7 @@ from jwt import DecodeError, ExpiredSignatureError
 from pytest import console_main
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -663,14 +664,13 @@ class postFacilities(Resource):
         facilitiesModel.query.session.add(facilities)
         db.session.commit()
 
-        return arguments, 201
+        return "", 201
 
 
 class getListFacilitiesCourse(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -761,7 +761,6 @@ class updateStudentModel(Resource):
 class getListSelectCourse(AbstractListResource):
     def __init__(self):
         super().__init__(courseModel)
-
     
     def get(self):
         course = db.session.query(courseModel).all()
@@ -775,7 +774,6 @@ class getListSelectTeacher(AbstractListResource):
     def __init__(self):
         super().__init__(teacherModel)
 
-    
     def get(self):
         teacher = db.session.query(teacherModel).all()
         list = []
@@ -795,6 +793,7 @@ class getRequestToValidate(Resource):
             list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
         return list, 201
 
+
 class getRequestWait(Resource):
 
     def get(self):
@@ -807,6 +806,7 @@ class getRequestWait(Resource):
                 {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
                  "comment": ask.comment})
         return list, 201
+
 
 class getRequestFinish(Resource):
 
@@ -821,11 +821,11 @@ class getRequestFinish(Resource):
                  "comment": ask.comment})
         return list, 201
 
+
 class getListSelectFalculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    
     def get(self):
         faculty = db.session.query(facultyModel).all()
         list = []
@@ -853,6 +853,16 @@ class postDocument(Resource):
         verif = verify()
         if verif is not True:
             return verif
+
+        if 'file' not in request.files:
+            return 'No file provided', 403
+
+        file = request.files['file']
+        if file.filename == '':
+            return 'No file provided', 400
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
         arguments = request.get_json()
         fil = arguments.get("file")
         arguments.pop("file")
