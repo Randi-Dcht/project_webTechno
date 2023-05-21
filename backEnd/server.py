@@ -11,6 +11,7 @@ from jwt import DecodeError, ExpiredSignatureError
 from pytest import console_main
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -853,6 +854,16 @@ class postDocument(Resource):
         verif = verify()
         if verif is not True:
             return verif
+
+        if 'file' not in request.files:
+            return 'No file provided', 403
+
+        file = request.files['file']
+        if file.filename == '':
+            return 'No file provided', 400
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
         arguments = request.get_json()
         fil = arguments.get("file")
         arguments.pop("file")
