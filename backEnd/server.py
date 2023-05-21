@@ -421,7 +421,6 @@ def verify(admin=False):
     username = get_jwt_identity()
     app.logger.info("User {} with type {} and token {} accessed the server".format(username, t, request.headers.get("Authorization")))
     return True
-
     
 class addAdmin(Resource):
     
@@ -525,7 +524,7 @@ class addNewStudent(Resource):  # matricule / name / surname / email
                                   email_private="", faculty="", actif=False)
         studentModel.query.session.add(newStudent)
         db.session.commit()
-        app.logger.info("Admin {} added a new student : {}".format(get_jwt_identity(), newStudent.name))
+        app.logger.info("Added a new student : {}".format(newStudent.name))
         return "", 201
 
 
@@ -534,7 +533,7 @@ class getNewStudent(Resource):
     def get(self, id):
         student = db.session.query(studentModel).filter_by(matricule=id).filter_by(actif=False).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
-        app.logger.info("Admin {} accessed the server to get the new student info".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the new student info : {}".format(student.name))
         return rtn, 200
 
 
@@ -549,7 +548,7 @@ class postStudent(Resource):
 
         student = db.session.query(studentModel).filter_by(matricule=matricule).first()
         if student is None:
-            app.logger.info("Admin {} tried to add a new student with an invalid matricule".format(get_jwt_identity()))
+            app.logger.info("Tried to add a new student with an invalid matricule : {}".format(matricule))
             return "", 404
         else:
             student.name = args.get("name")
@@ -563,7 +562,7 @@ class postStudent(Resource):
         login_student = loginStudentModel(matricule=matricule, password=pwd, email=mail)
         loginStudentModel.query.session.add(login_student)
         db.session.commit()
-        app.logger.info("Admin {} added a new student : {}".format(get_jwt_identity(), student.name))
+        app.logger.info("Added a new student with password : {}".format(student.name))
         return "", 201
 
 
@@ -608,6 +607,22 @@ class postCourse(Resource):
         db.session.commit()
         app.logger.info("Admin {} added a new course : {}".format(get_jwt_identity(), course.name))
         return "", 201
+    
+    class removeCourse(Resource):
+        
+        def post(self):
+            verif = verify()
+            if verif is not True:
+                return verif
+            arguments = request.get_json()
+            course = db.session.query(courseModel).filter_by(id=arguments.get('id')).first()
+            if course is None:
+                app.logger.info("Admin {} tried to remove a course with an invalid id".format(get_jwt_identity()))
+                return "", 404
+            db.session.delete(course)
+            db.session.commit()
+            app.logger.info("Admin {} removed a course : {}".format(get_jwt_identity(), course.name))
+            return "", 200
 
 
 class postLinkCourseStudent(Resource):
@@ -806,7 +821,7 @@ class getListSelectCourse(AbstractListResource):
         list = []
         for c in course:
             list.append({"key": c.id_aa, "value": c.name})
-        app.logger.info("Admin {} accessed the server to get the list of courses".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of courses")
         return [l for l in list], 200
 
 
@@ -819,7 +834,7 @@ class getListSelectTeacher(AbstractListResource):
         list = []
         for t in teacher:
             list.append({"key": t.id, "value": t.name + " " + t.surname})
-        app.logger.info("Admin {} accessed the server to get the list of teachers".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of teachers")
         return [l for l in list], 200
 
 
@@ -832,7 +847,7 @@ class getRequestToValidate(Resource):
             exam = db.session.query(examModel).filter_by(id=ask.exam).first()
             stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
             list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
-        app.logger.info("Admin {} accessed the server to get the list of requests to validate".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of requests to validate")
         return list, 201
 
 
@@ -847,7 +862,7 @@ class getRequestWait(Resource):
             list.append(
                 {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
                  "comment": ask.comment})
-        app.logger.info("Admin {} accessed the server to get the list of requests waiting".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of requests waiting")
         return list, 201
 
 
@@ -862,7 +877,7 @@ class getRequestFinish(Resource):
             list.append(
                 {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
                  "comment": ask.comment})
-        app.logger.info("Admin {} accessed the server to get the list of requests finished".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of requests finished")
         return list, 201
 
 
@@ -875,7 +890,7 @@ class getListSelectFalculty(AbstractListResource):
         list = []
         for f in faculty:
             list.append({"key": f.id, "value": f.name})
-        app.logger.info("Admin {} accessed the server to get the list of faculties".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of faculties")
         return [l for l in list], 200
 
 
@@ -889,7 +904,7 @@ class getListSelectLocal(AbstractListResource):
         list = []
         for l in local:
             list.append({"key": l.name, "value": l.name})
-        app.logger.info("Admin {} accessed the server to get the list of locals".format(get_jwt_identity()))
+        app.logger.info("Accessed the server to get the list of locals")
         return [l for l in list], 200
 
 
