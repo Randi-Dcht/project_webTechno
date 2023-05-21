@@ -66,6 +66,7 @@ function App()
 
                 <Route path={"invite/teacher/:id"} element={<Teacher/>}/>
                 <Route path={"invite/secretary/:id"} element={<Secretary/>}/>
+                
             </Routes>
         </div>
   )

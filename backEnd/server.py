@@ -2,7 +2,7 @@
 import json
 import os
 from datetime import datetime
-
+import logging
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
@@ -13,6 +13,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
 from werkzeug.utils import secure_filename
 
+# ------------------- CONFIG FLASK -------------------
+
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config["JWT_SECRET_KEY"] = "key-of-datBase-secret"
@@ -21,9 +23,17 @@ api = Api(app)
 db = SQLAlchemy()
 db.init_app(app)
 jwt = JWTManager(app)
-
 actual_year = "2022-2023"
 
+# ------------------- CONFIG LOGGER -------------------
+
+app.logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler('app.log')
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+app.logger.addHandler(file_handler)
+# add date and time to log
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 # ------------------- METHOD -------------------
 
@@ -51,8 +61,6 @@ def getExamList(id, quadri):
                      "course": course.name, "facilities": subList})
 
     return list
-
-
 # ------------------- RESOURCES -------------------
 # All resource (abstract) :
 
@@ -396,18 +404,22 @@ def verify(admin=False):
     try:
         verify_jwt_in_request()
     except (DecodeError, ExpiredSignatureError):
-        print("token invalid")
+        app.logger.info("User tried to access the server with an invalid token : {}".format(request.headers.get("Authorization")))
         return {"msg": "Authentication required"}, 401
     t = request.headers.get("type")
     if t is None:
-        print("type not found")
+        app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t, request.headers.get("Authorization")))
         return {"msg": "Type not found"}, 401
-    print(t)
     if admin :
         if t == "admin":
+            app.logger.info("Admin {} with type {} and token {} accessed the server".format(get_jwt_identity(), t, request.headers.get("Authorization")))
             return True
         else:
+            app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t, request.headers.get("Authorization")))
             return {"msg": "Admin authentication required"}, 401
+    # add the username, type and token to the log
+    username = get_jwt_identity()
+    app.logger.info("User {} with type {} and token {} accessed the server".format(username, t, request.headers.get("Authorization")))
     return True
 
     
@@ -426,6 +438,8 @@ class addAdmin(Resource):
         adminModel.query.session.add(admin)
         db.session.commit()
 
+        app.logger.info("Admin {} added a new admin : {}".format(get_jwt_identity(), admin.name))
+
         return "", 201
 
 
@@ -438,6 +452,9 @@ class getAdmin(Resource):
         admin = db.session.query(adminModel).filter_by(name="admin").first()
         rtn = admin.as_dict()
         del rtn["password"]  # remove password from the response
+
+        app.logger.info("Admin {} accessed the server to get the admin info".format(get_jwt_identity()))
+
         return rtn, 200
 
 
@@ -447,11 +464,14 @@ class loginAdmin(Resource):
         admin = db.session.query(adminModel).filter_by(email=arguments.get('mail')).first()
 
         if admin is None:
+            app.logger.info("User {} tried to login with an invalid email".format(arguments.get('mail')))
             return "", 404
         if check_password_hash(admin.password, arguments.get("password")):
+            app.logger.info("User {} logged in".format(admin.name))
             var = {"id": admin.id}, {"token": create_access_token(identity=admin.id)}, {"type": "admin"}
             return var, 200
         else:
+            app.logger.info("User {} tried to login with an invalid password".format(admin.name))
             return "", 401
 
 
@@ -465,14 +485,17 @@ class updatePasswordAdmin(Resource):
         admin = db.session.query(adminModel).filter_by(email=arguments.get('mail')).first()
 
         if admin is None:
+            app.logger.info("User {} tried to update his password with an invalid email".format(arguments.get('mail')))
             return "", 404
         if check_password_hash(admin.password, arguments.get("password")):
             pwd = arguments.get("newPassword")
             pwd = generate_password_hash(pwd)
             admin.password = pwd
             db.session.commit()
+            app.logger.info("User {} updated his password".format(admin.name))
             return "", 200
         else:
+            app.logger.info("User {} tried to update his password with an invalid password".format(admin.name))
             return "", 401
 
 
@@ -484,6 +507,7 @@ class getStudent(Resource):
             return verif
         student = db.session.query(studentModel).filter_by(matricule=id).first()
         rtn = student.as_dict()
+        app.logger.info("User {} accessed the server to get the student info".format(get_jwt_identity()))
         return rtn, 200
 
 
@@ -501,7 +525,7 @@ class addNewStudent(Resource):  # matricule / name / surname / email
                                   email_private="", faculty="", actif=False)
         studentModel.query.session.add(newStudent)
         db.session.commit()
-
+        app.logger.info("Admin {} added a new student : {}".format(get_jwt_identity(), newStudent.name))
         return "", 201
 
 
@@ -510,6 +534,7 @@ class getNewStudent(Resource):
     def get(self, id):
         student = db.session.query(studentModel).filter_by(matricule=id).filter_by(actif=False).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
+        app.logger.info("Admin {} accessed the server to get the new student info".format(get_jwt_identity()))
         return rtn, 200
 
 
@@ -524,6 +549,7 @@ class postStudent(Resource):
 
         student = db.session.query(studentModel).filter_by(matricule=matricule).first()
         if student is None:
+            app.logger.info("Admin {} tried to add a new student with an invalid matricule".format(get_jwt_identity()))
             return "", 404
         else:
             student.name = args.get("name")
@@ -537,7 +563,7 @@ class postStudent(Resource):
         login_student = loginStudentModel(matricule=matricule, password=pwd, email=mail)
         loginStudentModel.query.session.add(login_student)
         db.session.commit()
-
+        app.logger.info("Admin {} added a new student : {}".format(get_jwt_identity(), student.name))
         return "", 201
 
 
@@ -561,7 +587,7 @@ class postTeacher(Resource):
         teacher = teacherModel(**arguments)
         teacherModel.query.session.add(teacher)
         db.session.commit()
-
+        app.logger.info("Admin {} added a new teacher : {}".format(get_jwt_identity(), teacher.name))
         return "", 201
 
 
@@ -580,7 +606,7 @@ class postCourse(Resource):
         course = courseModel(**arguments)
         courseModel.query.session.add(course)
         db.session.commit()
-
+        app.logger.info("Admin {} added a new course : {}".format(get_jwt_identity(), course.name))
         return "", 201
 
 
@@ -602,7 +628,7 @@ class postLinkCourseStudent(Resource):
                                             student=arguments.get('student'))
             courseFacilitiesModel.query.session.add(addLink)
             db.session.commit()
-
+        app.logger.info("Admin {} added a new link between course and student".format(get_jwt_identity()))
         return "", 201
 
 
@@ -626,6 +652,7 @@ class getListCourseFacilities(AbstractListResourceById):
                 facilities = db.session.query(facilitiesModel).filter_by(id=f.facilities).first()
                 subList.append({"id": facilities.id, "name": facilities.name, "description": facilities.description, })
             list.append({"id": aCourse.id_aa, "name": aCourse.name, "facilities": subList})
+        app.logger.info("Admin {} accessed the server to get the list of facilities for a student".format(get_jwt_identity()))
         return [h for h in list], 200
 
 
@@ -646,6 +673,7 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
             list.append({"id_aa": crs.id_aa, "name": crs.name, "teacher": teacher.name + " " + teacher.surname,
                          "mail": teacher.email, "isSuccess": c.isSuccess, "passExam": crs.passExam,
                          "quadrimester": crs.quadrimester})
+        app.logger.info("Admin {} accessed the server to get the list of courses for a student".format(get_jwt_identity()))
         return [h for h in list], 200
 
 
@@ -664,7 +692,7 @@ class postFacilities(Resource):
         facilities = facilitiesModel(**arguments)
         facilitiesModel.query.session.add(facilities)
         db.session.commit()
-
+        app.logger.info("Admin {} added a new facilities : {}".format(get_jwt_identity(), facilities.name))
         return "", 201
 
 
@@ -677,6 +705,7 @@ class getListFacilitiesCourse(AbstractListResourceById):
         if verif is not True:
             return verif
         facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="course")
+        app.logger.info("Admin {} accessed the server to get the list of facilities for a course".format(get_jwt_identity()))
         return [f.as_dict() for f in facilities], 200
 
 
@@ -690,6 +719,7 @@ class getListFacilitiesExam(AbstractListResourceById):
         if verif is not True:
             return verif
         facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="exam")
+        app.logger.info("Admin {} accessed the server to get the list of facilities for an exam".format(get_jwt_identity()))
         return [f.as_dict() for f in facilities], 200
 
 
@@ -701,13 +731,16 @@ class loginStudent(Resource):
 
         student = db.session.query(loginStudentModel).filter_by(email=mail).first()
         if student is None:
+            app.logger.info("Someone tried to connect with the mail : {}".format(mail))
             return "", 404
 
         if check_password_hash(student.password, password):
             var = {"id": student.matricule}, {"token": create_access_token(identity=student.matricule)}, {
                 "type": "student"}
+            app.logger.info("Student {} connected to the server".format(student.matricule))
             return var, 200
         else:
+            app.logger.info("Someone tried to connect with the mail but the password was wrong : {}".format(mail))
             return "", 401
 
 
@@ -721,13 +754,16 @@ class updateStudentPassword(Resource):
 
         student = db.session.query(loginStudentModel).filter_by(matricule=matricule).first()
         if student is None:
+            app.logger.info("Someone tried to change the password of the student {} but the matricule was wrong".format(matricule))
             return "", 404
 
         if check_password_hash(student.password, password):
             student.password = generate_password_hash(new_password)
             db.session.commit()
+            app.logger.info("Student {} changed his password".format(matricule))
             return "", 200
         else:
+            app.logger.info("Someone tried to change the password of the student {} but the password was wrong".format(matricule))
             return "", 401
 
 
@@ -748,6 +784,7 @@ class updateStudentModel(Resource):
 
         student = db.session.query(studentModel).filter_by(matricule=matricule).first()
         if student is None:
+            app.logger.info("Someone tried to change the information of the student {} but the matricule was wrong".format(matricule))
             return "", 404
         else:
             student.name = name
@@ -756,6 +793,7 @@ class updateStudentModel(Resource):
             student.email_private = email_private
             student.faculty = faculty
             db.session.commit()
+            app.logger.info("Student {} changed his information".format(matricule))
             return "", 200
 
 
@@ -768,6 +806,7 @@ class getListSelectCourse(AbstractListResource):
         list = []
         for c in course:
             list.append({"key": c.id_aa, "value": c.name})
+        app.logger.info("Admin {} accessed the server to get the list of courses".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -780,6 +819,7 @@ class getListSelectTeacher(AbstractListResource):
         list = []
         for t in teacher:
             list.append({"key": t.id, "value": t.name + " " + t.surname})
+        app.logger.info("Admin {} accessed the server to get the list of teachers".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -792,6 +832,7 @@ class getRequestToValidate(Resource):
             exam = db.session.query(examModel).filter_by(id=ask.exam).first()
             stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
             list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
+        app.logger.info("Admin {} accessed the server to get the list of requests to validate".format(get_jwt_identity()))
         return list, 201
 
 
@@ -806,6 +847,7 @@ class getRequestWait(Resource):
             list.append(
                 {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
                  "comment": ask.comment})
+        app.logger.info("Admin {} accessed the server to get the list of requests waiting".format(get_jwt_identity()))
         return list, 201
 
 
@@ -820,6 +862,7 @@ class getRequestFinish(Resource):
             list.append(
                 {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
                  "comment": ask.comment})
+        app.logger.info("Admin {} accessed the server to get the list of requests finished".format(get_jwt_identity()))
         return list, 201
 
 
@@ -832,6 +875,7 @@ class getListSelectFalculty(AbstractListResource):
         list = []
         for f in faculty:
             list.append({"key": f.id, "value": f.name})
+        app.logger.info("Admin {} accessed the server to get the list of faculties".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -845,6 +889,7 @@ class getListSelectLocal(AbstractListResource):
         list = []
         for l in local:
             list.append({"key": l.name, "value": l.name})
+        app.logger.info("Admin {} accessed the server to get the list of locals".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -856,10 +901,12 @@ class postDocument(Resource):
             return verif
 
         if 'file' not in request.files:
+            app.logger.info("Someone tried to upload a document but no file was provided")
             return 'No file provided', 403
 
         file = request.files['file']
         if file.filename == '':
+            app.logger.info("Someone tried to upload a document but no file was provided")
             return 'No file provided', 400
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -872,7 +919,7 @@ class postDocument(Resource):
         db.session.commit()
 
         #fil.save(os.path.join(app.config['UPLOAD_FOLDER'], document.id + ".pdf")) TODO error
-
+        app.logger.info("Admin {} uploaded a document".format(get_jwt_identity()))
         return "", 201
 
 
@@ -886,11 +933,13 @@ class getDocument(AbstractListResourceById):
             return verif
         document = db.session.query(documentsModel).filter_by(student=id).all()
         if document is None:
+            app.logger.info("Admin {} tried to get a document but it doesn't exist".format(get_jwt_identity()))
             return "", 404
         else:
             list = []
             for d in document:
                 list.append({"id": d.id, "name": d.name, "pusbBy": d.pushBy, "date": "error"})
+            app.logger.info("Admin {} accessed the server to get a document".format(get_jwt_identity()))
             return list, 200
 
 
@@ -922,6 +971,7 @@ class generateExamenFacilities(Resource):
                     exam = examFacilitiesModel(facilities=f.id, student=student, exam=facilities.id)
                     examFacilitiesModel.query.session.add(exam)
                     db.session.commit()
+        app.logger.info("Admin {} generated the exam facilities for the student {}".format(get_jwt_identity(), student))
         return "", 201
 
 
@@ -934,6 +984,7 @@ class getExamFacilities1(AbstractListResourceById):
         verif = verify()
         if verif is not True:
             return verif
+        app.logger.info("Admin {} accessed the server to get the list of exam facilities".format(get_jwt_identity()))
         return getExamList(id, 1), 200
 
 
@@ -946,6 +997,7 @@ class getExamFacilities2(AbstractListResourceById):
         verif = verify()
         if verif is not True:
             return verif
+        app.logger.info("Admin {} accessed the server to get the list of exam facilities".format(get_jwt_identity()))
         return getExamList(id, 2), 200
 
 
@@ -958,6 +1010,7 @@ class getExamFacilities3(AbstractListResourceById):
         verif = verify()
         if verif is not True:
             return verif
+        app.logger.info("Admin {} accessed the server to get the list of exam facilities".format(get_jwt_identity()))
         return getExamList(id, 3), 200
 
 
@@ -974,6 +1027,7 @@ class getListFaculty(AbstractListResource):
         list = []
         for f in faculty:
             list.append({"id": f.id, "name": f.name, "mail": f.mail})
+        app.logger.info("Admin {} accessed the server to get the list of faculties".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -987,6 +1041,7 @@ class postFaculty(Resource):
         faculty = facultyModel(**arguments)
         facultyModel.query.session.add(faculty)
         db.session.commit()
+        app.logger.info("Admin {} created a faculty".format(get_jwt_identity()))
         return "", 201
 
 
@@ -1000,6 +1055,7 @@ class getActionDate(Resource):
         list = []
         for a in action:
             list.append({"name": a.name, "start": str(a.date_start), "end": str(a.date_end)})
+        app.logger.info("Admin {} accessed the server to get the list of action dates".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -1013,6 +1069,7 @@ class getExampleFacilities(Resource):
         list = []
         for f in facilities:
             list.append({"name": f.name, "key": f.name})
+        app.logger.info("Admin {} accessed the server to get the list of example facilities".format(get_jwt_identity()))
         return [l for l in list], 200
 
 
@@ -1027,6 +1084,7 @@ class getMyExam(AbstractListResourceById):
             return verif
         rtn = db.session.query(examModel).filter_by(id=id).first()
         course = db.session.query(courseModel).filter_by(id_aa=rtn.course).first()
+        app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
         return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour, "local": rtn.locale, "type": rtn.type}, 200
 
 
@@ -1044,7 +1102,7 @@ class getMyExamFacilities(AbstractListResourceById):
         for r in rtn:
             tmp = db.session.query(facilitiesModel).filter_by(id=r.facilities).first()
             lst.append({"id": r.id, "facilitie": tmp.name})
-
+        app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
         return [l for l in lst], 200
 
 
@@ -1061,6 +1119,7 @@ class postMyExam(Resource):
         exam.locale = arguments.get("local")
         exam.type = arguments.get("type")
         db.session.commit()
+        app.logger.info("Admin {} updated the exam {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
 
 
@@ -1074,6 +1133,7 @@ class getDeadLine(AbstractListResourceById):
         if verif is not True:
             return verif
         rtn = db.session.query(actionDateModel).filter_by(name=id).first()
+        app.logger.info("Admin {} accessed the server to get the deadline {}".format(get_jwt_identity(), id))
         return {"id": rtn.id, "date_start": str(rtn.date_start), "date_end": str(rtn.date_end)}, 200
 
 
@@ -1087,6 +1147,7 @@ class getDeadLineList(Resource):
         lst = []
         for r in rtn:
             lst.append({"id": r.id, "date_start": r.date_start, "date_end": r.date_end})
+        app.logger.info("Admin {} accessed the server to get the list of deadlines".format(get_jwt_identity()))
         return [l for l in lst], 200
 
 
@@ -1101,6 +1162,7 @@ class postUpdateDeadLine(Resource):
         action.date_start = arguments.get("date_start")
         action.date_end = arguments.get("date_end")
         db.session.commit()
+        app.logger.info("Admin {} updated the deadline {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
 
 # ------------------- INIT -------------------
@@ -1109,6 +1171,7 @@ class postUpdateDeadLine(Resource):
 def initDataBase():
     if db.session.query(adminModel).filter_by(name="admin").first() is None:
         admin = adminModel(name="admin", password=generate_password_hash("admin"), email="admin@admin.be")
+        app.logger.info(" * admin created !")
         adminModel.query.session.add(admin)
         db.session.commit()
         print(" * admin created !")
@@ -1135,6 +1198,8 @@ def initDataBase():
         actionDateModel.query.session.add(action)
         db.session.commit()
 
+        app.logger.info(" * actionDate created !")
+
         # read json file to database
         with open('data/faculty.json') as json_file:
             data = json.load(json_file)
@@ -1143,6 +1208,7 @@ def initDataBase():
                 facultyModel.query.session.add(faculty)
                 db.session.commit()
         print(" * faculty created !")
+        app.logger.info(" * faculty created !")
 
         with open('data/teacher.json') as json_file:
             data = json.load(json_file)
@@ -1151,6 +1217,7 @@ def initDataBase():
                 teacherModel.query.session.add(teacher)
                 db.session.commit()
         print(" * teacher created !")
+        app.logger.info(" * teacher created !")
 
         with open('data/course.json') as json_file:
             data = json.load(json_file)
@@ -1160,6 +1227,7 @@ def initDataBase():
                 courseModel.query.session.add(course)
                 db.session.commit()
         print(" * course created !")
+        app.logger.info(" * course created !")
 
         with open('data/facilities.json') as json_file:
             data = json.load(json_file)
@@ -1168,6 +1236,7 @@ def initDataBase():
                 exampleFacilitiesModel.query.session.add(facilities)
                 db.session.commit()
         print(" * facilities created !")
+        app.logger.info(" * facilities created !")
 
         with open('data/local.json') as json_file:
             data = json.load(json_file).get("locals")
@@ -1176,6 +1245,7 @@ def initDataBase():
                 localModel.query.session.add(local)
                 db.session.commit()
         print(" * local created !")
+        app.logger.info(" * local created !")
 
 
 # ------------------- ROUTES -------------------
@@ -1234,6 +1304,8 @@ api.add_resource(getDeadLineList, "/deadline-list")
 api.add_resource(getListSelectFalculty, "/faculty-select")
 api.add_resource(getListSelectLocal, "/local-select")
 api.add_resource(getDocument, "/list-document/<id>")
+
+app.logger.info(" * Flask server starting ...")
 
 # ------------------- MAIN -------------------
 # Main :
