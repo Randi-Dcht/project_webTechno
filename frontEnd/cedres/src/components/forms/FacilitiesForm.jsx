@@ -30,6 +30,7 @@ const FacilitiesForm = ({cancel, example}) =>
         mutationFn: postFacilities,
         onSuccess: async data => {
             await client.invalidateQueries(['listFacilities-exam','listFacilities-course']);
+            window.location.reload();
         }
     });
 

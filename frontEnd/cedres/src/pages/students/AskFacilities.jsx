@@ -13,6 +13,7 @@ const AskFacilities = () =>
         mutationFn: postAskFacilitiesExamen,
         onSuccess: async data => {
             await client.invalidateQueries(['listExamFacilities1', 'listExamFacilities2', 'listExamFacilities3']);
+            window.location.reload();
         }
     });
 
