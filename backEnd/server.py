@@ -974,6 +974,7 @@ class getDocument(AbstractListResourceById):
             return list, 200
 
 
+
 class generateExamenFacilities(Resource):
     
     def post(self):
@@ -1135,6 +1136,18 @@ class getMyExamFacilities(AbstractListResourceById):
             lst.append({"id": r.id, "facilitie": tmp.name})
         app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
         return [l for l in lst], 200
+    
+class removeExam(Resource) :
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        arguments = request.get_json()
+        exam = examModel.query.filter_by(id=arguments.get("id")).first()
+        db.session.delete(exam)
+        db.session.commit()
+        app.logger.info("Admin {} deleted the exam {}".format(get_jwt_identity(), arguments.get("id")))
+        return "", 201
 
 
 class postMyExam(Resource):
