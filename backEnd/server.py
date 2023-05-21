@@ -640,6 +640,23 @@ class removeFacilities(Resource):
         app.logger.info("Admin {} removed a facilities : {}".format(get_jwt_identity(), facilities.name))
         return "", 200
 
+class removeLinkCourseStudent(Resource):
+    
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        arguments = request.get_json()
+        link = db.session.query(courseStudentModel).filter_by(course=arguments.get('course')).filter_by(
+            student=arguments.get('student')).first()
+        if link is None:
+            app.logger.info("Admin {} tried to remove a link between course and student with an invalid id".format(
+                get_jwt_identity()))
+            return "", 404
+        db.session.delete(link)
+        db.session.commit()
+        app.logger.info("Admin {} removed a link between course and student".format(get_jwt_identity()))
+        return "", 200
 
 class postLinkCourseStudent(Resource):
     
@@ -1147,6 +1164,18 @@ class removeExam(Resource) :
         db.session.delete(exam)
         db.session.commit()
         app.logger.info("Admin {} deleted the exam {}".format(get_jwt_identity(), arguments.get("id")))
+        return "", 201
+    
+class removeExamFacilities(Resource) :
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        arguments = request.get_json()
+        exam = examFacilitiesModel.query.filter_by(id=arguments.get("id")).first()
+        db.session.delete(exam)
+        db.session.commit()
+        app.logger.info("Admin {} deleted the exam facilities {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
 
 
