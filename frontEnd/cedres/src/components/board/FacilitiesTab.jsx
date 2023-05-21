@@ -7,7 +7,7 @@ const FacilitiesTab = ({getter, name}) =>
 
     const {data, isLoading} = useQuery(
         {
-            queryKey: name,
+            queryKey: ['listFacilities-'+name],
             queryFn: () => getter
         });
 

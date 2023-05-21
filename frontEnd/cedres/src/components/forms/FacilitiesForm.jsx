@@ -29,7 +29,7 @@ const FacilitiesForm = ({cancel, example}) =>
     const mutation = useMutation({
         mutationFn: postFacilities,
         onSuccess: async data => {
-            await client.invalidateQueries(['listFacilitiesCourse', 'listFacilitiesExam']);
+            await client.invalidateQueries(['listFacilities-exam','listFacilities-course']);
         }
     });
 

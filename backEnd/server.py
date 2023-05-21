@@ -664,14 +664,13 @@ class postFacilities(Resource):
         facilitiesModel.query.session.add(facilities)
         db.session.commit()
 
-        return arguments, 201
+        return "", 201
 
 
 class getListFacilitiesCourse(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -762,7 +761,6 @@ class updateStudentModel(Resource):
 class getListSelectCourse(AbstractListResource):
     def __init__(self):
         super().__init__(courseModel)
-
     
     def get(self):
         course = db.session.query(courseModel).all()
@@ -776,7 +774,6 @@ class getListSelectTeacher(AbstractListResource):
     def __init__(self):
         super().__init__(teacherModel)
 
-    
     def get(self):
         teacher = db.session.query(teacherModel).all()
         list = []
@@ -796,6 +793,7 @@ class getRequestToValidate(Resource):
             list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
         return list, 201
 
+
 class getRequestWait(Resource):
 
     def get(self):
@@ -808,6 +806,7 @@ class getRequestWait(Resource):
                 {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
                  "comment": ask.comment})
         return list, 201
+
 
 class getRequestFinish(Resource):
 
@@ -822,11 +821,11 @@ class getRequestFinish(Resource):
                  "comment": ask.comment})
         return list, 201
 
+
 class getListSelectFalculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    
     def get(self):
         faculty = db.session.query(facultyModel).all()
         list = []
