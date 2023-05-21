@@ -1178,6 +1178,18 @@ class removeExamFacilities(Resource) :
         app.logger.info("Admin {} deleted the exam facilities {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
 
+class removeCourseFacilities(Resource) :
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        arguments = request.get_json()
+        exam = courseFacilitiesModel.query.filter_by(id=arguments.get("id")).first()
+        db.session.delete(exam)
+        db.session.commit()
+        app.logger.info("Admin {} deleted the course facilities {}".format(get_jwt_identity(), arguments.get("id")))
+        return "", 201
+
 
 class postMyExam(Resource):
     
