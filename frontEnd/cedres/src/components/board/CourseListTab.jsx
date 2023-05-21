@@ -22,7 +22,17 @@ const CourseListTab = () =>
                    <td>{course.id_aa}</td>
                    <td>{course.name}</td>
                    <td>{course.quadrimester}</td>
-                   <td>{course.passExam}</td>
+                   <td>
+                       {
+                           course.passExam === 8 && <p>Janvier/Aout</p>
+                       }
+                       {
+                           course.passExam === 11 && <p>Juin/Aout</p>
+                       }
+                       {
+                           course.passExam === 12 && <p>Janvier/Juin/Aout</p>
+                       }
+                   </td>
                </tr>
            )
        })

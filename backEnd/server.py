@@ -409,6 +409,7 @@ def verify(admin=False):
         else:
             return {"msg": "Admin authentication required"}, 401
     return True
+
     
 class addAdmin(Resource):
     
