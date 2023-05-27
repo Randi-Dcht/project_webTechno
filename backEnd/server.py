@@ -3,6 +3,8 @@ import json
 import os
 from datetime import datetime
 import logging
+from flask_mail import Mail
+from flask_mail import Message
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
@@ -16,6 +18,7 @@ from werkzeug.utils import secure_filename
 # ------------------- CONFIG FLASK -------------------
 
 app = Flask(__name__)
+mail = Mail(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config["JWT_SECRET_KEY"] = "key-of-datBase-secret"
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -34,6 +37,38 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(mes
 app.logger.addHandler(file_handler)
 # add date and time to log
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+
+# ------------------- METHOD -------------------
+
+def send_mail(subject, sender, recipients, text_body, html_body):
+    """
+    send mail
+    :param subject:
+    :param sender:
+    :param recipients:
+    :param text_body:
+    :param html_body:
+    :return:
+    """
+    msg = Message(subject, sender=sender, recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    mail.send(msg)
+
+
+def send_mail_new_student(email, path_to_connect):
+    print("<a href='http://localhost:5173/student/first/" + str(path_to_connect) + "'>Compléter votre inscription</a>")
+    send_mail("Compléter votre inscription", "demo.dchtrnd.be", [email], "Compléter votre inscription",
+              "<a href='http://localhost:5173/student/first/" + str(path_to_connect) + "'>Compléter votre inscription</a>")
+    app.logger.info("send mail to " + email)
+
+
+def send_mail_listing(email, path_to_connect, to_send):
+    print("<a href='http://localhost:5173/invite/" + to_send + "/" + str(path_to_connect) + "'>Ma liste</a>")
+    send_mail("Elève à besoin spécifique", "demo.dchtrnd.be", [email], "Voir les élèves à besoin spécifique",
+              "<a href='http://localhost:5173/invite/" + to_send + "/" + str(path_to_connect) + "'>Ma liste</a>")
+    app.logger.info("send mail to " + email)
 
 # ------------------- METHOD -------------------
 
@@ -61,6 +96,8 @@ def getExamList(id, quadri):
                      "course": course.name, "facilities": subList})
 
     return list
+
+
 # ------------------- RESOURCES -------------------
 # All resource (abstract) :
 
@@ -404,26 +441,35 @@ def verify(admin=False):
     try:
         verify_jwt_in_request()
     except (DecodeError, ExpiredSignatureError):
-        app.logger.info("User tried to access the server with an invalid token : {}".format(request.headers.get("Authorization")))
+        app.logger.info(
+            "User tried to access the server with an invalid token : {}".format(request.headers.get("Authorization")))
         return {"msg": "Authentication required"}, 401
     t = request.headers.get("type")
     if t is None:
-        app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t, request.headers.get("Authorization")))
+        app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t,
+                                                                                              request.headers.get(
+                                                                                                  "Authorization")))
         return {"msg": "Type not found"}, 401
-    if admin :
+    if admin:
         if t == "admin":
-            app.logger.info("Admin {} with type {} and token {} accessed the server".format(get_jwt_identity(), t, request.headers.get("Authorization")))
+            app.logger.info("Admin {} with type {} and token {} accessed the server".format(get_jwt_identity(), t,
+                                                                                            request.headers.get(
+                                                                                                "Authorization")))
             return True
         else:
-            app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t, request.headers.get("Authorization")))
+            app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t,
+                                                                                                  request.headers.get(
+                                                                                                      "Authorization")))
             return {"msg": "Admin authentication required"}, 401
     # add the username, type and token to the log
     username = get_jwt_identity()
-    app.logger.info("User {} with type {} and token {} accessed the server".format(username, t, request.headers.get("Authorization")))
+    app.logger.info("User {} with type {} and token {} accessed the server".format(username, t, request.headers.get(
+        "Authorization")))
     return True
-    
+
+
 class addAdmin(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -443,7 +489,7 @@ class addAdmin(Resource):
 
 
 class getAdmin(Resource):
-    
+
     def get(self):
         verif = verify()
         if verif is not True:
@@ -475,7 +521,7 @@ class loginAdmin(Resource):
 
 
 class updatePasswordAdmin(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -499,7 +545,7 @@ class updatePasswordAdmin(Resource):
 
 
 class getStudent(Resource):
-    
+
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -511,7 +557,7 @@ class getStudent(Resource):
 
 
 class addNewStudent(Resource):  # matricule / name / surname / email
-    
+
     def post(self):
         arguments = request.get_json()
 
@@ -525,11 +571,12 @@ class addNewStudent(Resource):  # matricule / name / surname / email
         studentModel.query.session.add(newStudent)
         db.session.commit()
         app.logger.info("Added a new student : {}".format(newStudent.name))
+        send_mail_new_student(email, matricule)
         return "", 201
 
 
 class getNewStudent(Resource):
-    
+
     def get(self, id):
         student = db.session.query(studentModel).filter_by(matricule=id).filter_by(actif=False).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
@@ -538,7 +585,7 @@ class getNewStudent(Resource):
 
 
 class postStudent(Resource):
-    
+
     def post(self):
         args = request.get_json()
 
@@ -577,7 +624,7 @@ class getListNewStudent(AbstractListResource):
 
 
 class postTeacher(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -596,7 +643,7 @@ class getListTeacher(AbstractListResource):
 
 
 class postCourse(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -607,9 +654,9 @@ class postCourse(Resource):
         db.session.commit()
         app.logger.info("Admin {} added a new course : {}".format(get_jwt_identity(), course.name))
         return "", 201
-    
+
     class removeCourse(Resource):
-        
+
         def post(self):
             verif = verify()
             if verif is not True:
@@ -624,8 +671,9 @@ class postCourse(Resource):
             app.logger.info("Admin {} removed a course : {}".format(get_jwt_identity(), course.name))
             return "", 200
 
+
 class removeFacilities(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -640,8 +688,9 @@ class removeFacilities(Resource):
         app.logger.info("Admin {} removed a facilities : {}".format(get_jwt_identity(), facilities.name))
         return "", 200
 
+
 class removeLinkCourseStudent(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -658,8 +707,9 @@ class removeLinkCourseStudent(Resource):
         app.logger.info("Admin {} removed a link between course and student".format(get_jwt_identity()))
         return "", 200
 
+
 class postLinkCourseStudent(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -684,7 +734,6 @@ class getListCourseFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(courseFacilitiesModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -700,7 +749,8 @@ class getListCourseFacilities(AbstractListResourceById):
                 facilities = db.session.query(facilitiesModel).filter_by(id=f.facilities).first()
                 subList.append({"id": facilities.id, "name": facilities.name, "description": facilities.description, })
             list.append({"id": aCourse.id_aa, "name": aCourse.name, "facilities": subList})
-        app.logger.info("Admin {} accessed the server to get the list of facilities for a student".format(get_jwt_identity()))
+        app.logger.info(
+            "Admin {} accessed the server to get the list of facilities for a student".format(get_jwt_identity()))
         return [h for h in list], 200
 
 
@@ -708,7 +758,6 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
     def __init__(self):
         super().__init__(courseModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -721,7 +770,8 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
             list.append({"id_aa": crs.id_aa, "name": crs.name, "teacher": teacher.name + " " + teacher.surname,
                          "mail": teacher.email, "isSuccess": c.isSuccess, "passExam": crs.passExam,
                          "quadrimester": crs.quadrimester})
-        app.logger.info("Admin {} accessed the server to get the list of courses for a student".format(get_jwt_identity()))
+        app.logger.info(
+            "Admin {} accessed the server to get the list of courses for a student".format(get_jwt_identity()))
         return [h for h in list], 200
 
 
@@ -731,7 +781,7 @@ class getListCourse(AbstractListResource):
 
 
 class postFacilities(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -753,7 +803,8 @@ class getListFacilitiesCourse(AbstractListResourceById):
         if verif is not True:
             return verif
         facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="course")
-        app.logger.info("Admin {} accessed the server to get the list of facilities for a course".format(get_jwt_identity()))
+        app.logger.info(
+            "Admin {} accessed the server to get the list of facilities for a course".format(get_jwt_identity()))
         return [f.as_dict() for f in facilities], 200
 
 
@@ -761,13 +812,13 @@ class getListFacilitiesExam(AbstractListResourceById):
     def __init__(self):
         super().__init__(facilitiesModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
             return verif
         facilities = db.session.query(facilitiesModel).filter_by(student=id).filter_by(type="exam")
-        app.logger.info("Admin {} accessed the server to get the list of facilities for an exam".format(get_jwt_identity()))
+        app.logger.info(
+            "Admin {} accessed the server to get the list of facilities for an exam".format(get_jwt_identity()))
         return [f.as_dict() for f in facilities], 200
 
 
@@ -793,7 +844,7 @@ class loginStudent(Resource):
 
 
 class updateStudentPassword(Resource):
-    
+
     def post(self):
         arguments = request.get_json()
         matricule = arguments.get("matricule")
@@ -802,7 +853,8 @@ class updateStudentPassword(Resource):
 
         student = db.session.query(loginStudentModel).filter_by(matricule=matricule).first()
         if student is None:
-            app.logger.info("Someone tried to change the password of the student {} but the matricule was wrong".format(matricule))
+            app.logger.info(
+                "Someone tried to change the password of the student {} but the matricule was wrong".format(matricule))
             return "", 404
 
         if check_password_hash(student.password, password):
@@ -811,12 +863,13 @@ class updateStudentPassword(Resource):
             app.logger.info("Student {} changed his password".format(matricule))
             return "", 200
         else:
-            app.logger.info("Someone tried to change the password of the student {} but the password was wrong".format(matricule))
+            app.logger.info(
+                "Someone tried to change the password of the student {} but the password was wrong".format(matricule))
             return "", 401
 
 
 class updateStudentModel(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -832,7 +885,9 @@ class updateStudentModel(Resource):
 
         student = db.session.query(studentModel).filter_by(matricule=matricule).first()
         if student is None:
-            app.logger.info("Someone tried to change the information of the student {} but the matricule was wrong".format(matricule))
+            app.logger.info(
+                "Someone tried to change the information of the student {} but the matricule was wrong".format(
+                    matricule))
             return "", 404
         else:
             student.name = name
@@ -848,7 +903,7 @@ class updateStudentModel(Resource):
 class getListSelectCourse(AbstractListResource):
     def __init__(self):
         super().__init__(courseModel)
-    
+
     def get(self):
         course = db.session.query(courseModel).all()
         list = []
@@ -879,7 +934,9 @@ class getRequestToValidate(Resource):
         for ask in list_request:
             exam = db.session.query(examModel).filter_by(id=ask.exam).first()
             stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
-            list.append({"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status, "comment": ask.comment})
+            list.append(
+                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
+                 "comment": ask.comment})
         app.logger.info("Accessed the server to get the list of requests to validate")
         return list, 201
 
@@ -931,7 +988,6 @@ class getListSelectLocal(AbstractListResource):
     def __init__(self):
         super().__init__(localModel)
 
-    
     def get(self):
         local = db.session.query(localModel).all()
         list = []
@@ -942,7 +998,7 @@ class getListSelectLocal(AbstractListResource):
 
 
 class postDocument(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -966,7 +1022,7 @@ class postDocument(Resource):
         documentsModel.query.session.add(document)
         db.session.commit()
 
-        #fil.save(os.path.join(app.config['UPLOAD_FOLDER'], document.id + ".pdf")) TODO error
+        # fil.save(os.path.join(app.config['UPLOAD_FOLDER'], document.id + ".pdf")) TODO error
         app.logger.info("Admin {} uploaded a document".format(get_jwt_identity()))
         return "", 201
 
@@ -991,9 +1047,8 @@ class getDocument(AbstractListResourceById):
             return list, 200
 
 
-
 class generateExamenFacilities(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1006,7 +1061,8 @@ class generateExamenFacilities(Resource):
         to_pass = db.session.query(courseStudentModel).filter_by(student=student).filter_by(isSuccess='false').all()
         for t in to_pass:
             course = db.session.query(courseModel).filter_by(id_aa=t.course).first()
-            ckeck_exist = db.session.query(examModel).filter_by(student=student).filter_by(course=course.id_aa).filter_by(quadrimester=quadrimester).first()
+            ckeck_exist = db.session.query(examModel).filter_by(student=student).filter_by(
+                course=course.id_aa).filter_by(quadrimester=quadrimester).first()
             if course.passExam in list_ok and ckeck_exist is None:
                 facilities = examModel(course=course.id_aa, student=student, locale="", hour="", date="", type="",
                                        quadrimester=quadrimester)
@@ -1028,7 +1084,6 @@ class getExamFacilities1(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -1041,7 +1096,6 @@ class getExamFacilities2(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -1054,7 +1108,6 @@ class getExamFacilities3(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -1067,7 +1120,6 @@ class getListFaculty(AbstractListResource):
     def __init__(self):
         super().__init__(facultyModel)
 
-    
     def get(self):
         verif = verify()
         if verif is not True:
@@ -1081,7 +1133,7 @@ class getListFaculty(AbstractListResource):
 
 
 class postFaculty(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1095,7 +1147,7 @@ class postFaculty(Resource):
 
 
 class getActionDate(Resource):
-    
+
     def get(self):
         verif = verify()
         if verif is not True:
@@ -1109,7 +1161,7 @@ class getActionDate(Resource):
 
 
 class getExampleFacilities(Resource):
-    
+
     def get(self):
         verif = verify()
         if verif is not True:
@@ -1126,7 +1178,6 @@ class getMyExam(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -1134,14 +1185,14 @@ class getMyExam(AbstractListResourceById):
         rtn = db.session.query(examModel).filter_by(id=id).first()
         course = db.session.query(courseModel).filter_by(id_aa=rtn.course).first()
         app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
-        return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour, "local": rtn.locale, "type": rtn.type}, 200
+        return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour,
+                "local": rtn.locale, "type": rtn.type}, 200
 
 
 class getMyExamFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -1153,8 +1204,9 @@ class getMyExamFacilities(AbstractListResourceById):
             lst.append({"id": r.id, "facilitie": tmp.name})
         app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
         return [l for l in lst], 200
-    
-class removeExam(Resource) :
+
+
+class removeExam(Resource):
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1165,8 +1217,9 @@ class removeExam(Resource) :
         db.session.commit()
         app.logger.info("Admin {} deleted the exam {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
-    
-class removeExamFacilities(Resource) :
+
+
+class removeExamFacilities(Resource):
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1178,7 +1231,8 @@ class removeExamFacilities(Resource) :
         app.logger.info("Admin {} deleted the exam facilities {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
 
-class removeCourseFacilities(Resource) :
+
+class removeCourseFacilities(Resource):
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1192,7 +1246,7 @@ class removeCourseFacilities(Resource) :
 
 
 class postMyExam(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1212,7 +1266,6 @@ class getDeadLine(AbstractListResourceById):
     def __init__(self):
         super().__init__(actionDateModel)
 
-    
     def get(self, id):
         verif = verify()
         if verif is not True:
@@ -1223,7 +1276,7 @@ class getDeadLine(AbstractListResourceById):
 
 
 class getDeadLineList(Resource):
-    
+
     def get(self):
         verif = verify()
         if verif is not True:
@@ -1237,7 +1290,7 @@ class getDeadLineList(Resource):
 
 
 class postUpdateDeadLine(Resource):
-    
+
     def post(self):
         verif = verify()
         if verif is not True:
@@ -1249,6 +1302,7 @@ class postUpdateDeadLine(Resource):
         db.session.commit()
         app.logger.info("Admin {} updated the deadline {}".format(get_jwt_identity(), arguments.get("id")))
         return "", 201
+
 
 # ------------------- INIT -------------------
 # Initialisation database :
@@ -1391,6 +1445,7 @@ api.add_resource(getListSelectLocal, "/local-select")
 api.add_resource(getDocument, "/list-document/<id>")
 
 app.logger.info(" * Flask server starting ...")
+
 
 # ------------------- MAIN -------------------
 # Main :
