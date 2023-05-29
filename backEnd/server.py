@@ -51,10 +51,10 @@ def send_mail(subject, sender, recipients, text_body, html_body):
     :param html_body:
     :return:
     """
-    msg = Message(subject, sender=sender, recipients=recipients)
-    msg.body = text_body
-    msg.html = html_body
-    mail.send(msg)
+    # msg = Message(subject, sender=sender, recipients=recipients)
+    # msg.body = text_body
+    # msg.html = html_body
+    # mail.send(msg)
 
 
 def send_mail_new_student(email, path_to_connect):
@@ -88,12 +88,13 @@ def getExamList(id, quadri):
     for e in exam:
         subList = []
         facilities = db.session.query(examFacilitiesModel).filter_by(exam=e.id).all()
+        statu = db.session.query(examStatusModel).filter_by(exam=e.id).first()
         for c in facilities:
             facil = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
             subList.append({"id": c.id, "name": facil.name})
         course = db.session.query(courseModel).filter_by(id_aa=e.course).first()
         list.append({"id": e.id, "date": e.date, "hour": e.hour, "locale": e.locale, "type": e.type, "aa": e.course,
-                     "course": course.name, "facilities": subList})
+                     "course": course.name, "facilities": subList, "status": statu.status})
 
     return list
 
@@ -1068,7 +1069,7 @@ class generateExamenFacilities(Resource):
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
-                status = examStatusModel(exam=facilities.id, status="tovalide")
+                status = examStatusModel(exam=facilities.id, status="create")
                 examStatusModel.query.session.add(status)
                 db.session.commit()
                 listing = db.session.query(facilitiesModel).filter_by(student=student).filter_by(type="exam").all()
@@ -1077,6 +1078,22 @@ class generateExamenFacilities(Resource):
                     examFacilitiesModel.query.session.add(exam)
                     db.session.commit()
         app.logger.info("Admin {} generated the exam facilities for the student {}".format(get_jwt_identity(), student))
+        return "", 201
+
+
+class updateStatusExam(Resource):
+
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        arg = request.get_json()
+        id = arg.get("id")
+        status = arg.get("status")
+        status_db = db.session.query(examStatusModel).filter_by(exam=id).first()
+        status_db.status = status
+        db.session.commit()
+        app.logger.info("Admin {} updated the status of the exam {}".format(get_jwt_identity(), id))
         return "", 201
 
 
@@ -1493,6 +1510,7 @@ api.add_resource(getDocument, "/list-document/<id>")
 api.add_resource(getLog, "/log")
 api.add_resource(getActiveButton, "/active-button")
 api.add_resource(getListStudentInFaculty, "/faculty/<id>")
+api.add_resource(updateStatusExam, "/update-status-exam")
 
 app.logger.info(" * Flask server starting ...")
 

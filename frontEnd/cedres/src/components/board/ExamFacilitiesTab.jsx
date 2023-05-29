@@ -1,9 +1,39 @@
 import {Button, Table} from "react-bootstrap";
-import {getListCourseFacilitiesStudent, getListCourseStudent, getListExamFacilitiesStudent} from "../../utils/api.js";
-import {useQuery} from "@tanstack/react-query";
-import {useMemo} from "react";
+import {
+    getListCourseFacilitiesStudent,
+    getListCourseStudent,
+    getListExamFacilitiesStudent,
+    postAskFacilitiesExamen, postUpdateStatusExam
+} from "../../utils/api.js";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useCallback, useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {STUDENT} from "../../utils/routes.js";
+
+
+const ButtonValide = ({id}) =>
+{
+    const client = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: postUpdateStatusExam,
+        onSuccess: async data => {
+            await client.invalidateQueries(['buttonValidate']);
+        }
+    });
+
+
+    const onSubmit = useCallback(() => {
+        mutation.mutate({
+            'id': id,
+            'status': 'tovalide'
+        });
+    }, [mutation]);
+
+    return(
+        <Button style={{marginLeft:'15px'}} onClick={()=>onSubmit()} variant='danger'>valider</Button>
+    )
+}
 
 const ExamFacilitiesTab = ({session, Ukey, showButton}) =>
 {
@@ -48,6 +78,9 @@ const ExamFacilitiesTab = ({session, Ukey, showButton}) =>
                    </td>
                    <td>
                        {showButton && <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>}
+                       {doc.status==="update" && <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>}
+                       {showButton && doc.status==="create" && <ButtonValide id={doc.id}/>}
+                       {doc.status==="update" && <ButtonValide id={doc.id}/>}
                    </td>
                </tr>
            )

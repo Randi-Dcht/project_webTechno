@@ -9,7 +9,7 @@ const Secretary = () =>
 
     return(
         <Container>
-            <h2>Liste des étudiants</h2>
+            <h2 className="m-4">Liste des étudiants</h2>
             <ListStudentInFaculty myId={myId}/>
         </Container>
     )

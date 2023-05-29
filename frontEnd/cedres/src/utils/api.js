@@ -275,3 +275,9 @@ export async function getStudentInFaculty(myId)
     const rep = await server.get(`/faculty/${myId}`);
     return rep.data
 }
+
+export async function postUpdateStatusExam(data)
+{
+    const rep = await server.post('/update-status-exam', data);
+    return rep.data
+}
