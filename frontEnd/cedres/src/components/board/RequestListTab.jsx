@@ -14,9 +14,12 @@ const RequestListTab = ({data}) =>
                <tr key={req.id}>
                    <td>{req.student}</td>
                    <td>{req.exam}</td>
-                   <td>{req.status}</td>
                    <td>{req.comment}</td>
-                   <td><Button variant='warning'>Modifier</Button></td>
+                   <td>
+                       <Button variant='warning'>Modifier</Button>
+                       <Button variant='success'>Valide</Button>
+                       <Button variant='danger'>Non valide</Button>
+                   </td>
                </tr>
            )
        })
@@ -27,7 +30,7 @@ const RequestListTab = ({data}) =>
         <Table>
             <thead>
             <tr>
-                <td>Elève</td><td>Examen</td><td>Status</td><td>Commentaire</td><td>Action</td>
+                <td>Elève</td><td>Examen</td><td>Commentaire</td><td>Action</td>
             </tr>
             </thead>
             <tbody>
