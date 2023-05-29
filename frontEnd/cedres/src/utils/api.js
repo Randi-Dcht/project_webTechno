@@ -269,3 +269,9 @@ export async function getActiveButton()
     const rep = await server.get('/active-button');
     return rep.data
 }
+
+export async function getStudentInFaculty(myId)
+{
+    const rep = await server.get(`/faculty/${myId}`);
+    return rep.data
+}
