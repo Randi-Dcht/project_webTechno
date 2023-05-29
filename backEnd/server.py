@@ -33,7 +33,7 @@ actual_year = "2022-2023"
 app.logger.setLevel(logging.INFO)
 file_handler = logging.FileHandler('app.log')
 file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+file_handler.setFormatter(logging.Formatter('%(asctime)s ** %(levelname)s ** %(message)s'))
 app.logger.addHandler(file_handler)
 # add date and time to log
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -442,29 +442,29 @@ def verify(admin=False):
         verify_jwt_in_request()
     except (DecodeError, ExpiredSignatureError):
         app.logger.info(
-            "User tried to access the server with an invalid token : {}".format(request.headers.get("Authorization")))
+            "User tried to access the server with an invalid token {}...".format(request.headers.get("Authorization")[:20]))
         return {"msg": "Authentication required"}, 401
     t = request.headers.get("type")
     if t is None:
-        app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t,
+        app.logger.info("User {} with type {} and token {}... tried to access the server".format(get_jwt_identity(), t,
                                                                                               request.headers.get(
-                                                                                                  "Authorization")))
+                                                                                                  "Authorization")[:20]))
         return {"msg": "Type not found"}, 401
     if admin:
         if t == "admin":
-            app.logger.info("Admin {} with type {} and token {} accessed the server".format(get_jwt_identity(), t,
+            app.logger.info("Admin {} with type {} and token {}... accessed the server".format(get_jwt_identity(), t,
                                                                                             request.headers.get(
-                                                                                                "Authorization")))
+                                                                                                "Authorization")[:20]))
             return True
         else:
-            app.logger.info("User {} with type {} and token {} tried to access the server".format(get_jwt_identity(), t,
+            app.logger.info("User {} with type {} and token {}... tried to access the server".format(get_jwt_identity(), t,
                                                                                                   request.headers.get(
-                                                                                                      "Authorization")))
+                                                                                                      "Authorization")[:20]))
             return {"msg": "Admin authentication required"}, 401
     # add the username, type and token to the log
     username = get_jwt_identity()
-    app.logger.info("User {} with type {} and token {} accessed the server".format(username, t, request.headers.get(
-        "Authorization")))
+    app.logger.info("User {} with type {} and token {}... accessed the server".format(username, t, request.headers.get(
+        "Authorization")[:20]))
     return True
 
 
@@ -1304,6 +1304,20 @@ class postUpdateDeadLine(Resource):
         return "", 201
 
 
+class getLog(Resource):
+
+    def get(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        with open("app.log", "r") as f:
+            lines = f.readlines()
+            ln = []
+            for i in range(len(lines)):
+                rmp = lines[i].replace("\n", "").split("**")
+                ln.append({"date": rmp[0], "type": rmp[1], "message": rmp[2]})
+        return ln, 200
+
 # ------------------- INIT -------------------
 # Initialisation database :
 
@@ -1443,6 +1457,7 @@ api.add_resource(getDeadLineList, "/deadline-list")
 api.add_resource(getListSelectFalculty, "/faculty-select")
 api.add_resource(getListSelectLocal, "/local-select")
 api.add_resource(getDocument, "/list-document/<id>")
+api.add_resource(getLog, "/log")
 
 app.logger.info(" * Flask server starting ...")
 

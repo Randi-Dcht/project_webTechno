@@ -257,3 +257,9 @@ export async function getRequestFinish()
     const rep = await server.get(`/request-finish`);
     return rep.data
 }
+
+export async function getLog()
+{
+    const rep = await server.get('/log');
+    return rep.data
+}
