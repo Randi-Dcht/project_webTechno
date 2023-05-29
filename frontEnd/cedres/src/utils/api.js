@@ -263,3 +263,9 @@ export async function getLog()
     const rep = await server.get('/log');
     return rep.data
 }
+
+export async function getActiveButton()
+{
+    const rep = await server.get('/active-button');
+    return rep.data
+}

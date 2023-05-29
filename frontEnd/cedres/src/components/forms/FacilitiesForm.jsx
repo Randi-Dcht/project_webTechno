@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {postFacilities} from "../../utils/api.js";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {getListFacilitiesExample, postFacilities} from "../../utils/api.js";
 import {useForm} from "react-hook-form";
 import React, {useCallback} from "react";
 import {Button, Container, Form, Row} from "react-bootstrap";
@@ -21,7 +21,7 @@ const validationSchema = yup.object().shape({
         .required("Un titre est obligatoire !"),
 });
 
-const FacilitiesForm = ({cancel, example}) =>
+const FacilitiesForm = ({cancel}) =>
 {
     const client = useQueryClient();
     const navigate = useNavigate();
@@ -33,6 +33,12 @@ const FacilitiesForm = ({cancel, example}) =>
             window.location.reload();
         }
     });
+
+    const {data, isLoading} = useQuery(
+        {
+            queryKey:['listExampleFacilities'],
+            queryFn: getListFacilitiesExample,
+        })
 
     const {handleSubmit, control} = useForm({
         mode: "onBlur",
@@ -64,15 +70,15 @@ const FacilitiesForm = ({cancel, example}) =>
         <div>
             <Container>
                 <Row>
-                    <Form onSubmit={handleSubmit(onSubmit)}>
-                        <ChooseList type="text" name="name" label="Titre aménagement" control={control} listData={example} listName='listExample'/>
+                    {!isLoading &&<Form onSubmit={handleSubmit(onSubmit)}>
+                        <ChooseList type="text" name="name" label="Titre aménagement" control={control} listData={data} listName='listExample'/>
                         <Input type="text" name="description" label="Description aménagement" control={control}/>
                         <InputList type="text" name="type" label="Aménagements pour" control={control} listData={list_Type}/>
                         <div className="container">
                             <Button className="m-2" variant="warning" type="submit">Ajouter</Button>
                             <Button className="m-2" variant="outline-secondary" onClick={()=>cancel(false)}>Annuler</Button>
                         </div>
-                    </Form>
+                    </Form>}
                 </Row>
             </Container>
         </div>

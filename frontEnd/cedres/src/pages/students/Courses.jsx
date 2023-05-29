@@ -3,7 +3,8 @@ import CourseTab from "../../components/board/CourseTab.jsx";
 import {useState} from "react";
 import CourseStudentForm from "../../components/forms/CourseStudentForm.jsx";
 import {useQuery} from "@tanstack/react-query";
-import {getListCoure, getSelectList} from "../../utils/api.js";
+import {getActiveButton, getListCoure, getSelectList} from "../../utils/api.js";
+import NoButton from "../../components/NoButton.jsx";
 
 const listCourse = () =>
 {
@@ -34,13 +35,21 @@ const Courses = () =>
     const listA = listCourse();
     const listB = listTeacher();
 
+    const {data, isLoading} = useQuery(
+        {
+            queryKey:['activeButton'],
+            queryFn: getActiveButton,
+        })
+
     return(
         <Container>
             <h3 className="m-3">Mes cours : </h3>
             {
+                isLoading? <p>Chargement ...</p>:
+                    data.active==="course"?
                 isAdd === false ?
                     <div className="container-fluid text-center"><Button className='m-3' variant="warning" onClick={()=>setAdd(true)}>Ajouter un cours</Button></div>:
-                    <CourseStudentForm cancel={setAdd} listA={listA} listB={listB}/>
+                    <CourseStudentForm cancel={setAdd} listA={listA} listB={listB}/>: <NoButton/>
             }
             <CourseTab/>
         </Container>

@@ -1318,6 +1318,25 @@ class getLog(Resource):
                 ln.append({"date": rmp[0], "type": rmp[1], "message": rmp[2]})
         return ln, 200
 
+
+class getActiveButton(Resource):
+
+    def get(self):
+        now_date = str(datetime.now().year) + "-" + str(datetime.now().month) + "-" + str(datetime.now().day)
+        now_date = datetime.strptime(now_date, '%Y-%m-%d')
+
+        rtn = None
+        for r in db.session.query(actionDateModel).all():
+            if datetime.strptime(str(r.date_start), '%Y-%m-%d') <= now_date <= datetime.strptime(str(r.date_end), '%Y-%m-%d'):
+                rtn = r
+
+        if rtn is None:
+            active = "State0"
+        else:
+            active = rtn.name
+        return {"active": active}, 200
+
+
 # ------------------- INIT -------------------
 # Initialisation database :
 
@@ -1458,6 +1477,7 @@ api.add_resource(getListSelectFalculty, "/faculty-select")
 api.add_resource(getListSelectLocal, "/local-select")
 api.add_resource(getDocument, "/list-document/<id>")
 api.add_resource(getLog, "/log")
+api.add_resource(getActiveButton, "/active-button")
 
 app.logger.info(" * Flask server starting ...")
 
