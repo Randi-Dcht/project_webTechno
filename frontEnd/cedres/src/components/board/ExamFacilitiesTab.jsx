@@ -5,7 +5,7 @@ import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {STUDENT} from "../../utils/routes.js";
 
-const ExamFacilitiesTab = ({session, Ukey}) =>
+const ExamFacilitiesTab = ({session, Ukey, showButton}) =>
 {
     const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ const ExamFacilitiesTab = ({session, Ukey}) =>
                        }
                    </td>
                    <td>
-                       <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>
+                       {showButton && <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>}
                    </td>
                </tr>
            )
