@@ -1337,6 +1337,20 @@ class getActiveButton(Resource):
         return {"active": active}, 200
 
 
+class getListStudentInFaculty(AbstractListResourceById):
+
+        def __init__(self):
+            super().__init__(studentModel)
+
+        def get(self, id):
+            rtn = db.session.query(studentModel).filter_by(faculty=id).all()
+            lst = []
+            for r in rtn:
+                lst.append({"name": r.name + " " + r.surname, "matricule": r.matricule, "mail": r.email})
+            app.logger.info("Secretary of faculty accessed the server to get the list of students in faculty {}".format(id))
+            return [l for l in lst], 200
+
+
 # ------------------- INIT -------------------
 # Initialisation database :
 
@@ -1478,6 +1492,7 @@ api.add_resource(getListSelectLocal, "/local-select")
 api.add_resource(getDocument, "/list-document/<id>")
 api.add_resource(getLog, "/log")
 api.add_resource(getActiveButton, "/active-button")
+api.add_resource(getListStudentInFaculty, "/faculty/<id>")
 
 app.logger.info(" * Flask server starting ...")
 
