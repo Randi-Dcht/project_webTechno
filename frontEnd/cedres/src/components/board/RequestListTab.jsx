@@ -39,6 +39,10 @@ const RequestListTab = ({data, actionbutton}) =>
                <tr key={req.id}>
                    <td>{req.student}</td>
                    <td>{req.exam}</td>
+                   <td>
+                       <div>{req.date}</div>
+                       <div>{req.local}</div>
+                   </td>
                    <td>{req.comment}</td>
                    <td>
                        <Button variant='warning'>Consulter</Button>
@@ -55,7 +59,7 @@ const RequestListTab = ({data, actionbutton}) =>
         <Table>
             <thead>
             <tr>
-                <td>Elève</td><td>Examen</td><td>Commentaire</td><td>Action</td>
+                <td>Elève</td><td>Examen</td><td>Date & local</td><td>Commentaire</td><td>Action</td>
             </tr>
             </thead>
             <tbody>

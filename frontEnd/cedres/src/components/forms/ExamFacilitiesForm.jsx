@@ -63,6 +63,7 @@ const ExamFacilitiesForm = ({data_default}) =>
                             <Input type="hidden" name="id" label="" control={control}/>
                             <Input type="date" name="date" label="Date de l'examen" control={control}/>
                             <Input type="time" name="hour" label="Heure de l'examen" control={control}/>
+                            <Input type="time" name="hourEnd" label="Heure fin de l'examen" control={control}/>
                             <ChooseList type="text" name="local" label="Local de l'examen" control={control} listData={data} listName="local"/>
                             <InputList type="text" name="type" label="Type examen" control={control} listData={list_Type}/>
                         </Form>

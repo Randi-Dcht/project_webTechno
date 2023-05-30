@@ -94,7 +94,7 @@ def getExamList(id, quadri):
             subList.append({"id": c.id, "name": facil.name})
         course = db.session.query(courseModel).filter_by(id_aa=e.course).first()
         list.append({"id": e.id, "date": e.date, "hour": e.hour, "locale": e.locale, "type": e.type, "aa": e.course,
-                     "course": course.name, "facilities": subList, "status": statu.status})
+                     "course": course.name, "facilities": subList, "status": statu.status, "hourEnd": e.hour_end})
 
     return list
 
@@ -368,6 +368,7 @@ class examModel(db.Model):
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
     date = db.Column(db.String(25), nullable=False)
     hour = db.Column(db.String(10), nullable=False)
+    hour_end = db.Column(db.String(10), nullable=False, default=" ")
     locale = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(10), nullable=False)  # oral or written
     quadrimester = db.Column(db.Integer, nullable=False)  # 1, 2, 3
@@ -927,17 +928,23 @@ class getListSelectTeacher(AbstractListResource):
         return [l for l in list], 200
 
 
+def getRequestAdmin(status):
+    list_request = db.session.query(examStatusModel).filter_by(status=status).all()
+    list = []
+    for ask in list_request:
+        exam = db.session.query(examModel).filter_by(id=ask.exam).first()
+        stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+        course = db.session.query(courseModel).filter_by(id_aa=exam.course).first()
+        list.append(
+            {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": course.name, "date": exam.date + " " + exam.hour + " à " + exam.hour_end, "status": ask.status, "local": exam.locale,
+             "comment": ask.comment})
+    return list
+
+
 class getRequestToValidate(Resource):
 
     def get(self):
-        list_request = db.session.query(examStatusModel).filter_by(status='tovalide').all()
-        list = []
-        for ask in list_request:
-            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
-            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
-            list.append(
-                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
-                 "comment": ask.comment})
+        list = getRequestAdmin('tovalide')
         app.logger.info("Accessed the server to get the list of requests to validate")
         return list, 201
 
@@ -945,14 +952,7 @@ class getRequestToValidate(Resource):
 class getRequestWait(Resource):
 
     def get(self):
-        list_request = db.session.query(examStatusModel).filter_by(status='update').all()
-        list = []
-        for ask in list_request:
-            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
-            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
-            list.append(
-                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
-                 "comment": ask.comment})
+        list = getRequestAdmin('update')
         app.logger.info("Accessed the server to get the list of requests waiting")
         return list, 201
 
@@ -960,14 +960,7 @@ class getRequestWait(Resource):
 class getRequestFinish(Resource):
 
     def get(self):
-        list_request = db.session.query(examStatusModel).filter_by(status='finish').all()
-        list = []
-        for ask in list_request:
-            exam = db.session.query(examModel).filter_by(id=ask.exam).first()
-            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
-            list.append(
-                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": exam.course, "status": ask.status,
-                 "comment": ask.comment})
+        list = getRequestAdmin('finish')
         app.logger.info("Accessed the server to get the list of requests finished")
         return list, 201
 
@@ -1065,7 +1058,7 @@ class generateExamenFacilities(Resource):
             ckeck_exist = db.session.query(examModel).filter_by(student=student).filter_by(
                 course=course.id_aa).filter_by(quadrimester=quadrimester).first()
             if course.passExam in list_ok and ckeck_exist is None:
-                facilities = examModel(course=course.id_aa, student=student, locale="", hour="", date="", type="",
+                facilities = examModel(course=course.id_aa, student=student, locale="", hour="", hour_end="", date="", type="",
                                        quadrimester=quadrimester)
                 facilitiesModel.query.session.add(facilities)
                 db.session.commit()
@@ -1202,7 +1195,7 @@ class getMyExam(AbstractListResourceById):
         rtn = db.session.query(examModel).filter_by(id=id).first()
         course = db.session.query(courseModel).filter_by(id_aa=rtn.course).first()
         app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
-        return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour,
+        return {"id": rtn.id, "course": course.name, "aa": rtn.course, "date": rtn.date, "hour": rtn.hour, "hourEnd": rtn.hour_end,
                 "local": rtn.locale, "type": rtn.type}, 200
 
 
@@ -1272,6 +1265,7 @@ class postMyExam(Resource):
         exam = examModel.query.filter_by(id=arguments.get("id")).first()
         exam.date = arguments.get("date")
         exam.hour = arguments.get("hour")
+        exam.hour_end = arguments.get("hourEnd")
         exam.locale = arguments.get("local")
         exam.type = arguments.get("type")
         db.session.commit()
