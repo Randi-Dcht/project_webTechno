@@ -945,7 +945,7 @@ class getRequestToValidate(Resource):
 class getRequestWait(Resource):
 
     def get(self):
-        list_request = db.session.query(examStatusModel).filter_by(status='wait').all()
+        list_request = db.session.query(examStatusModel).filter_by(status='update').all()
         list = []
         for ask in list_request:
             exam = db.session.query(examModel).filter_by(id=ask.exam).first()
