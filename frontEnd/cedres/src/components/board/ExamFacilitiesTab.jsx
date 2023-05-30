@@ -77,7 +77,7 @@ const ExamFacilitiesTab = ({session, Ukey, showButton}) =>
                        }
                    </td>
                    <td>
-                       {showButton && <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>}
+                       {showButton && doc.status==="create" && <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>}
                        {doc.status==="update" && <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+doc.id)}>Modifier</Button>}
                        {showButton && doc.status==="create" && <ButtonValide id={doc.id}/>}
                        {doc.status==="update" && <ButtonValide id={doc.id}/>}
