@@ -1,9 +1,34 @@
 import {Button, Table} from "react-bootstrap";
-import {getListCoure, getListCourseStudent, getListFaculty} from "../../utils/api.js";
-import {useQuery} from "@tanstack/react-query";
-import {useMemo} from "react";
+import {getListCoure, getListCourseStudent, getListFaculty, postUpdateStatusExam} from "../../utils/api.js";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useCallback, useMemo} from "react";
 
-const RequestListTab = ({data}) =>
+
+const ActionButton = ({id, name, status, variant}) =>
+{
+    const client = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: postUpdateStatusExam,
+        onSuccess: async data => {
+            await client.invalidateQueries(['buttonValidate']);
+        }
+    });
+
+
+    const onSubmit = useCallback(() => {
+        mutation.mutate({
+            'id': id,
+            'status': status
+        });
+    }, [mutation]);
+
+    return(
+        <Button style={{marginLeft:'5px'}} onClick={()=>onSubmit()} variant={variant}>{name}</Button>
+    )
+}
+
+const RequestListTab = ({data, actionbutton}) =>
 {
 
    const lineTab = useMemo(() =>
@@ -16,9 +41,9 @@ const RequestListTab = ({data}) =>
                    <td>{req.exam}</td>
                    <td>{req.comment}</td>
                    <td>
-                       <Button variant='warning'>Modifier</Button>
-                       <Button variant='success'>Valide</Button>
-                       <Button variant='danger'>Non valide</Button>
+                       <Button variant='warning'>Consulter</Button>
+                       {actionbutton >= 2 && <ActionButton name="Valide" id={req.id} status="finish" variant='success'/>}
+                       {actionbutton >= 3 && <ActionButton name="Non valide" id={req.id} status="update" variant='danger'/>}
                    </td>
                </tr>
            )
