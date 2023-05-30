@@ -20,8 +20,12 @@ export const URL_CEDRES =
             "url" : ADMIN + '/log'
         },
         {
-            "name" : "DeadLine",
+            "name" : "Agenda",
             "url" : ADMIN + '/deadline'
+        },
+        {
+            "name" : "Paramètres",
+            "url" : ADMIN + '/parameters'
         }
     ]
 

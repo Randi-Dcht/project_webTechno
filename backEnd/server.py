@@ -27,6 +27,7 @@ db = SQLAlchemy()
 db.init_app(app)
 jwt = JWTManager(app)
 actual_year = "2022-2023"
+actual_quadri = 1
 
 # ------------------- CONFIG LOGGER -------------------
 
@@ -929,15 +930,19 @@ class getListSelectTeacher(AbstractListResource):
 
 
 def getRequestAdmin(status):
+    quadri = int(db.session.query(actionDateModel).filter_by(name="quadri").first().date_start)
     list_request = db.session.query(examStatusModel).filter_by(status=status).all()
     list = []
     for ask in list_request:
         exam = db.session.query(examModel).filter_by(id=ask.exam).first()
-        stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
-        course = db.session.query(courseModel).filter_by(id_aa=exam.course).first()
-        list.append(
-            {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": course.name, "date": exam.date + " " + exam.hour + " à " + exam.hour_end, "status": ask.status, "local": exam.locale,
-             "comment": ask.comment})
+        if exam.quadrimester == quadri:
+            stud = db.session.query(studentModel).filter_by(matricule=exam.student).first()
+            course = db.session.query(courseModel).filter_by(id_aa=exam.course).first()
+            list.append(
+                {"id": ask.id, "student": stud.name + " " + stud.surname, "exam": course.name,
+                 "date": exam.date + " " + exam.hour + " à " + exam.hour_end, "status": ask.status,
+                 "local": exam.locale,
+                 "comment": ask.comment})
     return list
 
 
@@ -1315,6 +1320,31 @@ class postUpdateDeadLine(Resource):
         return "", 201
 
 
+class postUpdateQuadri(Resource):
+
+        def post(self):
+            verif = verify()
+            if verif is not True:
+                return verif
+            arguments = request.get_json()
+            actual_quadri = arguments.get("quadri")
+            action = actionDateModel.query.filter_by(name="quadri").first()
+            action.date_start = actual_quadri
+            db.session.commit()
+
+            return "", 201
+
+
+class getQuadri(Resource):
+
+        def get(self):
+            verif = verify()
+            if verif is not True:
+                return verif
+            q = db.session.query(actionDateModel).filter_by(name="quadri").first().date_start
+            app.logger.info("Admin {} accessed the server to get the quadri".format(get_jwt_identity()))
+            return {"quadri": q}, 200
+
 class getLog(Resource):
 
     def get(self):
@@ -1392,6 +1422,10 @@ def initDataBase():
         db.session.commit()
 
         action = actionDateModel(date_start=date_year + "-07-01", date_end=date_year + "-08-01", name="session3")
+        actionDateModel.query.session.add(action)
+        db.session.commit()
+
+        action = actionDateModel(date_start="1", date_end="0", name="quadri")
         actionDateModel.query.session.add(action)
         db.session.commit()
 
@@ -1505,6 +1539,8 @@ api.add_resource(getLog, "/log")
 api.add_resource(getActiveButton, "/active-button")
 api.add_resource(getListStudentInFaculty, "/faculty/<id>")
 api.add_resource(updateStatusExam, "/update-status-exam")
+api.add_resource(postUpdateQuadri, "/update-quadri")
+api.add_resource(getQuadri, "/get-quadri")
 
 app.logger.info(" * Flask server starting ...")
 

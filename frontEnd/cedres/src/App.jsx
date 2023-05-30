@@ -26,6 +26,7 @@ import Secretary from "./pages/secretary/Secretary.jsx";
 import Examens from "./pages/students/Examens.jsx";
 import DeadLine from "./pages/admin/DeadLine.jsx";
 import ProfilStudent from './pages/admin/ProfilStudent';
+import Parameters from "./pages/admin/Parameters.jsx";
 
 function App()
 {
@@ -53,6 +54,7 @@ function App()
                 <Route path={ADMIN + "/list-ask"} element={<ListAsk/>}/>
                 <Route path={ADMIN + "/log"} element={<ListLog/>}/>
                 <Route path={ADMIN + "/deadline"} element={<DeadLine/>}/>
+                <Route path={ADMIN + "/parameters"} element={<Parameters/>}/>
 
                 <Route path={STUDENT} element={<HomeStudent/>}/>
                 <Route path={STUDENT + "/courses"} element={<Courses/>}/>

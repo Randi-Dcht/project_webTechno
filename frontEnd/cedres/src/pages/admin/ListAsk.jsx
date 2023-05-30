@@ -1,7 +1,14 @@
-import {Container, Tab, Tabs} from "react-bootstrap";
-import {useQuery} from "@tanstack/react-query";
-import {getListFaculty, getRequestFinish, getRequestToValidate, getRequestWait} from "../../utils/api.js";
+import {Button, Container, Tab, Tabs} from "react-bootstrap";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {
+    getQuadri,
+    getRequestFinish,
+    getRequestToValidate,
+    getRequestWait, postUpdateQuadri,
+    postUpdateStatusExam
+} from "../../utils/api.js";
 import RequestListTab from "../../components/board/RequestListTab.jsx";
+import {useCallback} from "react";
 
 const RequestToValidate = ({request, id, actionButton}) =>
 {

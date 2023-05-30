@@ -281,3 +281,15 @@ export async function postUpdateStatusExam(data)
     const rep = await server.post('/update-status-exam', data);
     return rep.data
 }
+
+export async function postUpdateQuadri(data)
+{
+    const rep = await server.post('/update-quadri', data);
+    return rep.data
+}
+
+export async function getQuadri()
+{
+    const rep = await server.get(`/get-quadri`);
+    return rep.data
+}
