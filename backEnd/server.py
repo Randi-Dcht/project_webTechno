@@ -568,14 +568,47 @@ class addNewStudent(Resource):  # matricule / name / surname / email
         email = arguments.get("email")
         name = arguments.get("name")
         surname = arguments.get("surname")
-
+        self.sendmail(email, name, surname, matricule)
         newStudent = studentModel(matricule=matricule, name=name, surname=surname, email=email, phone="",
                                   email_private="", faculty="", actif=False)
+
         studentModel.query.session.add(newStudent)
         db.session.commit()
+
         app.logger.info("Added a new student : {}".format(newStudent.name))
-        send_mail_new_student(email, matricule)
         return "", 201
+
+    def sendmail (self, receiver_email, name, surname, matricule):
+
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        import smtplib, ssl
+
+        SENDER_ADDRESS = 'noreplyprojetbdwebcedre@gmail.com'
+        PASSWORD = 'mncbfyyjnosvjcoz'  # password for sender address
+        RECIPIENT_EMAILS = [receiver_email]
+        SUBJECT = "Inscription sur le site de gestion des étudiants du cèdres de l'UMons"
+
+        message = MIMEMultipart()
+        message['From'] = SENDER_ADDRESS
+        message['To'] = RECIPIENT_EMAILS[0]
+        message['Subject'] = SUBJECT
+
+        text = "Bonjour" + str(surname) + " "+ str(name) + ", \n " \
+               "Vous avez été inscrit sur le site de gestion des étudiants du cèdres de l'UMons. \n " \
+               "Veuillez cliquer sur le lien suivant pour confirmer votre inscription : \n " \
+               "http://localhost:5173/student/first/" + str(matricule) + "\n"  \
+
+        part1 = MIMEText(text, "plain")
+
+        message.attach(part1)
+
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(SENDER_ADDRESS, PASSWORD)
+            server.sendmail(
+                SENDER_ADDRESS, receiver_email, message.as_string().encode('utf-8')
+            )
 
 
 class getNewStudent(Resource):
