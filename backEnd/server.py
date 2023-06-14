@@ -1425,6 +1425,34 @@ class getListStudentInFaculty(AbstractListResourceById):
             return [l for l in lst], 200
 
 
+class postAThingInDatabase(Resource):
+    def post(self):
+       # verif = verify()
+       # if verif is not True:
+       #     return verif
+        arguments = request.get_json()
+        research = arguments.get("data")
+        List = []
+        for r in db.session.query(studentModel).all():
+            if research in r.name or research in r.surname or research in r.email or research == r.matricule:
+                List.append({"name": r.name + " " + r.surname, "matricule": r.matricule, "mail": r.email, "type:": "student"})
+        for r in db.session.query(teacherModel).all():
+            if research in r.name or research in r.surname or research in r.email:
+                List.append({"name": r.name + " " + r.surname, "mail": r.email, "type:": "teacher"})
+        for r in db.session.query(localModel).all():
+            if research in r.name:
+                List.append({"name": r.name, "type:": "local"})
+        for r in db.session.query(facultyModel).all():
+            if research in r.name or research in r.mail:
+                List.append({"name": r.name, "email": r.mail, "type:": "faculty"})
+        for r in db.session.query(courseModel).all():
+            if research in r.name or research in r.id_aa:
+                List.append({"name": r.name, "description": r.id_aa, "type:": "course"})
+
+        return [l for l in List], 200
+
+
+
 # ------------------- INIT -------------------
 # Initialisation database :
 
@@ -1574,6 +1602,7 @@ api.add_resource(getListStudentInFaculty, "/faculty/<id>")
 api.add_resource(updateStatusExam, "/update-status-exam")
 api.add_resource(postUpdateQuadri, "/update-quadri")
 api.add_resource(getQuadri, "/get-quadri")
+api.add_resource(postAThingInDatabase, "/research")
 
 app.logger.info(" * Flask server starting ...")
 
