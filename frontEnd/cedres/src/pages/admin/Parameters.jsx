@@ -38,6 +38,22 @@ const Parameters = () =>
         <Container>
             <h3 className='m-3'>Paramètres de l'App :</h3>
             <Alert variant='danger' className='m-3'>
+                <h4>Envoyer des mails</h4>
+                <div style={{display:'flex', justifyContent:'space-around'}}>
+                    <Button variant='danger'>Mail professeurs</Button>
+                    <Button variant='danger'>Mail secrétariats</Button>
+                </div>
+            </Alert>
+            <Alert variant='danger' className='m-3'>
+                <h4>Envoyer des mails aux étudiants</h4>
+                <div style={{display:'flex', justifyContent:'space-around'}}>
+                    <Button variant='danger'>Mail rappel aménagements</Button>
+                    <Button variant='danger'>Mail rappel cours</Button>
+                    <Button variant='danger'>Mail rappel demandes</Button>
+                    <Button variant='danger'>Mail rappel documents</Button>
+                </div>
+            </Alert>
+            <Alert variant='danger' className='m-3'>
                 <h4>Choix quadrimestre</h4>
                 {
                     isLoading? <p>chargement ...</p>:
