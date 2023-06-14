@@ -1427,14 +1427,14 @@ class getListStudentInFaculty(AbstractListResourceById):
 
 class postAThingInDatabase(Resource):
     def post(self):
-       # verif = verify()
-       # if verif is not True:
-       #     return verif
+        verif = verify()
+        if verif is not True:
+            return verif
         arguments = request.get_json()
         research = arguments.get("data")
         List = []
         for r in db.session.query(studentModel).all():
-            if research in r.name or research in r.surname or research in r.email or research == str(r.matricule):
+            if research in r.name or research in r.surname or research in r.email or research in str(r.matricule):
                 List.append({"data": r.name + " " + r.surname + " " + str(r.matricule) + " " + r.email, "type": "student", "id": "1"})
         for r in db.session.query(teacherModel).all():
             if research in r.name or research in r.surname or research in r.email:
