@@ -1401,7 +1401,7 @@ class getActiveButton(Resource):
 
         rtn = None
         for r in db.session.query(actionDateModel).all():
-            if datetime.strptime(str(r.date_start), '%Y-%m-%d') <= now_date <= datetime.strptime(str(r.date_end), '%Y-%m-%d'):
+            if r.name != "quadri" and datetime.strptime(str(r.date_start), '%Y-%m-%d') <= now_date <= datetime.strptime(str(r.date_end), '%Y-%m-%d'):
                 rtn = r
 
         if rtn is None:
