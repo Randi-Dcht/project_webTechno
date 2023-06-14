@@ -27,6 +27,7 @@ import Examens from "./pages/students/Examens.jsx";
 import DeadLine from "./pages/admin/DeadLine.jsx";
 import ProfilStudent from './pages/admin/ProfilStudent';
 import Parameters from "./pages/admin/Parameters.jsx";
+import Research from "./pages/admin/Research.jsx";
 
 function App()
 {
@@ -55,6 +56,7 @@ function App()
                 <Route path={ADMIN + "/log"} element={<ListLog/>}/>
                 <Route path={ADMIN + "/deadline"} element={<DeadLine/>}/>
                 <Route path={ADMIN + "/parameters"} element={<Parameters/>}/>
+                <Route path={ADMIN + "/research"} element={<Research/>}/>
 
                 <Route path={STUDENT} element={<HomeStudent/>}/>
                 <Route path={STUDENT + "/courses"} element={<Courses/>}/>

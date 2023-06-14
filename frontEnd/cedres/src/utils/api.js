@@ -293,3 +293,9 @@ export async function getQuadri()
     const rep = await server.get(`/get-quadri`);
     return rep.data
 }
+
+export async function postResearch(data)
+{
+    const rep = await server.post('/research', data);
+    return rep.data
+}
