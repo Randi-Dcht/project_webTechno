@@ -1,7 +1,7 @@
-import {Table} from "react-bootstrap";
+import {Button, Table} from "react-bootstrap";
 import {getListCourseStudent} from "../../utils/api.js";
 import {useQuery} from "@tanstack/react-query";
-import {useMemo} from "react";
+import React, {useMemo} from "react";
 
 const CourseTab = () =>
 {
@@ -14,7 +14,6 @@ const CourseTab = () =>
 
    const lineTab = useMemo(() =>
    {
-       console.log(data)
        return data?.map(doc =>
        {
            return(
@@ -25,7 +24,7 @@ const CourseTab = () =>
                    <td><a href={"mailto:" + doc.mail}>{doc.teacher}</a></td>
                    <td>
                        {
-                           doc.isSuccess === "false" ? 'Non':'Oui'
+                           doc.isSuccess === "false" ? <Button>Réussi</Button>:<p>oui</p>
                        }
                    </td>
                </tr>

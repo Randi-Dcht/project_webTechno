@@ -962,6 +962,24 @@ class getListSelectTeacher(AbstractListResource):
         return [l for l in list], 200
 
 
+class postSuccessCourse(Resource):
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        args = request.get_json()
+        id = args.get("id")
+        course = db.session.query(courseStudentModel).filter_by(id=id).first()
+        if course is None:
+            app.logger.info(
+                "Someone tried to change the status of the course {} but the id was wrong".format(id))
+            return "", 404
+        else:
+            course.isSuccess = True
+            db.session.commit()
+            app.logger.info("Course {} changed his status to success".format(id))
+            return "", 200
+
 def getRequestAdmin(status):
     quadri = int(db.session.query(actionDateModel).filter_by(name="quadri").first().date_start)
     list_request = db.session.query(examStatusModel).filter_by(status=status).all()
@@ -1603,6 +1621,7 @@ api.add_resource(updateStatusExam, "/update-status-exam")
 api.add_resource(postUpdateQuadri, "/update-quadri")
 api.add_resource(getQuadri, "/get-quadri")
 api.add_resource(postAThingInDatabase, "/research")
+api.add_resource(postSuccessCourse, "/success-course")
 
 app.logger.info(" * Flask server starting ...")
 

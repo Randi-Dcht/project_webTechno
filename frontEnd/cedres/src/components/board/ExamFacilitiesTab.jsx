@@ -61,7 +61,6 @@ const ExamFacilitiesTab = ({session, Ukey, showButton}) =>
 
    const lineTab = useMemo(() =>
    {
-       console.log(data)
        let before = ""
        return data?.map(doc =>
        {

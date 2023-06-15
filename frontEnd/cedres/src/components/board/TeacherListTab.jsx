@@ -14,7 +14,6 @@ const CourseListTab = () =>
 
    const lineTab = useMemo(() =>
    {
-       console.log(data)
        return data?.map(prof =>
        {
            return(

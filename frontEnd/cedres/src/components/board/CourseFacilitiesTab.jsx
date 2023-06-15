@@ -28,7 +28,6 @@ const CourseFacilitiesTab = () =>
 
    const lineTab = useMemo(() =>
    {
-       console.log(data)
        let before = ""
        return data?.map(doc =>
        {

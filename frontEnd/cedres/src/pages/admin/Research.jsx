@@ -18,8 +18,6 @@ const Search = ({setVisible, setData, setLoad}) =>
             setLoad(true)
             setVisible(true);
             setData(data)
-            console.log(data)
-
         }
     });
 

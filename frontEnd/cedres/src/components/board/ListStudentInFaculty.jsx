@@ -21,7 +21,6 @@ const ListStudentInFaculty = ({myId}) =>
 
    const lineTab = useMemo(() =>
    {
-       console.log(data)
        return data?.map(std =>
        {
            return(

@@ -299,3 +299,9 @@ export async function postResearch(data)
     const rep = await server.post('/research', data);
     return rep.data
 }
+
+export async function postSuccessCourse(data)
+{
+    const rep = await server.post('/success-course', data);
+    return rep.data
+}
