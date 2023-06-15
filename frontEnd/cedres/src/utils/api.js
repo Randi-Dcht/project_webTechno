@@ -305,3 +305,9 @@ export async function postSuccessCourse(data)
     const rep = await server.post('/success-course', data);
     return rep.data
 }
+
+export async function getStudentDocs(myId)
+{
+    const rep = await server.get(`/list-document/${myId}`);
+    return rep.data
+}

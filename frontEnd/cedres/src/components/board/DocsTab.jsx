@@ -1,14 +1,15 @@
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
 import {Table} from "react-bootstrap";
+import {getStudentDocs} from "../../utils/api.js";
 
-const DocsTab = ({url}) =>
+const DocsTab = () =>
 {
-    /*
+
     const {data, isLoading} = useQuery(
         {
             queryKey: ['listDocs'],
-            queryFn: () => url
+            queryFn: () => getStudentDocs(localStorage.getItem('id'))
         });
 
     const lineTab = useMemo(() =>
@@ -18,28 +19,27 @@ const DocsTab = ({url}) =>
             return(
                 <tr key={doc.id}>
                     <td>{doc.name}</td>
-                    <td>{doc.description}</td>
+                    <td>{doc.pushBy}</td>
+                    <td><a href="none.pdf">Télécharge</a></td>
                 </tr>
             )
         })
     }, [data])
-*/
+
 
     return(
-        /*isLoading?
-            <p>Chargement ...</p>:*/
-            <Table>
-                <thead>
-                <tr>
-                    <td>Nom</td><td>Date</td><td>Téléchargement</td>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                   // lineTab
-                }
-                </tbody>
-            </Table>
+        <Table>
+            <thead>
+            <tr>
+                <td>Document</td><td>Charger par</td><td>Téléchargements</td>
+            </tr>
+            </thead>
+            <tbody>
+            {
+                lineTab
+            }
+            </tbody>
+        </Table>
     )
 }
 export default DocsTab
