@@ -3,13 +3,13 @@ import {getListCourseStudent} from "../../utils/api.js";
 import {useQuery} from "@tanstack/react-query";
 import React, {useMemo} from "react";
 
-const CourseTab = () =>
+const CourseTab = ({student}) =>
 {
 
    const {data, isLoading} = useQuery(
        {
            queryKey: ['listCourse'],
-           queryFn: () => getListCourseStudent(localStorage.getItem('id'))
+           queryFn: () => getListCourseStudent(student)
        });
 
    const lineTab = useMemo(() =>

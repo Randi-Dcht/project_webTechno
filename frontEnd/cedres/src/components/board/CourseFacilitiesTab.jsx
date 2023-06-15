@@ -3,13 +3,13 @@ import {getListCourseFacilitiesStudent, getListCourseStudent} from "../../utils/
 import {useQuery} from "@tanstack/react-query";
 import {useMemo} from "react";
 
-const CourseFacilitiesTab = () =>
+const CourseFacilitiesTab = ({student}) =>
 {
 
    const {data, isLoading} = useQuery(
        {
            queryKey: ['listCourseFacilities'],
-           queryFn: () => getListCourseFacilitiesStudent(localStorage.getItem('id'))
+           queryFn: () => getListCourseFacilitiesStudent(student)
        });
 
    const facilities = (list, index1) =>

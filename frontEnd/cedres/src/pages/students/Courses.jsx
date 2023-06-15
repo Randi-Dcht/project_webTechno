@@ -51,7 +51,7 @@ const Courses = () =>
                     <div className="container-fluid text-center"><Button className='m-3' variant="warning" onClick={()=>setAdd(true)}>Ajouter un cours</Button></div>:
                     <CourseStudentForm cancel={setAdd} listA={listA} listB={listB}/>: <NoButton/>
             }
-            <CourseTab/>
+            <CourseTab student={localStorage.getItem('id')}/>
         </Container>
     )
 }

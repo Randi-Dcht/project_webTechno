@@ -1054,16 +1054,16 @@ class postDocument(Resource):
         if verif is not True:
             return verif
 
-        if 'file' not in request.files:
-            app.logger.info("Someone tried to upload a document but no file was provided")
-            return 'No file provided', 403
+       # if 'file' not in request.files:
+       #     app.logger.info("Someone tried to upload a document but no file was provided")
+       #     return 'No file provided', 403
 
-        file = request.files['file']
-        if file.filename == '':
-            app.logger.info("Someone tried to upload a document but no file was provided")
-            return 'No file provided', 400
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #file = request.files['file']
+        #if file.filename == '':
+        #    app.logger.info("Someone tried to upload a document but no file was provided")
+        #    return 'No file provided', 400
+        #filename = secure_filename(file.filename)
+        #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         arguments = request.get_json()
         fil = arguments.get("file")
@@ -1092,7 +1092,7 @@ class getDocument(AbstractListResourceById):
         else:
             list = []
             for d in document:
-                list.append({"id": d.id, "name": d.name, "pusbBy": d.pushBy, "date": "error"})
+                list.append({"id": d.id, "name": d.name, "pushBy": d.pushBy, "date": "error"})
             app.logger.info("Admin {} accessed the server to get a document".format(get_jwt_identity()))
             return list, 200
 

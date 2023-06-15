@@ -35,14 +35,14 @@ const ButtonValide = ({id}) =>
     )
 }
 
-const ExamFacilitiesTab = ({session, Ukey, showButton}) =>
+const ExamFacilitiesTab = ({session, Ukey, showButton, student}) =>
 {
     const navigate = useNavigate();
 
    const {data, isLoading} = useQuery(
        {
            queryKey: [Ukey],
-           queryFn: () => getListExamFacilitiesStudent(localStorage.getItem('id'), session)
+           queryFn: () => getListExamFacilitiesStudent(student, session)
        });
 
    const facilities = (list, index1) =>

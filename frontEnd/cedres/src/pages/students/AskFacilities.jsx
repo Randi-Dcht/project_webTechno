@@ -42,19 +42,19 @@ const AskFacilities = () =>
                 className="mb-3"
             >
                 <Tab eventKey="course" title="Cours">
-                    <CourseFacilitiesTab/>
+                    <CourseFacilitiesTab student={localStorage.getItem('id')}/>
                 </Tab>
                 <Tab eventKey="exam-1" title="Examen janvier">
                     {data.active==="session1"?<Button variant="warning" onClick={()=>onSubmit(1)}>Créer une demande pour janvier</Button>:<NoButton/>}
-                    <ExamFacilitiesTab session='1' Ukey='listExamFacilities1' showButton={data.active==="session1"}/>
+                    <ExamFacilitiesTab session='1' Ukey='listExamFacilities1' showButton={data.active==="session1"} student={localStorage.getItem('id')}/>
                 </Tab>
                 <Tab eventKey="exam-2" title="Examen juin">
                     {data.active==="session2"?<Button variant="warning" onClick={()=>onSubmit(2)}>Créer une demande pour juin</Button>:<NoButton/>}
-                    <ExamFacilitiesTab session='2' Ukey='listExamFacilities2' showButton={data.active==="session2"}/>
+                    <ExamFacilitiesTab session='2' Ukey='listExamFacilities2' showButton={data.active==="session2"} student={localStorage.getItem('id')}/>
                 </Tab>
                 <Tab eventKey="exam-3" title="Examen août">
                     {data.active==="session3"?<Button variant="warning" onClick={()=>onSubmit(3)}>Créer une demande pour août</Button>:<NoButton/>}
-                    <ExamFacilitiesTab session='3' Ukey='listExamFacilities3' showButton={data.active==="session3"}/>
+                    <ExamFacilitiesTab session='3' Ukey='listExamFacilities3' showButton={data.active==="session3"} student={localStorage.getItem('id')}/>
                 </Tab>
             </Tabs>}
         </Container>

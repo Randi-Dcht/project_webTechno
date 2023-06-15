@@ -3,13 +3,13 @@ import {useMemo} from "react";
 import {Table} from "react-bootstrap";
 import {getStudentDocs} from "../../utils/api.js";
 
-const DocsTab = () =>
+const DocsTab = ({student}) =>
 {
 
     const {data, isLoading} = useQuery(
         {
             queryKey: ['listDocs'],
-            queryFn: () => getStudentDocs(localStorage.getItem('id'))
+            queryFn: () => getStudentDocs(student)
         });
 
     const lineTab = useMemo(() =>

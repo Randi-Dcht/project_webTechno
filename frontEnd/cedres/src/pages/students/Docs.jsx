@@ -16,7 +16,7 @@ const Docs = () =>
                     <div className="container-fluid text-center"><Button className='m-4' variant="warning" onClick={()=>setPush(true)}>Ajouter un document</Button></div>:
                     <PushDocForm cancel={setPush}/>
             }
-            <DocsTab/>
+            <DocsTab student={localStorage.getItem('id')}/>
         </Container>
     )
 }
