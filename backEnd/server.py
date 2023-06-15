@@ -1,8 +1,11 @@
 # save this as app.py
+import hashlib
 import json
 import os
 from datetime import datetime
 import logging
+from random import random
+
 from flask_mail import Mail
 from flask_mail import Message
 from flask import Flask, request, jsonify
@@ -226,6 +229,21 @@ class adminModel(db.Model):
 
     def __repr__(self):
         return "<admin %r>" % self.name
+
+
+class hashAThing(db.Model):
+    """
+    hash a thing model
+    """
+    __tablename__ = "hashAThing"
+    data = db.Column(db.String(20), primary_key=True)
+    hash = db.Column(db.String(200),  nullable=False)
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    def __repr__(self):
+        return "<student %r>" % self.name
 
 
 class studentModel(db.Model):
@@ -575,6 +593,13 @@ class addNewStudent(Resource):  # matricule / name / surname / email
         studentModel.query.session.add(newStudent)
         db.session.commit()
 
+        matricule_hash = str(matricule) + '1589647'
+        hashdata = hashAThing(data=matricule, hash=matricule_hash)
+        hashAThing.query.session.add(hashdata)
+        db.session.commit()
+
+        print("matricule_hash : ", matricule_hash)
+
         app.logger.info("Added a new student : {}".format(newStudent.name))
         return "", 201
 
@@ -614,7 +639,8 @@ class addNewStudent(Resource):  # matricule / name / surname / email
 class getNewStudent(Resource):
 
     def get(self, id):
-        student = db.session.query(studentModel).filter_by(matricule=id).filter_by(actif=False).first()
+        hashData = db.session.query(hashAThing).filter_by(hash=id).first()
+        student = db.session.query(studentModel).filter_by(matricule=hashData.data).filter_by(actif=False).first()
         rtn = {"name": student.name, "surname": student.surname, "matricule": student.matricule, "email": student.email}
         app.logger.info("Accessed the server to get the new student info : {}".format(student.name))
         return rtn, 200
