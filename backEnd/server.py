@@ -91,7 +91,7 @@ def getExamList(id, quadri):
     list = []
     for e in exam:
         subList = []
-        facilities = db.session.query(examFacilitiesModel).filter_by(exam=e.id).all()
+        facilities = db.session.query(examFacilitiesModel).filter_by(exam=e.id).filter_by(used='true').all()
         statu = db.session.query(examStatusModel).filter_by(exam=e.id).first()
         for c in facilities:
             facil = db.session.query(facilitiesModel).filter_by(id=c.facilities).first()
@@ -425,6 +425,7 @@ class examFacilitiesModel(db.Model):
     exam = db.Column(db.Integer, db.ForeignKey("exam.id"), nullable=False)
     student = db.Column(db.Integer, db.ForeignKey("student.matricule"), nullable=False)
     facilities = db.Column(db.Integer, db.ForeignKey("facilities.id"), nullable=False)
+    used = db.Column(db.String(15), nullable=False, default='true')  # true or false
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -1281,6 +1282,23 @@ class getMyExam(AbstractListResourceById):
                 "local": rtn.locale, "type": rtn.type}, 200
 
 
+class getMyExamFacilitiesTrue(AbstractListResourceById):
+    def __init__(self):
+        super().__init__(examModel)
+
+    def get(self, id):
+        verif = verify()
+        if verif is not True:
+            return verif
+        rtn = db.session.query(examFacilitiesModel).filter_by(exam=id).filter_by(used='true').all()
+        lst = []
+        for r in rtn:
+            tmp = db.session.query(facilitiesModel).filter_by(id=r.facilities).first()
+            lst.append({"id": r.id, "facilitie": tmp.name})
+        app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
+        return [l for l in lst], 200
+
+
 class getMyExamFacilities(AbstractListResourceById):
     def __init__(self):
         super().__init__(examModel)
@@ -1293,9 +1311,22 @@ class getMyExamFacilities(AbstractListResourceById):
         lst = []
         for r in rtn:
             tmp = db.session.query(facilitiesModel).filter_by(id=r.facilities).first()
-            lst.append({"id": r.id, "facilitie": tmp.name})
+            lst.append({"id": r.id, "facilitie": tmp.name, "used": r.used})
         app.logger.info("Admin {} accessed the server to get the exam facilities {}".format(get_jwt_identity(), id))
         return [l for l in lst], 200
+
+
+class postUpdateExamFacilities(Resource):
+    def post(self):
+        verif = verify()
+        if verif is not True:
+            return verif
+        arguments = request.get_json()
+        exam = examFacilitiesModel.query.filter_by(id=arguments.get("id")).first()
+        exam.used = arguments.get("status")
+        db.session.commit()
+        app.logger.info("Admin {} updated the exam facilities {}".format(get_jwt_identity(), arguments.get("id")))
+        return "", 201
 
 
 class removeExam(Resource):
@@ -1634,6 +1665,7 @@ api.add_resource(getExampleFacilities, "/exampleFacilities-list")
 api.add_resource(getMyExam, "/myExam/<id>")
 api.add_resource(postMyExam, "/myExam-update")
 api.add_resource(getMyExamFacilities, "/myExamList/<id>")
+api.add_resource(getMyExamFacilitiesTrue, "/myExamListTrue/<id>")
 api.add_resource(getDeadLine, "/deadline/<id>")
 api.add_resource(postUpdateDeadLine, "/deadline-update")
 api.add_resource(getDeadLineList, "/deadline-list")
@@ -1648,6 +1680,7 @@ api.add_resource(postUpdateQuadri, "/update-quadri")
 api.add_resource(getQuadri, "/get-quadri")
 api.add_resource(postAThingInDatabase, "/research")
 api.add_resource(postSuccessCourse, "/success-course")
+api.add_resource(postUpdateExamFacilities, "/update-exam-facilities")
 
 app.logger.info(" * Flask server starting ...")
 

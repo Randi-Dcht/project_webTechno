@@ -204,6 +204,12 @@ export async function getMyExamList(number)
     return rep.data
 }
 
+export async function getMyExamListTrue(number)
+{
+    const rep = await server.get(`/myExamListTrue/${number}`);
+    return rep.data
+}
+
 export async function postMyExam(data)
 {
     const rep = await server.post('/myExam-update', data);
@@ -309,5 +315,11 @@ export async function postSuccessCourse(data)
 export async function getStudentDocs(myId)
 {
     const rep = await server.get(`/list-document/${myId}`);
+    return rep.data
+}
+
+export async function postUpdateFacilitiesExam(data)
+{
+    const rep = await server.post('/update-exam-facilities', data);
     return rep.data
 }
