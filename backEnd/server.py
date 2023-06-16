@@ -1511,12 +1511,13 @@ class getListStudentByTeacher(AbstractListResourceById):
                 for r in rtn:
                     data = db.session.query(examModel).filter_by(course=r.course).filter_by(quadrimester=actual_quadri).first()
                     std = db.session.query(studentModel).filter_by(matricule=r.student).first()
+                    course = db.session.query(courseModel).filter_by(id_aa=r.course).first()
                     amg = db.session.query(examFacilitiesModel).filter_by(exam=data.id).filter_by(student=r.student).filter_by(used='true').all()
                     lst2 = []
                     for a in amg:
                         dati = db.session.query(facilitiesModel).filter_by(id=a.facilities).first()
                         lst2.append({"id": dati.id, "name": dati.name, "description": dati.description})
-                    lst.append({"name": std.name + " " + std.surname, "matricule": std.matricule, "mail": std.email, "listing": [l for l in lst2]})
+                    lst.append({"course": course.name, "name": std.name + " " + std.surname, "matricule": std.matricule, "mail": std.email, "listing": [l for l in lst2]})
                 app.logger.info("Teacher {} accessed the server to get the list of students in his courses".format(id))
                 return [l for l in lst], 200
 

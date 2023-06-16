@@ -41,6 +41,7 @@ const ListStudentByTeacher = ({myId}) =>
        {
            return(
                <tr key={std.matricule}>
+                   <td>{std.course}</td>
                    <td>{std.matricule}</td>
                    <td><a href={"mailto:" + std.mail}>{std.name}</a></td>
                    <td>
@@ -58,7 +59,7 @@ const ListStudentByTeacher = ({myId}) =>
         <Table>
             <thead>
             <tr>
-                <td>Matricule</td><td>Etudiant</td><td>Liste aménagements</td>
+                <td>Cours</td><td>Matricule</td><td>Etudiant</td><td>Liste aménagements</td>
             </tr>
             </thead>
             <tbody>
