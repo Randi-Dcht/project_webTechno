@@ -1509,9 +1509,9 @@ class getListStudentByTeacher(AbstractListResourceById):
                 rtn = db.session.query(courseStudentModel).filter_by(teacher=id).all()
                 lst = []
                 for r in rtn:
-                    data = db.session.query(examModel).filter_by(course=r.course).filter_by(quadrimester='1').first()
+                    data = db.session.query(examModel).filter_by(course=r.course).filter_by(quadrimester=actual_quadri).first()
                     std = db.session.query(studentModel).filter_by(matricule=r.student).first()
-                    amg = db.session.query(examFacilitiesModel).filter_by(exam=data.id).filter_by(student=r.student).all()
+                    amg = db.session.query(examFacilitiesModel).filter_by(exam=data.id).filter_by(student=r.student).filter_by(used='true').all()
                     lst2 = []
                     for a in amg:
                         dati = db.session.query(facilitiesModel).filter_by(id=a.facilities).first()
