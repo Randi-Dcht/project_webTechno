@@ -19,6 +19,7 @@ const ButtonValide = ({id}) =>
         mutationFn: postUpdateStatusExam,
         onSuccess: async data => {
             await client.invalidateQueries(['buttonValidate']);
+            window.location.reload()
         }
     });
 

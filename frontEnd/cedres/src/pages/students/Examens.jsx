@@ -59,7 +59,7 @@ const Examens = () =>
             {
                 listFacilities(examNumber)
             }
-            <Button className='m-5' onClick={() => navigate('/student/ask')}>Quitter</Button>
+            <Button className='m-5' onClick={() => history.back()}>Quitter</Button>
         </Container>
     )
 }

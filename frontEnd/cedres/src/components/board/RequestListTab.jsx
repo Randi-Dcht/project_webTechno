@@ -2,6 +2,8 @@ import {Button, Table} from "react-bootstrap";
 import {getListCoure, getListCourseStudent, getListFaculty, postUpdateStatusExam} from "../../utils/api.js";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useCallback, useMemo} from "react";
+import {STUDENT} from "../../utils/routes.js";
+import {useNavigate} from "react-router-dom";
 
 
 const ActionButton = ({id, name, status, variant}) =>
@@ -30,6 +32,7 @@ const ActionButton = ({id, name, status, variant}) =>
 
 const RequestListTab = ({data, actionbutton}) =>
 {
+    const navigate = useNavigate()
 
    const lineTab = useMemo(() =>
    {
@@ -45,7 +48,7 @@ const RequestListTab = ({data, actionbutton}) =>
                    </td>
                    <td>{req.comment}</td>
                    <td>
-                       <Button variant='warning'>Consulter</Button>
+                       <Button variant='warning' onClick={() => navigate(STUDENT+'/ask-exam/'+req.id)}>Consulter</Button>
                        {actionbutton >= 2 && <ActionButton name="Valide" id={req.id} status="finish" variant='success'/>}
                        {actionbutton >= 3 && <ActionButton name="Non valide" id={req.id} status="update" variant='danger'/>}
                    </td>
