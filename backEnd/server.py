@@ -1500,6 +1500,27 @@ class getListStudentInFaculty(AbstractListResourceById):
             return [l for l in lst], 200
 
 
+class getListStudentByTeacher(AbstractListResourceById):
+
+            def __init__(self):
+                super().__init__(studentModel)
+
+            def get(self, id):
+                rtn = db.session.query(courseStudentModel).filter_by(teacher=id).all()
+                lst = []
+                for r in rtn:
+                    data = db.session.query(examModel).filter_by(course=r.course).filter_by(quadrimester='1').first()
+                    std = db.session.query(studentModel).filter_by(matricule=r.student).first()
+                    amg = db.session.query(examFacilitiesModel).filter_by(exam=data.id).filter_by(student=r.student).all()
+                    lst2 = []
+                    for a in amg:
+                        dati = db.session.query(facilitiesModel).filter_by(id=a.facilities).first()
+                        lst2.append({"id": dati.id, "name": dati.name, "description": dati.description})
+                    lst.append({"name": std.name + " " + std.surname, "matricule": std.matricule, "mail": std.email, "listing": [l for l in lst2]})
+                app.logger.info("Teacher {} accessed the server to get the list of students in his courses".format(id))
+                return [l for l in lst], 200
+
+
 class postAThingInDatabase(Resource):
     def post(self):
         verif = verify()
@@ -1675,6 +1696,7 @@ api.add_resource(getDocument, "/list-document/<id>")
 api.add_resource(getLog, "/log")
 api.add_resource(getActiveButton, "/active-button")
 api.add_resource(getListStudentInFaculty, "/faculty/<id>")
+api.add_resource(getListStudentByTeacher, "/listTeacher/<id>")
 api.add_resource(updateStatusExam, "/update-status-exam")
 api.add_resource(postUpdateQuadri, "/update-quadri")
 api.add_resource(getQuadri, "/get-quadri")

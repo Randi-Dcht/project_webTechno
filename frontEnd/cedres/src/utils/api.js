@@ -282,6 +282,12 @@ export async function getStudentInFaculty(myId)
     return rep.data
 }
 
+export async function getListStudentByTeacher(teacher)
+{
+    const rep = await server.get(`/listTeacher/${teacher}`);
+    return rep.data
+}
+
 export async function postUpdateStatusExam(data)
 {
     const rep = await server.post('/update-status-exam', data);
