@@ -2,6 +2,8 @@ import {Alert, Button, Container} from "react-bootstrap";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {getQuadri, postUpdateQuadri} from "../../utils/api.js";
 import {useCallback} from "react";
+import AdminForm from "../../components/forms/AdminForm.jsx";
+import UpdatePassForm from "../../components/forms/UpdatePassForm.jsx";
 
 const ActionButton = ({id, name, color}) =>
 {
@@ -69,6 +71,12 @@ const Parameters = () =>
                 <center>
                     <Button variant='danger'>réinitialisation</Button>
                 </center>
+            </Alert>
+            <Alert variant='danger' className='m-3'>
+                <AdminForm/>
+            </Alert>
+            <Alert variant='danger' className='m-3'>
+                <UpdatePassForm url={null}/>
             </Alert>
         </Container>
     )
