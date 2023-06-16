@@ -1532,19 +1532,19 @@ class postAThingInDatabase(Resource):
         List = []
         for r in db.session.query(studentModel).all():
             if research in r.name or research in r.surname or research in r.email or research in str(r.matricule):
-                List.append({"data": r.name + " " + r.surname + " " + str(r.matricule) + " " + r.email, "type": "student", "id": "1"})
+                List.append({"data": r.name + " " + r.surname + " " + str(r.matricule) + " " + r.email, "type": "etudiant", "id": r.matricule})
         for r in db.session.query(teacherModel).all():
             if research in r.name or research in r.surname or research in r.email:
-                List.append({"data": r.name + " " + r.surname + " " + r.email, "type": "teacher", "id": "2"})
+                List.append({"data": r.name + " " + r.surname + " " + r.email, "type": "professeur", "id": "2"})
         for r in db.session.query(localModel).all():
             if research in r.name:
                 List.append({"data": r.name, "type": "local", "id": "3"})
         for r in db.session.query(facultyModel).all():
             if research in r.name or research in r.mail:
-                List.append({"data": r.name + " " + r.mail, "type": "faculty", "id": "4"})
+                List.append({"data": r.name + " " + r.mail, "type": "facultée", "id": "4"})
         for r in db.session.query(courseModel).all():
             if research in r.name or research in r.id_aa:
-                List.append({"data": r.name + " " + str(r.id_aa), "type": "course", "id": "5"})
+                List.append({"data": r.name + " " + str(r.id_aa), "type": "cours", "id": "5"})
 
         return [l for l in List], 200
 
