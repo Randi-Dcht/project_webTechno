@@ -1,7 +1,30 @@
 import {Button, Table} from "react-bootstrap";
-import {getListCourseStudent} from "../../utils/api.js";
-import {useQuery} from "@tanstack/react-query";
-import React, {useMemo} from "react";
+import {getListCourseStudent, postSuccessCourse} from "../../utils/api.js";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import React, {useCallback, useMemo} from "react";
+
+const ActionButton = ({id}) =>
+{
+    const client = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: postSuccessCourse,
+        onSuccess: async data => {
+            await client.invalidateQueries(['listCourse']);
+        }
+    });
+
+
+    const onSubmit = useCallback(() => {
+        mutation.mutate({
+            'id': id
+        });
+    }, [mutation]);
+
+    return(
+        <Button style={{marginLeft:'5px'}} onClick={()=>onSubmit()} variant={"warning"}>Réussi</Button>
+    )
+}
 
 const CourseTab = ({student}) =>
 {
@@ -24,7 +47,7 @@ const CourseTab = ({student}) =>
                    <td><a href={"mailto:" + doc.mail}>{doc.teacher}</a></td>
                    <td>
                        {
-                           doc.isSuccess === "false" ? <Button>Réussi</Button>:<p>oui</p>
+                           doc.isSuccess === "false" ? <ActionButton id={doc.id}/>:<p>oui</p>
                        }
                    </td>
                </tr>

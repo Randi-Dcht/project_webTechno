@@ -831,7 +831,7 @@ class getListCourseStudent(AbstractListResourceById):  # TODO add name of teache
             teacher = db.session.query(teacherModel).filter_by(id=c.teacher).first()
             list.append({"id_aa": crs.id_aa, "name": crs.name, "teacher": teacher.name + " " + teacher.surname,
                          "mail": teacher.email, "isSuccess": c.isSuccess, "passExam": crs.passExam,
-                         "quadrimester": crs.quadrimester})
+                         "quadrimester": crs.quadrimester, "id": c.id})
         app.logger.info(
             "Admin {} accessed the server to get the list of courses for a student".format(get_jwt_identity()))
         return [h for h in list], 200
